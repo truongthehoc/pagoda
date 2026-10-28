@@ -11,8 +11,28 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Đọc cấu hình từ file .env nếu có
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  envContent.split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) {
+      const match = trimmed.match(/^([^=]+)=(.*)$/);
+      if (match) {
+        const key = match[1].trim();
+        let val = match[2].trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        process.env[key] = val;
+      }
+    }
+  });
+}
+
 const app = express();
-const PORT = 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -25,6 +45,12 @@ if (!fs.existsSync(uploadsDir)) {
 }
 // Phục vụ các file tĩnh trong thư mục uploads (ảnh, nhạc do người dùng tải lên)
 app.use('/uploads', express.static(uploadsDir));
+
+// Phục vụ frontend tĩnh đã build trong thư mục dist/ (chế độ Production)
+const distDir = path.join(__dirname, 'dist');
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir));
+}
 
 // Cấu hình Multer lưu file upload
 const storage = multer.diskStorage({
@@ -39,13 +65,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Kết nối MySQL Database
+// Kết nối MySQL Database (hỗ trợ biến môi trường trên VPS)
 const pool = mysql.createPool({
-  host: '127.0.0.1',
-  port: 3306,
-  user: 'root',
-  password: '',
-  database: 'pagoda_db',
+  host: process.env.DB_HOST || '127.0.0.1',
+  port: parseInt(process.env.DB_PORT || '3306', 10),
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : '',
+  database: process.env.DB_NAME || 'pagoda_db',
   charset: 'utf8mb4',
   waitForConnections: true,
   connectionLimit: 10,
@@ -715,6 +741,22 @@ app.patch('/api/admin/wishes/:id/toggle', async (req, res) => {
   }
 });
 
-app.listen(PORT, '127.0.0.1', () => {
-  console.log(`🚀 Backend API Server đang chạy tại http://127.0.0.1:${PORT}`);
+// Định tuyến trang Admin và giao diện chính trong chế độ Production
+if (fs.existsSync(distDir)) {
+  app.get('/admin', (req, res) => {
+    res.sendFile(path.join(distDir, 'admin.html'));
+  });
+  app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(distDir, 'admin.html'));
+  });
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(distDir, 'index.html'));
+  });
+}
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Pagoda Server đang chạy tại http://0.0.0.0:${PORT}`);
 });
