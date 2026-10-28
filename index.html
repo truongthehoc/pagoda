@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chính Điện Tam Bảo - Chốn Thiền Môn Trang Nghiêm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- KHÔNG GIAN CHÍNH ĐIỆN TAM BẢO 2D -->
+    <main id="temple-view" class="temple-view">
+      <!-- 1. HÌNH NỀN BÀN THỜ TAM BẢO THẬT -->
+      <div id="tam-bao-bg" class="tam-bao-bg"></div>
+      <div class="temple-vignette"></div>
+
+      <!-- 2. FLARE ÁNH SÁNG QUANG MINH TỰ NHIÊN QUANH PHẬT -->
+      <div id="buddha-flare" class="divine-light-flare">
+        <div class="flare-core"></div>
+        <div class="flare-corona"></div>
+        <div class="flare-streak-h"></div>
+        <div class="flare-streak-v"></div>
+        <div class="flare-glow-outer"></div>
+      </div>
+
+      <!-- 3. ÁNH SÁNG ĐÈN THỜ BẬP BÙNG NHẸ TRÊN BÀN THỜ -->
+      <div class="altar-candle-flicker candle-c1"></div>
+      <div class="altar-candle-flicker candle-c2"></div>
+      <div class="altar-candle-flicker candle-c3"></div>
+
+      <!-- 4. CANVAS HIỆU ỨNG SƯƠNG KHÓI TRẦM HƯƠNG & BỤI VÀNG -->
+      <canvas id="mist-canvas" class="temple-canvas"></canvas>
+
+      <!-- 5. CANVAS HOẠT ẢNH VÁI TAM BẢO FPOV -->
+      <canvas id="incense-canvas" class="temple-canvas"></canvas>
+    </main>
+
+    <!-- BỘ ĐIỀU CHỈNH ÂM LƯỢNG (TĂNG/GIẢM & TẮT/MỞ) -->
+    <div class="top-volume-control">
+      <button id="btn-volume-toggle" class="btn-volume" title="Bật / Tắt Âm Thanh">
+        <span id="volume-icon" class="vol-icon">🔊</span>
+      </button>
+      <div class="volume-slider-box">
+        <input type="range" id="volume-slider" min="0" max="100" value="75" title="Kéo để tăng / giảm âm lượng" />
+        <span id="volume-percent" class="volume-percent">75%</span>
+      </div>
+    </div>
+
+    <!-- THANH CÔNG CỤ CHÍNH: THẮP HƯƠNG & RÚT THẺ -->
+    <footer class="main-action-bar">
+      <!-- Nút Thắp Nén Hương Thơm (Hoạt ảnh FPOV) -->
+      <button id="btn-offer-incense" class="btn-action-primary">
+        <div class="btn-glow-pulse"></div>
+        <span class="btn-icon">
+          <svg class="btn-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="goldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fffbeb" />
+                <stop offset="40%" stop-color="#fbbf24" />
+                <stop offset="100%" stop-color="#b45309" />
+              </linearGradient>
+              <linearGradient id="censerBody" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#f59e0b" />
+                <stop offset="35%" stop-color="#92400e" />
+                <stop offset="100%" stop-color="#451a03" />
+              </linearGradient>
+              <radialGradient id="emberGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="30%" stop-color="#fef08a" />
+                <stop offset="70%" stop-color="#f97316" />
+                <stop offset="100%" stop-color="#dc2626" />
+              </radialGradient>
+              <linearGradient id="incenseSmokeGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#fef3c7" stop-opacity="0.95" />
+                <stop offset="50%" stop-color="#fef3c7" stop-opacity="0.5" />
+                <stop offset="100%" stop-color="#fef3c7" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+
+            <!-- Làn khói uốn lượn từ 3 nén nhang -->
+            <path d="M19 14 C17 10, 22 7, 19 2" stroke="url(#incenseSmokeGrad)" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <path d="M24 12 C22 8, 27 5, 24 1" stroke="url(#incenseSmokeGrad)" stroke-width="2.2" stroke-linecap="round" fill="none" />
+            <path d="M29 14 C31 10, 26 7, 29 2" stroke="url(#incenseSmokeGrad)" stroke-width="1.8" stroke-linecap="round" fill="none" />
+
+            <!-- 3 Thân que nhang -->
+            <line x1="22" y1="28" x2="19" y2="14" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" />
+            <line x1="22" y1="28" x2="19" y2="14" stroke="#fef08a" stroke-width="1" stroke-linecap="round" opacity="0.6" />
+            <line x1="24" y1="28" x2="24" y2="12" stroke="#d97706" stroke-width="2.4" stroke-linecap="round" />
+            <line x1="24" y1="28" x2="24" y2="12" stroke="#fef08a" stroke-width="1" stroke-linecap="round" opacity="0.6" />
+            <line x1="26" y1="28" x2="29" y2="14" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" />
+            <line x1="26" y1="28" x2="29" y2="14" stroke="#fef08a" stroke-width="1" stroke-linecap="round" opacity="0.6" />
+
+            <!-- 3 Đầu tàn nhang ửng đỏ sáng -->
+            <circle cx="19" cy="14" r="2.2" fill="url(#emberGlow)" />
+            <circle cx="24" cy="12" r="2.4" fill="url(#emberGlow)" />
+            <circle cx="29" cy="14" r="2.2" fill="url(#emberGlow)" />
+
+            <!-- Bát nhang / Lư đồng Tam Bảo -->
+            <path d="M12 28 C8 28, 8 35, 12 36" stroke="url(#goldGrad1)" stroke-width="2" stroke-linecap="round" fill="none" />
+            <path d="M36 28 C40 28, 40 35, 36 36" stroke="url(#goldGrad1)" stroke-width="2" stroke-linecap="round" fill="none" />
+            <ellipse cx="24" cy="27" rx="14" ry="4.5" fill="url(#goldGrad1)" />
+            <ellipse cx="24" cy="27" rx="12" ry="3.5" fill="#3b1706" />
+            <path d="M11 27 C11 38, 37 38, 37 27 Z" fill="url(#censerBody)" stroke="url(#goldGrad1)" stroke-width="1.2" />
+            <path d="M14 32 Q24 35 34 32" stroke="url(#goldGrad1)" stroke-width="1.5" fill="none" />
+            <circle cx="24" cy="33.5" r="2" fill="url(#goldGrad1)" />
+            <path d="M16 37 L14 42 M24 38 L24 43 M32 37 L34 42" stroke="url(#goldGrad1)" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        </span>
+        <div class="btn-text">
+          <span class="main-title">THẮP NÉN HƯƠNG THƠM</span>
+          <span class="sub-title">Cầm 3 nén tâm hương • Cung kính vái Tam Bảo</span>
+        </div>
+      </button>
+
+      <!-- Nút Rút Thẻ Cầu An / Lời Phật Dạy -->
+      <button id="btn-draw-card" class="btn-action-card">
+        <span class="btn-icon">
+          <svg class="btn-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fffbeb" />
+                <stop offset="40%" stop-color="#fbbf24" />
+                <stop offset="100%" stop-color="#b45309" />
+              </linearGradient>
+              <linearGradient id="tubeWood" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#78350f" />
+                <stop offset="40%" stop-color="#b45309" />
+                <stop offset="70%" stop-color="#d97706" />
+                <stop offset="100%" stop-color="#451a03" />
+              </linearGradient>
+              <linearGradient id="bambooStick" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#fef08a" />
+                <stop offset="100%" stop-color="#d97706" />
+              </linearGradient>
+              <linearGradient id="featuredStick" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ef4444" />
+                <stop offset="25%" stop-color="#dc2626" />
+                <stop offset="30%" stop-color="#fef08a" />
+                <stop offset="100%" stop-color="#f59e0b" />
+              </linearGradient>
+            </defs>
+
+            <!-- Các thẻ tre xòe ra bên trong ống -->
+            <path d="M16 26 L12 12 C12 11, 14 10, 15 11 L19 25 Z" fill="url(#bambooStick)" stroke="#b45309" stroke-width="0.8" />
+            <path d="M32 26 L36 12 C36 11, 34 10, 33 11 L29 25 Z" fill="url(#bambooStick)" stroke="#b45309" stroke-width="0.8" />
+            <path d="M19 26 L18 8 C18 7, 21 7, 21 8 L22 26 Z" fill="url(#bambooStick)" stroke="#b45309" stroke-width="0.8" />
+            <path d="M29 26 L30 8 C30 7, 27 7, 27 8 L26 26 Z" fill="url(#bambooStick)" stroke="#b45309" stroke-width="0.8" />
+
+            <!-- Thẻ Cầu An Vươn Cao (Được rút lên) -->
+            <rect x="22" y="3" width="4" height="24" rx="2" fill="url(#featuredStick)" stroke="url(#goldGrad2)" stroke-width="1" />
+            <circle cx="24" cy="6" r="1.2" fill="#fffbeb" />
+            <line x1="24" y1="9" x2="24" y2="18" stroke="#78350f" stroke-width="0.8" stroke-dasharray="1.5 1.5" />
+
+            <!-- Ống cắm thẻ quẻ xăm -->
+            <ellipse cx="24" cy="24" rx="13" ry="4" fill="url(#goldGrad2)" />
+            <ellipse cx="24" cy="24" rx="11.5" ry="3" fill="#2d1305" />
+            
+            <!-- Thân ống gỗ chạm vàng -->
+            <path d="M11 24 L13 41 C13 44, 35 44, 35 41 L37 24 Z" fill="url(#tubeWood)" stroke="url(#goldGrad2)" stroke-width="1.2" />
+
+            <!-- Vành đai vàng trang trí -->
+            <path d="M12 29 Q24 32 36 29" stroke="url(#goldGrad2)" stroke-width="1.5" fill="none" />
+            <path d="M13 36 Q24 39 35 36" stroke="url(#goldGrad2)" stroke-width="1.5" fill="none" />
+
+            <!-- Biểu tượng hoa sen vàng giữa thân ống -->
+            <path d="M24 31 C22 34, 20 34, 19 33 C21 35, 23 35.5, 24 36 C25 35.5, 27 35, 29 33 C28 34, 26 34, 24 31 Z" fill="url(#goldGrad2)" />
+            <circle cx="24" cy="33.5" r="1" fill="#fffbeb" />
+
+            <!-- Tua rua cát tường may mắn -->
+            <path d="M36 29 C38 31, 39 34, 38 37" stroke="#ef4444" stroke-width="1.5" fill="none" />
+            <circle cx="38" cy="38" r="1.5" fill="url(#goldGrad2)" />
+            <path d="M37 39 L36 45 M38 39 L38 46 M39 39 L40 45" stroke="#dc2626" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+        </span>
+        <div class="btn-text">
+          <span class="main-title">RÚT THẺ CẦU AN</span>
+          <span class="sub-title">Lời dạy Đức Phật • Lời nguyện bình an</span>
+        </div>
+      </button>
+    </footer>
+
+    <!-- TRẠNG THÁI NGHI THỨC KHI VÁI TAM BẢO FPOV -->
+    <div id="ritual-status-hud" class="ritual-hud" style="display: none;">
+      <div class="ritual-card">
+        <span class="ritual-lotus">🪷</span>
+        <p id="ritual-chant-text">Đang dâng 3 nén tâm hương thơm ngát...</p>
+      </div>
+    </div>
+
+    <!-- THIỆP CẦU AN & LỜI PHẬT DẠY (KHI RÚT THẺ HOẶC THẮP HƯƠNG XONG) -->
+    <div id="blessing-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card blessing-card">
+        <button id="btn-close-blessing" class="btn-modal-close">✕</button>
+        <div class="modal-header">
+          <div class="modal-icon">🪷</div>
+          <h2 id="blessing-title">Cầu Gia Đạo Bình An</h2>
+          <div class="gold-line"></div>
+        </div>
+        <div class="modal-body">
+          <div id="blessing-verse" class="verse-box"></div>
+          <p id="blessing-desc" class="desc-box"></p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-draw-another" class="btn-modal-aux">Rút Thẻ Khác</button>
+          <button id="btn-confirm-blessing" class="btn-modal-main">Thành Tâm Hoan Hỷ 🙏</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hệ Thống Quản Trị - Chính Điện Tam Bảo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="admin-light-body">
+
+    <!-- ========================================================
+         1. MÀN HÌNH ĐĂNG NHẬP (LOGIN OVERLAY)
+         ======================================================== -->
+    <div id="admin-login-modal" class="login-overlay">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="login-badge-icon">
+            <svg class="mono-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3c1.5 3 4.5 6 4.5 9 0 3-2 5-4.5 6-2.5-1-4.5-3-4.5-6 0-3 3-6 4.5-9z"></path>
+              <path d="M7.5 12c-2.5 1-4 3-4 5.5 0 2 2 3.5 5 3.5 1.5 0 2.5-.5 3.5-1.5"></path>
+              <path d="M16.5 12c2.5 1 4 3 4 5.5 0 2-2 3.5-5 3.5-1.5 0-2.5-.5-3.5-1.5"></path>
+            </svg>
+          </div>
+          <h2>Đăng nhập quản trị</h2>
+          <p class="login-subtitle">Hệ thống quản lý không gian Chính Điện Tam Bảo</p>
+        </div>
+
+        <form id="admin-login-form" class="login-form">
+          <div class="form-group">
+            <label for="login-username">Tài khoản quản trị</label>
+            <div class="input-with-icon">
+              <span class="input-icon">
+                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <input type="text" id="login-username" placeholder="Nhập tên đăng nhập..." autocomplete="username" required value="admin" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Mật khẩu</label>
+            <div class="input-with-icon">
+              <span class="input-icon">
+                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <input type="password" id="login-password" placeholder="Nhập mật khẩu..." autocomplete="current-password" required value="admin123" />
+            </div>
+          </div>
+
+          <div id="login-error-msg" class="login-error-alert" style="display: none;">
+            <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span id="login-error-text">Tài khoản hoặc mật khẩu không chính xác</span>
+          </div>
+
+          <div class="login-demo-hint">
+            <span>Tài khoản: admin | Mật khẩu: admin123</span>
+          </div>
+
+          <button type="submit" class="btn-login-submit">
+            <span>Đăng nhập hệ thống</span>
+            <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+
+        <div class="login-footer">
+          <a href="/" class="login-back-home">
+            <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Quay lại trang Chính Điện Tam Bảo</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         2. BỐ CỤC GIAO DIỆN CHÍNH (SIDEBAR + MAIN CONTENT)
+         ======================================================== -->
+    <div id="admin-app-layout" class="admin-layout" style="display: none;">
+      
+      <!-- THANH ĐIỀU HƯỚNG BÊN TRÁI (SIDEBAR) -->
+      <aside class="admin-sidebar">
+        <!-- Logo & Tên hệ thống -->
+        <div class="sidebar-brand">
+          <div class="brand-avatar">
+            <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3c1.5 3 4.5 6 4.5 9 0 3-2 5-4.5 6-2.5-1-4.5-3-4.5-6 0-3 3-6 4.5-9z"></path>
+              <path d="M7.5 12c-2.5 1-4 3-4 5.5 0 2 2 3.5 5 3.5 1.5 0 2.5-.5 3.5-1.5"></path>
+              <path d="M16.5 12c2.5 1 4 3 4 5.5 0 2-2 3.5-5 3.5-1.5 0-2.5-.5-3.5-1.5"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h3>Quản Trị Tam Bảo</h3>
+            <span>Chính Điện Trang Nghiêm</span>
+          </div>
+        </div>
+
+        <!-- Menu chức năng (Monochrome outline icons) -->
+        <nav class="sidebar-nav">
+          <span class="nav-category">TỔNG QUAN & DỮ LIỆU</span>
+          
+          <button class="nav-item active" data-tab="tab-dashboard">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+            </span>
+            <span class="nav-label">Thống kê truy cập</span>
+          </button>
+
+          <span class="nav-category" style="margin-top: 18px;">CẤU HÌNH KHÔNG GIAN</span>
+
+          <button class="nav-item" data-tab="tab-altar">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </span>
+            <span class="nav-label">Hình ảnh Tam Bảo</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-music">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+              </svg>
+            </span>
+            <span class="nav-label">Danh sách nhạc thiền</span>
+            <span id="sidebar-track-badge" class="nav-badge">3</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-bell">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </span>
+            <span class="nav-label">Cài đặt chuông chùa</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-flare">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+            </span>
+            <span class="nav-label">Flare ánh sáng Phật</span>
+          </button>
+        </nav>
+
+        <!-- Chân Sidebar -->
+        <div class="sidebar-footer">
+          <div class="user-profile-card">
+            <div class="user-avatar">
+              <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <div class="user-info">
+              <span class="user-name">Quản trị viên</span>
+              <span class="user-role">admin@pagoda.vn</span>
+            </div>
+          </div>
+
+          <div class="sidebar-actions">
+            <a href="/" target="_blank" class="btn-sidebar-link" title="Mở trang Chính Điện trong tab mới">
+              <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+              <span>Xem Public</span>
+            </a>
+            <button id="btn-admin-logout" class="btn-sidebar-logout" title="Đăng xuất khỏi hệ thống">
+              <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- VÙNG NỘI DUNG CHÍNH (MAIN DASHBOARD VIEW) -->
+      <main class="admin-main-content">
+
+        <!-- Top Header Bar -->
+        <header class="admin-topbar">
+          <div class="topbar-title-box">
+            <h1 id="page-title">Thống kê lượt truy cập</h1>
+            <p id="page-subtitle">Theo dõi số lượng khách thập phương và các lượt thành tâm thắp hương, cầu an</p>
+          </div>
+
+          <div class="topbar-actions">
+            <span class="status-live-pill">
+              <span class="live-dot"></span> Đang hoạt động
+            </span>
+            <a href="/" class="btn-view-public">
+              <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span>Xem Chính Điện</span>
+            </a>
+          </div>
+        </header>
+
+        <!-- ==========================================
+             TAB 1: THỐNG KÊ LƯỢT TRUY CẬP (DASHBOARD)
+             ========================================== -->
+        <section id="tab-dashboard" class="admin-tab-pane active">
+          <!-- Hàng 4 thẻ số liệu KPI -->
+          <div class="kpi-grid">
+            <div class="kpi-card card-blue">
+              <div class="kpi-header">
+                <span class="kpi-title">Tổng lượt truy cập</span>
+                <span class="kpi-icon-badge">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpi-total-visits">0</div>
+              <div class="kpi-trend positive">
+                <span>Khách thập phương viếng thăm</span>
+              </div>
+            </div>
+
+            <div class="kpi-card card-amber">
+              <div class="kpi-header">
+                <span class="kpi-title">Lượt truy cập hôm nay</span>
+                <span class="kpi-icon-badge">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpi-today-visits">0</div>
+              <div class="kpi-trend positive">
+                <span>Cập nhật theo thời gian thực</span>
+              </div>
+            </div>
+
+            <div class="kpi-card card-rose">
+              <div class="kpi-header">
+                <span class="kpi-title">Lượt thắp hương thơm</span>
+                <span class="kpi-icon-badge">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpi-total-offerings">0</div>
+              <div class="kpi-trend positive">
+                <span>Lượt dâng 3 nén tâm hương</span>
+              </div>
+            </div>
+
+            <div class="kpi-card card-emerald">
+              <div class="kpi-header">
+                <span class="kpi-title">Lượt rút thẻ cầu an</span>
+                <span class="kpi-icon-badge">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                  </svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpi-total-blessings">0</div>
+              <div class="kpi-trend positive">
+                <span>Lời nguyện cầu gia đạo bình an</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lưới 2 cột: Biểu đồ & Nhật ký -->
+          <div class="stats-two-columns">
+            <div class="modern-card chart-card">
+              <div class="card-header-row">
+                <div>
+                  <h3>Biểu đồ lượt viếng thăm 7 ngày gần nhất</h3>
+                  <p class="text-muted">Số lượt truy cập và dâng hương theo từng ngày</p>
+                </div>
+                <div class="chart-legend">
+                  <span class="legend-item"><span class="color-dot visit-dot"></span> Truy cập</span>
+                  <span class="legend-item"><span class="color-dot offer-dot"></span> Thắp hương</span>
+                </div>
+              </div>
+
+              <div id="analytics-bar-chart" class="analytics-bars-container"></div>
+            </div>
+
+            <div class="modern-card logs-card">
+              <div class="card-header-row">
+                <div>
+                  <h3>Nhật ký tương tác gần đây</h3>
+                  <p class="text-muted">Các hoạt động vừa diễn ra trên hệ thống</p>
+                </div>
+                <button id="btn-refresh-stats" class="btn-card-action" title="Tải lại số liệu">
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M1 20v-6h6"></path>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  </svg>
+                  <span>Làm mới</span>
+                </button>
+              </div>
+
+              <div id="analytics-logs-list" class="activity-logs-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 2: CẬP NHẬT HÌNH ẢNH TAM BẢO
+             ========================================== -->
+        <section id="tab-altar" class="admin-tab-pane">
+          <div class="modern-card">
+            <div class="card-header-row">
+              <div>
+                <h3>Cập nhật hình ảnh bàn thờ Tam Bảo</h3>
+                <p class="text-muted">Hình ảnh được dùng làm phông nền 2D chính điện khi khách truy cập</p>
+              </div>
+            </div>
+
+            <!-- Xem trước ảnh hiện tại -->
+            <div class="altar-preview-section">
+              <div class="preview-frame">
+                <img id="altar-current-preview" src="/images/tam-bao-main.jpg" alt="Bàn thờ Tam Bảo hiện tại" />
+                <div class="preview-tag">ĐANG ÁP DỤNG TRÊN CHÍNH ĐIỆN</div>
+              </div>
+
+              <div class="altar-upload-options">
+                <div class="upload-zone">
+                  <div class="upload-icon">
+                    <svg class="mono-svg-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                  </div>
+                  <h4>Tải ảnh bàn thờ thực tế của chùa từ máy tính</h4>
+                  <p>Hỗ trợ định dạng JPG, PNG, WEBP độ phân giải cao</p>
+                  <label class="btn-upload-file">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Chọn tệp ảnh từ máy tính</span>
+                    <input type="file" id="input-altar-file" accept="image/*" style="display: none;" />
+                  </label>
+                </div>
+
+                <div class="altar-info-box">
+                  <h4>Lời khuyên tối ưu hình ảnh:</h4>
+                  <ul>
+                    <li>Nên chụp góc chính diện bàn thờ Tam Bảo, đủ sáng, tôn nghiêm.</li>
+                    <li>Tỉ lệ khuyến nghị: 16:9 hoặc ngang chuẩn màn hình vi tính.</li>
+                    <li>Hệ thống tự động đồng bộ sang trang chính ngay sau khi bạn chọn.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thư viện ảnh Tam Bảo mẫu -->
+            <div style="margin-top: 32px;">
+              <h4 style="font-size: 0.95rem; color: #1e293b; margin-bottom: 14px; font-weight: 500;">Hoặc chọn từ thư viện ảnh Tam Bảo tôn nghiêm có sẵn:</h4>
+              <div class="altar-preset-grid">
+                <div class="preset-card active" data-src="/images/tam-bao-main.jpg">
+                  <img src="/images/tam-bao-main.jpg" alt="Tam Bảo Uy Nghiêm" />
+                  <div class="preset-name">Tam Bảo Chùa Uy Nghiêm (Mặc định)</div>
+                </div>
+                <div class="preset-card" data-src="/images/tam-bao-1.jpg">
+                  <img src="/images/tam-bao-1.jpg" alt="Phật Thích Ca Dát Vàng" />
+                  <div class="preset-name">Đức Phật Thích Ca Dát Vàng</div>
+                </div>
+                <div class="preset-card" data-src="/images/tam-bao-2.jpg">
+                  <img src="/images/tam-bao-2.jpg" alt="Chính Điện Cổ Tự" />
+                  <div class="preset-name">Chính Điện Cổ Tự Trầm Mặc</div>
+                </div>
+                <div class="preset-card" data-src="/images/tam-bao-3.jpg">
+                  <img src="/images/tam-bao-3.jpg" alt="Tam Bảo Kim Thân" />
+                  <div class="preset-name">Tam Thế Phật Kim Thân</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 3: THÊM & QUẢN LÝ DANH SÁCH NHẠC THIỀN
+             ========================================== -->
+        <section id="tab-music" class="admin-tab-pane">
+          <div class="modern-card">
+            <div class="card-header-row">
+              <div>
+                <h3>Danh sách nhạc thiền phát lần lượt</h3>
+                <p class="text-muted">Khi người dùng vào trang public, hệ thống sẽ lần lượt phát danh sách nhạc này. Người dùng có thể tăng giảm âm lượng tùy ý.</p>
+              </div>
+            </div>
+
+            <!-- Form thêm bài nhạc -->
+            <div class="music-add-container">
+              <div class="add-subform">
+                <h4>Thêm bài nhạc mới qua đường dẫn URL:</h4>
+                <div class="flex-input-row">
+                  <input type="text" id="input-music-title" placeholder="Tên bài nhạc (Ví dụ: Chú Đại Bi - Nhạc Thiền...)" />
+                  <input type="text" id="input-music-url" placeholder="Đường dẫn file âm thanh .mp3 (https://...)" />
+                  <button id="btn-add-music-url" class="btn-primary-action">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Thêm vào danh sách</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="add-subform-file">
+                <h4>Hoặc tải tệp MP3 trực tiếp từ máy tính:</h4>
+                <label class="btn-secondary-action">
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Tải file nhạc từ máy tính</span>
+                  <input type="file" id="input-music-file" accept="audio/*" style="display: none;" />
+                </label>
+              </div>
+            </div>
+
+            <!-- Bảng danh sách bài hát -->
+            <div class="music-table-container">
+              <div class="table-header-info">
+                <h4>Danh sách bài nhạc trong hệ thống (<span id="music-track-count">0</span> bài)</h4>
+                <span class="text-hint">Hệ thống tự động chuyển bài tiếp theo khi hết nhạc</span>
+              </div>
+
+              <table class="modern-table">
+                <thead>
+                  <tr>
+                    <th style="width: 60px;">STT</th>
+                    <th>Tên bài nhạc thiền</th>
+                    <th style="width: 150px;">Định dạng</th>
+                    <th style="width: 160px;">Trạng thái</th>
+                    <th style="width: 200px; text-align: right;">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="music-table-body">
+                  <!-- Render động qua JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 4: QUẢN LÝ CHUÔNG CHÙA
+             ========================================== -->
+        <section id="tab-bell" class="admin-tab-pane">
+          <div class="modern-card">
+            <div class="card-header-row">
+              <div>
+                <h3>Cài đặt & Quản lý chuông chùa (Đại Hồng Chung)</h3>
+                <p class="text-muted">Cấu hình âm thanh chuông, khoảng cách giữa các lần thỉnh chuông tự động và âm lượng</p>
+              </div>
+            </div>
+
+            <div class="bell-settings-grid">
+              <!-- Cột trái: Cấu hình âm thanh -->
+              <div class="bell-form-column">
+                <div class="setting-item">
+                  <label class="setting-label">File âm thanh chuông chùa:</label>
+                  <p class="setting-desc">Mặc định hệ thống tạo âm thanh Đại Hồng Chung ngân vang trầm ấm bằng Web Audio API synthesizer.</p>
+                  
+                  <div class="input-with-button">
+                    <input type="text" id="bell-custom-url" placeholder="Đường dẫn file âm thanh chuông riêng (.mp3, .wav)..." />
+                  </div>
+
+                  <div style="margin-top: 10px;">
+                    <label class="btn-secondary-action" style="display: inline-flex;">
+                      <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      <span>Tải tệp chuông từ máy tính</span>
+                      <input type="file" id="bell-custom-file" accept="audio/*" style="display: none;" />
+                    </label>
+                  </div>
+                </div>
+
+                <div class="setting-item" style="margin-top: 24px;">
+                  <label class="setting-label">Âm lượng chuông:</label>
+                  <div class="slider-with-label">
+                    <input type="range" id="bell-volume-slider" min="10" max="100" value="85" />
+                    <span id="bell-volume-label" class="slider-val">85%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cột phải: Thời gian phát & chu kỳ -->
+              <div class="bell-form-column">
+                <div class="setting-item">
+                  <label class="setting-label">Tự động thỉnh chuông định kỳ:</label>
+                  <div class="toggle-switch-wrapper">
+                    <input type="checkbox" id="bell-autoplay-toggle" checked />
+                    <label for="bell-autoplay-toggle" class="toggle-switch"></label>
+                    <span class="toggle-status-text">Bật chế độ tự động thỉnh chuông theo chu kỳ</span>
+                  </div>
+                </div>
+
+                <div class="setting-item" style="margin-top: 20px;">
+                  <label class="setting-label">Khoảng cách các lần phát chuông:</label>
+                  <p class="setting-desc">Thời gian giãn cách giữa các lần tiếng chuông tự động ngân vang:</p>
+                  
+                  <div class="interval-presets">
+                    <button type="button" class="btn-interval-chip" data-sec="30">30 giây</button>
+                    <button type="button" class="btn-interval-chip active" data-sec="60">60 giây (1 phút)</button>
+                    <button type="button" class="btn-interval-chip" data-sec="120">2 phút</button>
+                    <button type="button" class="btn-interval-chip" data-sec="300">5 phút</button>
+                  </div>
+
+                  <div class="custom-interval-input">
+                    <span>Hoặc nhập số giây tùy chỉnh:</span>
+                    <input type="number" id="bell-interval-input" min="10" max="3600" value="60" /> <span>giây</span>
+                  </div>
+                </div>
+
+                <div class="bell-action-buttons">
+                  <button id="btn-test-bell" class="btn-primary-action">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Thử tiếng chuông ngay</span>
+                  </button>
+                  <button id="btn-save-bell-config" class="btn-save-action">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Lưu cấu hình chuông</span>
+                  </button>
+                  <button id="btn-reset-bell-default" class="btn-ghost-action">
+                    <span>Khôi phục chuông mặc định</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 5: TÙY CHỈNH FLARE ÁNH SÁNG
+             ========================================== -->
+        <section id="tab-flare" class="admin-tab-pane">
+          <div class="modern-card">
+            <div class="card-header-row">
+              <div>
+                <h3>Tùy chỉnh Flare ánh sáng quang minh quanh Phật</h3>
+                <p class="text-muted">Căn chỉnh quầng sáng hào quang quang học trên màn hình chính theo vị trí tượng Phật của ảnh bàn thờ</p>
+              </div>
+            </div>
+
+            <div class="flare-settings-grid">
+              <div class="flare-slider-card">
+                <div class="slider-field">
+                  <div class="field-label-row">
+                    <label>Vị trí ngang (Tọa độ X):</label>
+                    <span id="lbl-admin-flare-x" class="slider-highlight">50%</span>
+                  </div>
+                  <input type="range" id="admin-flare-x" min="10" max="90" step="0.5" value="50" />
+                </div>
+
+                <div class="slider-field">
+                  <div class="field-label-row">
+                    <label>Vị trí dọc (Tọa độ Y):</label>
+                    <span id="lbl-admin-flare-y" class="slider-highlight">26.5%</span>
+                  </div>
+                  <input type="range" id="admin-flare-y" min="10" max="80" step="0.5" value="26.5" />
+                </div>
+
+                <div class="slider-field">
+                  <div class="field-label-row">
+                    <label>Độ trong suốt (Độ sáng phát quang):</label>
+                    <span id="lbl-admin-flare-opacity" class="slider-highlight">70%</span>
+                  </div>
+                  <input type="range" id="admin-flare-opacity" min="0" max="100" step="1" value="70" />
+                </div>
+
+                <div class="slider-field">
+                  <div class="field-label-row">
+                    <label>Kích thước quầng sáng quang học:</label>
+                    <span id="lbl-admin-flare-size" class="slider-highlight">480px</span>
+                  </div>
+                  <input type="range" id="admin-flare-size" min="200" max="800" step="10" value="480" />
+                </div>
+
+                <div style="margin-top: 24px;">
+                  <button id="admin-btn-reset-flare" class="btn-secondary-action">
+                    <span>Đặt lại chuẩn mặc định</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="flare-guide-card">
+                <h4>Lưu ý căn chỉnh hào quang:</h4>
+                <ul>
+                  <li>Hào quang nên đặt ngay sau đầu hoặc sau lưng Đức Phật.</li>
+                  <li>Nếu ảnh mới của chùa bạn có Đức Phật ở vị trí khác, chỉ cần kéo thanh X và Y để định vị chính xác.</li>
+                  <li>Thông số được tự động lưu và đồng bộ tức thời ra màn hình Chính Điện.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <!-- Thông báo Toast hiện đại -->
+    <div id="admin-modern-toast" class="modern-toast" style="display: none;">
+      <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span id="toast-message" class="toast-text">Thao tác thành công</span>
+    </div>
+
+    <script type="module" src="/src/adminPage.js"></script>
+  </body>
+</html>
