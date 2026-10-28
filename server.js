@@ -52,10 +52,50 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Kiểm tra kết nối cơ sở dữ liệu
+// Kiểm tra kết nối cơ sở dữ liệu và khởi tạo các bảng cần thiết
 pool.getConnection()
-  .then(conn => {
+  .then(async conn => {
     console.log('✅ Đã kết nối thành công tới MySQL Database (pagoda_db)!');
+    try {
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS button_settings (
+          id INT PRIMARY KEY DEFAULT 1,
+          incense_title VARCHAR(255) NOT NULL DEFAULT 'THẮP NÉN HƯƠNG THƠM',
+          incense_subtitle VARCHAR(255) NOT NULL DEFAULT 'Cầm 3 nén tâm hương • Cung kính vái Tam Bảo',
+          card_title VARCHAR(255) NOT NULL DEFAULT 'RÚT THẺ CẦU AN',
+          card_subtitle VARCHAR(255) NOT NULL DEFAULT 'Lời dạy Đức Phật • Lời nguyện bình an',
+          wish_title VARCHAR(255) NOT NULL DEFAULT 'GỬI TÂM NGUYỆN',
+          buttons_order VARCHAR(255) NOT NULL DEFAULT 'incense,card,wish',
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+      try {
+        await conn.query("ALTER TABLE button_settings ADD COLUMN wish_title VARCHAR(255) NOT NULL DEFAULT 'GỬI TÂM NGUYỆN'");
+      } catch (_) {}
+      try {
+        await conn.query("ALTER TABLE button_settings ADD COLUMN buttons_order VARCHAR(255) NOT NULL DEFAULT 'incense,card,wish'");
+      } catch (_) {}
+      await conn.query(`
+        INSERT INTO button_settings (id, incense_title, incense_subtitle, card_title, card_subtitle, wish_title, buttons_order)
+        VALUES (1, 'THẮP NÉN HƯƠNG THƠM', 'Cầm 3 nén tâm hương • Cung kính vái Tam Bảo', 'RÚT THẺ CẦU AN', 'Lời dạy Đức Phật • Lời nguyện bình an', 'GỬI TÂM NGUYỆN', 'incense,card,wish')
+        ON DUPLICATE KEY UPDATE id = 1;
+      `);
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS prayers_wishes (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          author_name VARCHAR(150) DEFAULT NULL,
+          author_age VARCHAR(50) DEFAULT NULL,
+          author_address VARCHAR(255) DEFAULT NULL,
+          content TEXT NOT NULL,
+          likes_count INT DEFAULT 1,
+          is_approved TINYINT(1) DEFAULT 1,
+          ip_address VARCHAR(45) DEFAULT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+    } catch (tblErr) {
+      console.warn('Cảnh báo khởi tạo bảng database:', tblErr.message);
+    }
     conn.release();
   })
   .catch(err => {
@@ -147,6 +187,81 @@ app.post('/api/settings/flare', async (req, res) => {
       [flare_x, flare_y, flare_opacity, flare_size]
     );
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ========================================================
+// 2.1 API CẤU HÌNH VĂN BẢN & VỊ TRÍ NÚT HÀNH ĐỘNG
+// ========================================================
+app.get('/api/settings/buttons', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM button_settings WHERE id = 1');
+    if (rows.length > 0) {
+      const row = rows[0];
+      const rawOrder = row.buttons_order || 'incense,card,wish';
+      const buttons_order = rawOrder.split(',').map(s => s.trim()).filter(Boolean);
+      res.json({
+        id: row.id,
+        incense_title: row.incense_title || 'THẮP NÉN HƯƠNG THƠM',
+        card_title: row.card_title || 'RÚT THẺ CẦU AN',
+        wish_title: row.wish_title || 'GỬI TÂM NGUYỆN',
+        buttons_order: buttons_order.length > 0 ? buttons_order : ['incense', 'card', 'wish'],
+        updated_at: row.updated_at
+      });
+    } else {
+      res.json({
+        incense_title: 'THẮP NÉN HƯƠNG THƠM',
+        card_title: 'RÚT THẺ CẦU AN',
+        wish_title: 'GỬI TÂM NGUYỆN',
+        buttons_order: ['incense', 'card', 'wish']
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/settings/buttons', async (req, res) => {
+  const {
+    incense_title = 'THẮP NÉN HƯƠNG THƠM',
+    card_title = 'RÚT THẺ CẦU AN',
+    wish_title = 'GỬI TÂM NGUYỆN',
+    buttons_order = ['incense', 'card', 'wish']
+  } = req.body;
+
+  const orderStr = Array.isArray(buttons_order)
+    ? buttons_order.join(',')
+    : String(buttons_order || 'incense,card,wish');
+
+  try {
+    await pool.query(
+      `INSERT INTO button_settings (id, incense_title, card_title, wish_title, buttons_order)
+       VALUES (1, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         incense_title = VALUES(incense_title),
+         card_title = VALUES(card_title),
+         wish_title = VALUES(wish_title),
+         buttons_order = VALUES(buttons_order)`,
+      [
+        String(incense_title).trim() || 'THẮP NÉN HƯƠNG THƠM',
+        String(card_title).trim() || 'RÚT THẺ CẦU AN',
+        String(wish_title).trim() || 'GỬI TÂM NGUYỆN',
+        orderStr || 'incense,card,wish'
+      ]
+    );
+
+    res.json({
+      success: true,
+      message: 'Cập nhật cấu hình nút bấm thành công',
+      data: {
+        incense_title,
+        card_title,
+        wish_title,
+        buttons_order: orderStr.split(',').map(s => s.trim()).filter(Boolean)
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -408,6 +523,193 @@ app.get('/api/analytics/dashboard', async (req, res) => {
       history,
       recentLogs: logs
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ========================================================
+// 6. API TÂM NGUYỆN PHẬT TỬ (KÍNH DÂNG LÊN TAM BẢO)
+// ========================================================
+
+// Hàm ẩn danh thông tin cá nhân theo đúng phong tục tôn nghiêm
+function maskVietnameseName(name) {
+  if (!name || !name.trim()) return 'Phật tử ẩn danh';
+  const clean = name.trim();
+  const words = clean.split(/\s+/);
+  const maskedWords = words.map(w => {
+    if (w.length <= 1) return w;
+    return w.charAt(0) + '***';
+  });
+  return 'Phật tử ' + maskedWords.join(' ');
+}
+
+function maskAge(age) {
+  if (!age || !age.trim()) return '';
+  const clean = age.trim();
+  const digitsMatch = clean.match(/\d+/);
+  if (digitsMatch) {
+    const num = digitsMatch[0];
+    if (num.length === 2) {
+      return num.charAt(0) + '* tuổi';
+    } else if (num.length === 4) {
+      return num.slice(0, 2) + '**';
+    }
+    return num.charAt(0) + '* tuổi';
+  }
+  return clean.length > 2 ? clean.charAt(0) + '**' : clean;
+}
+
+function maskAddress(addr) {
+  if (!addr || !addr.trim()) return '';
+  const clean = addr.trim();
+  const parts = clean.split(/,\s*/);
+  const maskedParts = parts.map(part => {
+    const words = part.split(/\s+/);
+    if (words.length === 1) {
+      return words[0].length > 1 ? words[0].charAt(0) + '***' : words[0];
+    }
+    return words[0] + ' ' + words.slice(1).map(w => w.charAt(0) + '***').join(' ');
+  });
+  return maskedParts.join(', ');
+}
+
+function formatTimeAgo(date) {
+  const diffSec = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (diffSec < 60) return 'Vừa xong';
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)} phút trước`;
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} giờ trước`;
+  if (diffSec < 172800) return 'Hôm qua';
+  const d = new Date(date);
+  return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+}
+
+// Lấy danh sách tâm nguyện (đã che thông tin cá nhân)
+app.get('/api/wishes', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT id, author_name, author_age, author_address, content, likes_count, created_at 
+      FROM prayers_wishes 
+      WHERE is_approved = 1 
+      ORDER BY id DESC 
+      LIMIT 60
+    `);
+
+    const formatted = rows.map(r => ({
+      id: r.id,
+      display_name: maskVietnameseName(r.author_name),
+      display_age: maskAge(r.author_age),
+      display_address: maskAddress(r.author_address),
+      content: r.content,
+      likes_count: r.likes_count || 1,
+      created_at: r.created_at,
+      time_ago: formatTimeAgo(r.created_at)
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Gửi tâm nguyện mới kính dâng lên Tam Bảo
+app.post('/api/wishes', async (req, res) => {
+  const { author_name, author_age, author_address, content } = req.body;
+  if (!content || !content.trim()) {
+    return res.status(400).json({ error: 'Nội dung tâm nguyện không được để trống' });
+  }
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO prayers_wishes (author_name, author_age, author_address, content, likes_count, is_approved, ip_address) VALUES (?, ?, ?, ?, 1, 1, ?)',
+      [
+        author_name?.trim() || null,
+        author_age?.trim() || null,
+        author_address?.trim() || null,
+        content.trim(),
+        ip
+      ]
+    );
+
+    // Ghi nhận vào nhật ký
+    await pool.query(
+      'INSERT INTO analytics_logs (action_type, ip_address, label) VALUES (?, ?, ?)',
+      ['blessing', ip, `Phật tử kính dâng tâm nguyện: "${content.trim().slice(0, 35)}..."`]
+    );
+
+    res.json({
+      success: true,
+      message: 'Tâm nguyện của thí chủ đã được kính cẩn dâng lên Tam Bảo',
+      id: result.insertId
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Chắp tay cầu an (thích / hoan hỷ cùng tâm nguyện)
+app.post('/api/wishes/:id/like', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    await pool.query('UPDATE prayers_wishes SET likes_count = likes_count + 1 WHERE id = ?', [id]);
+    const [rows] = await pool.query('SELECT likes_count FROM prayers_wishes WHERE id = ?', [id]);
+    res.json({ success: true, likes_count: rows[0]?.likes_count || 1 });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Lấy danh sách tâm nguyện dành cho Quản Trị Viên (Admin)
+app.get('/api/admin/wishes', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT id, author_name, author_age, author_address, content, likes_count, is_approved, ip_address, created_at 
+      FROM prayers_wishes 
+      ORDER BY id DESC 
+      LIMIT 100
+    `);
+
+    const formatted = rows.map(r => ({
+      id: r.id,
+      author_name: r.author_name || 'Phật tử ẩn danh',
+      masked_name: maskVietnameseName(r.author_name),
+      author_age: r.author_age || '',
+      masked_age: maskAge(r.author_age),
+      author_address: r.author_address || '',
+      masked_address: maskAddress(r.author_address),
+      content: r.content,
+      likes_count: r.likes_count,
+      is_approved: r.is_approved,
+      ip_address: r.ip_address,
+      created_at: r.created_at,
+      time_ago: formatTimeAgo(r.created_at)
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Quản trị viên xóa tâm nguyện
+app.delete('/api/admin/wishes/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    await pool.query('DELETE FROM prayers_wishes WHERE id = ?', [id]);
+    res.json({ success: true, message: 'Đã xóa tâm nguyện' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Quản trị viên bật / tắt hiển thị tâm nguyện
+app.patch('/api/admin/wishes/:id/toggle', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    await pool.query('UPDATE prayers_wishes SET is_approved = IF(is_approved = 1, 0, 1) WHERE id = ?', [id]);
+    const [rows] = await pool.query('SELECT is_approved FROM prayers_wishes WHERE id = ?', [id]);
+    res.json({ success: true, is_approved: rows[0]?.is_approved });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

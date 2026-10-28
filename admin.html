@@ -6,7 +6,7 @@
     <title>Hệ Thống Quản Trị - Chính Điện Tam Bảo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body class="admin-light-body">
@@ -170,6 +170,25 @@
               </svg>
             </span>
             <span class="nav-label">Flare ánh sáng Phật</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-action-buttons">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </span>
+            <span class="nav-label">Cấu hình Nút & Chữ</span>
+          </button>
+
+          <button class="nav-item" data-tab="tab-wishes">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+              </svg>
+            </span>
+            <span class="nav-label">Tâm Nguyện Phật Tử</span>
           </button>
         </nav>
 
@@ -651,6 +670,233 @@
                   <li>Thông số được tự động lưu và đồng bộ tức thời ra màn hình Chính Điện.</li>
                 </ul>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             TAB 6: CẤU HÌNH VĂN BẢN NÚT HÀNH ĐỘNG (THẮP HƯƠNG & RÚT THẺ)
+             ======================================================== -->
+        <section id="tab-action-buttons" class="admin-tab-pane">
+          <div class="content-header-card">
+            <div class="header-icon-box">
+              <svg class="mono-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </div>
+            <div class="header-content">
+              <h2>Cấu Hình & Sắp Xếp Nút Tương Tác</h2>
+              <p>Tùy chỉnh tiêu đề và thay đổi vị trí thứ tự hiển thị của 3 nút bấm ở chân trang Chính Điện.</p>
+            </div>
+          </div>
+
+          <!-- Khu vực xem trước trực tiếp (Live Preview) -->
+          <div class="card-section" style="margin-bottom: 20px;">
+            <div class="section-title-row">
+              <h3>
+                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>Xem Trước Trực Tiếp (Live Preview)</span>
+              </h3>
+              <span class="preview-badge">Cập nhật theo thứ tự & tiêu đề thực tế</span>
+            </div>
+
+            <div class="action-buttons-preview-container">
+              <div id="admin-preview-bar" class="preview-bar-backdrop">
+                <!-- Nút 1: Thắp Hương Preview -->
+                <div class="btn-action-primary preview-btn" data-preview-key="incense" id="preview-btn-incense">
+                  <div class="btn-glow-pulse"></div>
+                  <span class="btn-icon">
+                    <svg class="btn-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 14 C17 10, 22 7, 19 2" stroke="#fef3c7" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                      <path d="M24 12 C22 8, 27 5, 24 1" stroke="#fef3c7" stroke-width="2.2" stroke-linecap="round" fill="none" />
+                      <path d="M29 14 C31 10, 26 7, 29 2" stroke="#fef3c7" stroke-width="1.8" stroke-linecap="round" fill="none" />
+                      <line x1="22" y1="28" x2="19" y2="14" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" />
+                      <line x1="24" y1="28" x2="24" y2="12" stroke="#d97706" stroke-width="2.4" stroke-linecap="round" />
+                      <line x1="26" y1="28" x2="29" y2="14" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" />
+                      <circle cx="19" cy="14" r="2.2" fill="#f97316" />
+                      <circle cx="24" cy="12" r="2.4" fill="#f97316" />
+                      <circle cx="29" cy="14" r="2.2" fill="#f97316" />
+                      <path d="M12 28 C8 28, 8 35, 12 36" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" fill="none" />
+                      <path d="M36 28 C40 28, 40 35, 36 36" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" fill="none" />
+                      <ellipse cx="24" cy="27" rx="14" ry="4.5" fill="#fbbf24" />
+                      <ellipse cx="24" cy="27" rx="12" ry="3.5" fill="#3b1706" />
+                      <path d="M11 27 C11 38, 37 38, 37 27 Z" fill="#92400e" stroke="#fbbf24" stroke-width="1.2" />
+                      <circle cx="24" cy="33.5" r="2" fill="#fbbf24" />
+                      <path d="M16 37 L14 42 M24 38 L24 43 M32 37 L34 42" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round" />
+                    </svg>
+                  </span>
+                  <div class="btn-text">
+                    <span class="main-title" id="preview-incense-title">THẮP NÉN HƯƠNG THƠM</span>
+                  </div>
+                </div>
+
+                <!-- Nút 2: Rút Thẻ Preview -->
+                <div class="btn-action-card preview-btn" data-preview-key="card" id="preview-btn-card">
+                  <span class="btn-icon">
+                    <svg class="btn-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16 26 L12 12 C12 11, 14 10, 15 11 L19 25 Z" fill="#fef08a" stroke="#b45309" stroke-width="0.8" />
+                      <path d="M32 26 L36 12 C36 11, 34 10, 33 11 L29 25 Z" fill="#fef08a" stroke="#b45309" stroke-width="0.8" />
+                      <path d="M19 26 L18 8 C18 7, 21 7, 21 8 L22 26 Z" fill="#fef08a" stroke="#b45309" stroke-width="0.8" />
+                      <path d="M29 26 L30 8 C30 7, 27 7, 27 8 L26 26 Z" fill="#fef08a" stroke="#b45309" stroke-width="0.8" />
+                      <rect x="22" y="3" width="4" height="24" rx="2" fill="#ef4444" stroke="#fbbf24" stroke-width="1" />
+                      <ellipse cx="24" cy="24" rx="13" ry="4" fill="#fbbf24" />
+                      <ellipse cx="24" cy="24" rx="11.5" ry="3" fill="#2d1305" />
+                      <path d="M11 24 L13 41 C13 44, 35 44, 35 41 L37 24 Z" fill="#b45309" stroke="#fbbf24" stroke-width="1.2" />
+                      <circle cx="24" cy="33.5" r="1" fill="#fffbeb" />
+                      <path d="M36 29 C38 31, 39 34, 38 37" stroke="#ef4444" stroke-width="1.5" fill="none" />
+                      <path d="M37 39 L36 45 M38 39 L38 46 M39 39 L40 45" stroke="#dc2626" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                  </span>
+                  <div class="btn-text">
+                    <span class="main-title" id="preview-card-title">RÚT THẺ CẦU AN</span>
+                  </div>
+                </div>
+
+                <!-- Nút 3: Gửi Tâm Nguyện Preview -->
+                <div class="btn-action-wish preview-btn" data-preview-key="wish" id="preview-btn-wish">
+                  <span class="btn-icon">
+                    <svg class="btn-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M24 8 C21 17, 18 26, 24 37 C30 26, 27 17, 24 8 Z" fill="#fb7185" stroke="#fbbf24" stroke-width="1.2"/>
+                      <path d="M24 18 C17 22, 10 29, 14 37 C19 39, 22 34, 24 37 Z" fill="#e11d48" stroke="#fbbf24" stroke-width="1" opacity="0.95"/>
+                      <path d="M24 18 C31 22, 38 29, 34 37 C29 39, 26 34, 24 37 Z" fill="#e11d48" stroke="#fbbf24" stroke-width="1" opacity="0.95"/>
+                      <ellipse cx="24" cy="40" rx="13" ry="3" fill="#fbbf24" opacity="0.9"/>
+                      <circle cx="24" cy="24" r="2.2" fill="#fffbeb" />
+                    </svg>
+                  </span>
+                  <div class="btn-text">
+                    <span class="main-title" id="preview-wish-title">GỬI TÂM NGUYỆN</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bảng 3 Thẻ cấu hình nút & sắp xếp vị trí -->
+          <div class="buttons-config-order-wrap" id="buttons-config-cards">
+            <!-- Cấu hình Nút 1: Thắp Hương -->
+            <div class="btn-config-card" data-key="incense" id="config-card-incense">
+              <div class="btn-config-card-header">
+                <div class="btn-config-identity">
+                  <span class="config-btn-badge tag-red">🪔 Thắp Hương</span>
+                  <span class="btn-order-indicator" id="order-label-incense">Vị trí: 1</span>
+                </div>
+                <div class="btn-order-actions">
+                  <button type="button" class="btn-reorder-move" data-key="incense" data-dir="-1" title="Chuyển sang trái">◀</button>
+                  <button type="button" class="btn-reorder-move" data-key="incense" data-dir="1" title="Chuyển sang phải">▶</button>
+                </div>
+              </div>
+              <div class="btn-config-field">
+                <label for="admin-input-incense-title">Tiêu đề nút:</label>
+                <input type="text" id="admin-input-incense-title" class="admin-text-input" placeholder="THẮP NÉN HƯƠNG THƠM" value="THẮP NÉN HƯƠNG THƠM" />
+              </div>
+            </div>
+
+            <!-- Cấu hình Nút 2: Rút Thẻ -->
+            <div class="btn-config-card" data-key="card" id="config-card-card">
+              <div class="btn-config-card-header">
+                <div class="btn-config-identity">
+                  <span class="config-btn-badge tag-gold">📜 Rút Thẻ Cầu An</span>
+                  <span class="btn-order-indicator" id="order-label-card">Vị trí: 2</span>
+                </div>
+                <div class="btn-order-actions">
+                  <button type="button" class="btn-reorder-move" data-key="card" data-dir="-1" title="Chuyển sang trái">◀</button>
+                  <button type="button" class="btn-reorder-move" data-key="card" data-dir="1" title="Chuyển sang phải">▶</button>
+                </div>
+              </div>
+              <div class="btn-config-field">
+                <label for="admin-input-card-title">Tiêu đề nút:</label>
+                <input type="text" id="admin-input-card-title" class="admin-text-input" placeholder="RÚT THẺ CẦU AN" value="RÚT THẺ CẦU AN" />
+              </div>
+            </div>
+
+            <!-- Cấu hình Nút 3: Gửi Tâm Nguyện -->
+            <div class="btn-config-card" data-key="wish" id="config-card-wish">
+              <div class="btn-config-card-header">
+                <div class="btn-config-identity">
+                  <span class="config-btn-badge tag-lotus">🪷 Gửi Tâm Nguyện</span>
+                  <span class="btn-order-indicator" id="order-label-wish">Vị trí: 3</span>
+                </div>
+                <div class="btn-order-actions">
+                  <button type="button" class="btn-reorder-move" data-key="wish" data-dir="-1" title="Chuyển sang trái">◀</button>
+                  <button type="button" class="btn-reorder-move" data-key="wish" data-dir="1" title="Chuyển sang phải">▶</button>
+                </div>
+              </div>
+              <div class="btn-config-field">
+                <label for="admin-input-wish-title">Tiêu đề nút:</label>
+                <input type="text" id="admin-input-wish-title" class="admin-text-input" placeholder="GỬI TÂM NGUYỆN" value="GỬI TÂM NGUYỆN" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Nút hành động Lưu & Đặt lại -->
+          <div class="config-actions-row">
+            <button id="btn-save-buttons-config" class="btn-primary-action">
+              <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>Lưu Cấu Hình & Sắp Xếp Vị Trí</span>
+            </button>
+            <button id="btn-reset-buttons-default" class="btn-secondary-action">
+              <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 4v6h-6"></path>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              <span>Khôi Phục Chuẩn Mặc Định</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- TAB 7: QUẢN LÝ TÂM NGUYỆN PHẬT TỬ -->
+        <section id="tab-wishes" class="admin-tab-pane">
+          <div class="card-modern">
+            <div class="card-modern-header">
+              <div class="header-title-box">
+                <span class="header-icon-box">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                  </svg>
+                </span>
+                <div>
+                  <h3>Danh Sách Lời Tâm Nguyện Của Phật Tử</h3>
+                  <p>Quản lý, kiểm duyệt và theo dõi các ước nguyện bình an của khách thập phương kính dâng lên Tam Bảo</p>
+                </div>
+              </div>
+              <button id="btn-refresh-wishes" class="btn-card-action" title="Tải lại danh sách">
+                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M23 4v6h-6"></path>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Làm mới</span>
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table class="table-modern">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th style="width: 160px;">Phật Tử</th>
+                    <th style="width: 80px;">Tuổi</th>
+                    <th style="width: 120px;">Địa Chỉ</th>
+                    <th>Nội Dung Tâm Nguyện</th>
+                    <th style="width: 90px; text-align: center;">Chắp Tay</th>
+                    <th style="width: 100px;">Thời Gian</th>
+                    <th style="width: 90px; text-align: center;">Trạng Thái</th>
+                    <th style="width: 100px; text-align: center;">Thao Tác</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-wishes-tbody">
+                  <tr>
+                    <td colspan="9" style="text-align: center; color: #64748b; padding: 24px;">Đang tải danh sách tâm nguyện...</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>

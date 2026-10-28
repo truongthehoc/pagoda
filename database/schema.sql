@@ -100,3 +100,36 @@ INSERT INTO analytics_logs (action_type, label, created_at) VALUES
 ('visit', 'Khách thập phương viếng thăm Chính Điện Tam Bảo', NOW() - INTERVAL 12 MINUTE),
 ('offering', 'Phật tử thành kính dâng 3 nén tâm hương thơm', NOW() - INTERVAL 8 MINUTE),
 ('blessing', 'Phật tử rút thẻ Cầu Gia Đạo Bình An', NOW() - INTERVAL 4 MINUTE);
+
+-- 7. BẢNG CẤU HÌNH VĂN BẢN NÚT HÀNH ĐỘNG (THẮP HƯƠNG & RÚT THẺ)
+CREATE TABLE IF NOT EXISTS button_settings (
+  id INT PRIMARY KEY DEFAULT 1,
+  incense_title VARCHAR(255) NOT NULL DEFAULT 'THẮP NÉN HƯƠNG THƠM',
+  incense_subtitle VARCHAR(255) NOT NULL DEFAULT 'Cầm 3 nén tâm hương • Cung kính vái Tam Bảo',
+  card_title VARCHAR(255) NOT NULL DEFAULT 'RÚT THẺ CẦU AN',
+  card_subtitle VARCHAR(255) NOT NULL DEFAULT 'Lời dạy Đức Phật • Lời nguyện bình an',
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO button_settings (id, incense_title, incense_subtitle, card_title, card_subtitle)
+VALUES (1, 'THẮP NÉN HƯƠNG THƠM', 'Cầm 3 nén tâm hương • Cung kính vái Tam Bảo', 'RÚT THẺ CẦU AN', 'Lời dạy Đức Phật • Lời nguyện bình an')
+ON DUPLICATE KEY UPDATE id = 1;
+
+-- 8. BẢNG TÂM NGUYỆN CỦA PHẬT TỬ (KÍNH DÂNG LÊN TAM BẢO)
+CREATE TABLE IF NOT EXISTS prayers_wishes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  author_name VARCHAR(150) DEFAULT NULL,
+  author_age VARCHAR(50) DEFAULT NULL,
+  author_address VARCHAR(255) DEFAULT NULL,
+  content TEXT NOT NULL,
+  likes_count INT DEFAULT 1,
+  is_approved TINYINT(1) DEFAULT 1,
+  ip_address VARCHAR(45) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO prayers_wishes (author_name, author_age, author_address, content, likes_count, created_at) VALUES
+('Nguyễn Thị Hoa', '34 tuổi', 'Hà Nội', 'Nguyện cầu mười phương chư Phật từ bi gia hộ cho cha mẹ hai bên sức khỏe dồi dào, tai qua nạn khỏi, bệnh tật tiêu trừ, sống đời an lạc bên con cháu.', 18, NOW() - INTERVAL 45 MINUTE),
+('Trần Văn Tuấn', '42 tuổi', 'Đà Nẵng', 'Cầu mong cho gia đạo êm ấm, trong ấm ngoài êm, công việc hanh thông, các con chăm ngoan học giỏi, luôn biết hướng thiện.', 26, NOW() - INTERVAL 2 HOUR),
+('Lê Hoàng Nam', '27 tuổi', 'TP. Hồ Chí Minh', 'Con xin sám hối mọi lỗi lầm vô minh trong quá khứ, nguyện cho thân tâm được an lạc, buông bỏ muộn phiền, công việc thuận buồm xuôi gió.', 15, NOW() - INTERVAL 5 HOUR),
+(NULL, '50 tuổi', 'Cần Thơ', 'Nguyện khắp mười phương quốc thái dân an, mưa thuận gió hòa, mọi người cùng gieo duyên lành với Tam Bảo, vạn sự cát tường.', 32, NOW() - INTERVAL 12 HOUR);

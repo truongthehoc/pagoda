@@ -6,7 +6,7 @@
     <title>Chính Điện Tam Bảo - Chốn Thiền Môn Trang Nghiêm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -48,8 +48,44 @@
       </div>
     </div>
 
-    <!-- THANH CÔNG CỤ CHÍNH: THẮP HƯƠNG & RÚT THẺ -->
-    <footer class="main-action-bar">
+    <!-- BIỂU TƯỢNG TÂM NGUYỆN TRÊN GÓC TRÁI (XEM DÒNG TÂM NGUYỆN) -->
+    <div class="top-left-wish-control">
+      <button id="btn-top-wishes" class="btn-top-wishes" title="Xem Dòng Tâm Nguyện Phật Tử">
+        <span class="btn-top-wishes-icon">🪷</span>
+        <span class="btn-top-wishes-label">Tâm Nguyện</span>
+        <span id="top-wishes-badge" class="top-wishes-badge">0</span>
+      </button>
+    </div>
+
+    <!-- KHUNG DANH SÁCH TÂM NGUYỆN PHẬT TỬ (HIỆU ỨNG KÍNH MỜ GÓC TRÁI) -->
+    <aside id="wishes-side-panel" class="wishes-side-panel" style="display: none;">
+      <div class="side-panel-header">
+        <div class="side-panel-title-wrap">
+          <span class="side-panel-lotus">🪷</span>
+          <div>
+            <h3 class="side-panel-title">Dòng Tâm Nguyện</h3>
+            <span class="side-panel-sub" id="side-panel-count-label">Lời nguyện kính dâng Tam Bảo</span>
+          </div>
+        </div>
+        <div class="side-panel-header-actions">
+          <button id="btn-refresh-side-wishes" class="btn-panel-action" title="Tải lại danh sách">🔄</button>
+          <button id="btn-close-side-wishes" class="btn-panel-action" title="Đóng">✕</button>
+        </div>
+      </div>
+
+      <div class="side-panel-body" id="side-wishes-list">
+        <div class="wishes-loading">Đang kết nối Dòng Tâm Nguyện...</div>
+      </div>
+
+      <div class="side-panel-footer">
+        <button id="btn-side-write-wish" class="btn-panel-write">
+          <span>✍️ Kính Dâng Lời Nguyện Mới</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- THANH CÔNG CỤ CHÍNH: THẮP HƯƠNG, RÚT THẺ & GỬI TÂM NGUYỆN (TIÊU ĐỀ GỌN GÀNG) -->
+    <footer id="main-action-bar" class="main-action-bar">
       <!-- Nút Thắp Nén Hương Thơm (Hoạt ảnh FPOV) -->
       <button id="btn-offer-incense" class="btn-action-primary">
         <div class="btn-glow-pulse"></div>
@@ -109,8 +145,7 @@
           </svg>
         </span>
         <div class="btn-text">
-          <span class="main-title">THẮP NÉN HƯƠNG THƠM</span>
-          <span class="sub-title">Cầm 3 nén tâm hương • Cung kính vái Tam Bảo</span>
+          <span class="main-title" id="incense-btn-title">THẮP NÉN HƯƠNG THƠM</span>
         </div>
       </button>
 
@@ -175,8 +210,39 @@
           </svg>
         </span>
         <div class="btn-text">
-          <span class="main-title">RÚT THẺ CẦU AN</span>
-          <span class="sub-title">Lời dạy Đức Phật • Lời nguyện bình an</span>
+          <span class="main-title" id="card-btn-title">RÚT THẺ CẦU AN</span>
+        </div>
+      </button>
+
+      <!-- Nút Gửi Tâm Nguyện / Lời Cầu Nguyện -->
+      <button id="btn-open-wish" class="btn-action-wish">
+        <span class="btn-icon">
+          <svg class="btn-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lotusPinkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#fff1f2" />
+                <stop offset="35%" stop-color="#fb7185" />
+                <stop offset="70%" stop-color="#e11d48" />
+                <stop offset="100%" stop-color="#881337" />
+              </linearGradient>
+              <linearGradient id="goldStemWish" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fffbeb" />
+                <stop offset="40%" stop-color="#fbbf24" />
+                <stop offset="100%" stop-color="#b45309" />
+              </linearGradient>
+            </defs>
+            <!-- Đài sen trang nghiêm -->
+            <path d="M24 8 C21 17, 18 26, 24 37 C30 26, 27 17, 24 8 Z" fill="url(#lotusPinkGrad)" stroke="url(#goldStemWish)" stroke-width="1.2"/>
+            <path d="M24 18 C17 22, 10 29, 14 37 C19 39, 22 34, 24 37 Z" fill="url(#lotusPinkGrad)" stroke="url(#goldStemWish)" stroke-width="1" opacity="0.95"/>
+            <path d="M24 18 C31 22, 38 29, 34 37 C29 39, 26 34, 24 37 Z" fill="url(#lotusPinkGrad)" stroke="url(#goldStemWish)" stroke-width="1" opacity="0.95"/>
+            <path d="M24 25 C15 27, 8 34, 10 40 C16 42, 20 38, 24 39 Z" fill="url(#lotusPinkGrad)" stroke="url(#goldStemWish)" stroke-width="0.8" opacity="0.85"/>
+            <path d="M24 25 C33 27, 40 34, 38 40 C32 42, 28 38, 24 39 Z" fill="url(#lotusPinkGrad)" stroke="url(#goldStemWish)" stroke-width="0.8" opacity="0.85"/>
+            <ellipse cx="24" cy="40" rx="13" ry="3" fill="url(#goldStemWish)" opacity="0.9"/>
+            <circle cx="24" cy="24" r="2.2" fill="#fffbeb" />
+          </svg>
+        </span>
+        <div class="btn-text">
+          <span class="main-title" id="wish-btn-title">GỬI TÂM NGUYỆN</span>
         </div>
       </button>
     </footer>
@@ -205,6 +271,131 @@
         <div class="modal-footer">
           <button id="btn-draw-another" class="btn-modal-aux">Rút Thẻ Khác</button>
           <button id="btn-confirm-blessing" class="btn-modal-main">Thành Tâm Hoan Hỷ 🙏</button>
+        </div>
+        <div class="modal-wish-prompt">
+          <button id="btn-blessing-to-wish" class="btn-link-wish">🪷 Viết lời tâm nguyện gửi đến Tam Bảo ✍️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. MODAL GỬI TÂM NGUYỆN (FORM VIẾT TÂM NGUYỆN) -->
+    <div id="wish-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card wish-card">
+        <button id="btn-close-wish" class="btn-modal-close" title="Đóng">✕</button>
+        
+        <div class="wish-header">
+          <div class="wish-header-icon">🪷</div>
+          <h2 class="wish-header-title">Kính Dâng Tâm Nguyện</h2>
+          <p class="wish-header-desc">Kính cẩn gửi gắm ước nguyện bình an đến đấng tâm linh mười phương</p>
+          <div class="gold-line"></div>
+        </div>
+
+        <div id="wish-write-container" class="wish-modal-body">
+          <form id="form-submit-wish" class="wish-form">
+            <div class="form-group">
+              <label for="wish-input-content" class="form-label">
+                <span>Lời Tâm Nguyện Của Thí Chủ</span>
+                <span class="required-star">*</span>
+              </label>
+              <textarea 
+                id="wish-input-content" 
+                class="wish-textarea" 
+                rows="4" 
+                maxlength="500" 
+                required 
+                placeholder="Kính bạch mười phương Tam Bảo, con xin thành tâm kính dâng lời nguyện cầu cho gia đạo bình an, cha mẹ mạnh khỏe, tai qua nạn khỏi, thân tâm thường an lạc..."></textarea>
+              <div class="char-count-hint"><span id="wish-char-count">0</span>/500 ký tự</div>
+            </div>
+
+            <div class="form-sub-header">
+              <span>Thông tin kính lễ (Tùy chọn - Tự động che giấu danh tính bảo mật)</span>
+            </div>
+
+            <div class="form-row-grid">
+              <div class="form-group">
+                <label for="wish-input-name" class="form-label">Họ và tên</label>
+                <input 
+                  type="text" 
+                  id="wish-input-name" 
+                  class="wish-input" 
+                  maxlength="50" 
+                  placeholder="VD: Nguyễn Văn An" />
+                <span class="field-hint">Sẽ hiển thị: N*** V*** A***</span>
+              </div>
+              <div class="form-group">
+                <label for="wish-input-age" class="form-label">Tuổi / Năm sinh</label>
+                <input 
+                  type="text" 
+                  id="wish-input-age" 
+                  class="wish-input" 
+                  maxlength="20" 
+                  placeholder="VD: 32 tuổi hoặc 1992" />
+                <span class="field-hint">Sẽ che: 3* tuổi</span>
+              </div>
+              <div class="form-group">
+                <label for="wish-input-address" class="form-label">Địa chỉ / Quê quán</label>
+                <input 
+                  type="text" 
+                  id="wish-input-address" 
+                  class="wish-input" 
+                  maxlength="60" 
+                  placeholder="VD: Hà Nội" />
+                <span class="field-hint">Sẽ che: Hà N***</span>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="btn-submit-wish" class="btn-wish-submit">
+                <span class="btn-wish-icon">🪷</span>
+                <span>Kính Dâng Lên Tam Bảo 🙏</span>
+              </button>
+            </div>
+
+            <div class="wish-switch-row">
+              <button type="button" id="btn-open-wall-from-write" class="btn-link-switch-modal">
+                📜 Xem Dòng Tâm Nguyện Khắp Mười Phương (<span id="wish-write-badge-count">4</span>) →
+              </button>
+            </div>
+          </form>
+
+          <!-- KHUNG THÔNG BÁO GỬI THÀNH CÔNG (ANIMATED CONFIRMATION) -->
+          <div id="wish-success-state" class="wish-success-box" style="display: none;">
+            <div class="success-lotus-anim">🪷</div>
+            <h3 class="success-title">Công Đức Vô Lượng</h3>
+            <div class="gold-line small"></div>
+            <p class="success-desc">
+              Tâm nguyện chí thành của thí chủ đã được kính cẩn dâng lên Đức Phật và chư Đại Bồ Tát.
+              Nguyện hồng ân Tam Bảo từ bi gia hộ cho sở cầu như ý, sở nguyện tòng tâm, gia đạo an khang, thân tâm thường lạc.
+            </p>
+            <div class="success-actions">
+              <button id="btn-view-prayers-wall" class="btn-modal-main">Xem Dòng Tâm Nguyện 🪷</button>
+              <button id="btn-write-another-wish" class="btn-modal-aux">Gửi Thêm Lời Nguyện</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MODAL DÒNG TÂM NGUYỆN (DANH SÁCH LỜI NGUYỆN CHE THÔNG TIN CÁ NHÂN) -->
+    <div id="wishes-wall-modal" class="modal-backdrop" style="display: none;">
+      <div class="modal-card wishes-wall-card">
+        <button id="btn-close-wall" class="btn-modal-close" title="Đóng">✕</button>
+        
+        <div class="wish-header">
+          <div class="wish-header-icon">🪷</div>
+          <h2 class="wish-header-title">Dòng Tâm Nguyện Tam Bảo</h2>
+          <p class="wish-header-desc">Ước nguyện bình an của phật tử mười phương kính dâng lên Tam Bảo</p>
+          <div class="gold-line"></div>
+        </div>
+
+        <div class="wishes-list-container" id="wishes-list-container">
+          <div class="wishes-loading">Đang kết nối Dòng Tâm Nguyện...</div>
+        </div>
+
+        <div class="wishes-list-footer">
+          <button id="btn-switch-to-write" class="btn-modal-main">
+            <span>✍️ Kính Dâng Lời Nguyện Của Bạn</span>
+          </button>
         </div>
       </div>
     </div>

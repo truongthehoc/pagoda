@@ -67,6 +67,25 @@ class ModernAdminApp {
     this.lblFlareSize = document.getElementById('lbl-admin-flare-size');
     this.btnResetFlare = document.getElementById('admin-btn-reset-flare');
 
+    // Tab 6: Cấu hình & sắp xếp nút tương tác
+    this.inputIncenseTitle = document.getElementById('admin-input-incense-title');
+    this.inputCardTitle = document.getElementById('admin-input-card-title');
+    this.inputWishTitle = document.getElementById('admin-input-wish-title');
+
+    this.previewIncenseTitle = document.getElementById('preview-incense-title');
+    this.previewCardTitle = document.getElementById('preview-card-title');
+    this.previewWishTitle = document.getElementById('preview-wish-title');
+
+    this.adminPreviewBar = document.getElementById('admin-preview-bar');
+    this.buttonsConfigCards = document.getElementById('buttons-config-cards');
+
+    this.btnSaveButtonsConfig = document.getElementById('btn-save-buttons-config');
+    this.btnResetButtonsDefault = document.getElementById('btn-reset-buttons-default');
+
+    // Tab 7: Quản lý tâm nguyện
+    this.adminWishesTbody = document.getElementById('admin-wishes-tbody');
+    this.btnRefreshWishes = document.getElementById('btn-refresh-wishes');
+
     // Toast
     this.toastEl = document.getElementById('admin-modern-toast');
     this.toastMsg = document.getElementById('toast-message');
@@ -82,6 +101,8 @@ class ModernAdminApp {
     await this.initMusicTab();
     await this.initBellTab();
     await this.initFlareTab();
+    await this.initActionButtonsTab();
+    this.initWishesTab();
   }
 
   // =========================================================================
@@ -185,6 +206,14 @@ class ModernAdminApp {
       'tab-flare': {
         title: 'Tùy chỉnh Flare ánh sáng quang minh quanh Phật',
         subtitle: 'Đồng bộ tọa độ và độ sáng hào quang từ cơ sở dữ liệu'
+      },
+      'tab-action-buttons': {
+        title: 'Cấu hình văn bản nút tương tác (Thắp Hương & Rút Thẻ)',
+        subtitle: 'Tùy chỉnh tiêu đề chính, phụ cho các nút hành động, lưu trực tiếp vào cơ sở dữ liệu'
+      },
+      'tab-wishes': {
+        title: 'Quản lý danh sách Tâm Nguyện của Phật Tử',
+        subtitle: 'Kiểm duyệt, theo dõi và bảo vệ quyền riêng tư các tâm nguyện kính dâng lên Tam Bảo'
       }
     };
 
@@ -210,6 +239,8 @@ class ModernAdminApp {
 
         if (targetTab === 'tab-dashboard') {
           this.renderAnalyticsData();
+        } else if (targetTab === 'tab-wishes') {
+          this.loadAdminWishes();
         }
       });
     });
@@ -778,6 +809,302 @@ class ModernAdminApp {
     if (this.lblFlareY) this.lblFlareY.textContent = `${y}%`;
     if (this.lblFlareOpacity) this.lblFlareOpacity.textContent = `${opacity}%`;
     if (this.lblFlareSize) this.lblFlareSize.textContent = `${size}px`;
+  }
+
+  // =========================================================================
+  // 7. CẤU HÌNH & SẮP XẾP NÚT TƯƠNG TÁC (THẮP HƯƠNG, RÚT THẺ, GỬI TÂM NGUYỆN)
+  // =========================================================================
+  async initActionButtonsTab() {
+    let incenseTitle = 'THẮP NÉN HƯƠNG THƠM';
+    let cardTitle = 'RÚT THẺ CẦU AN';
+    let wishTitle = 'GỬI TÂM NGUYỆN';
+    let buttonsOrder = ['incense', 'card', 'wish'];
+
+    // 1. Tải dữ liệu từ API hoặc Cache
+    try {
+      const res = await fetch('/api/settings/buttons');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.incense_title) incenseTitle = data.incense_title;
+        if (data.card_title) cardTitle = data.card_title;
+        if (data.wish_title) wishTitle = data.wish_title;
+        if (Array.isArray(data.buttons_order) && data.buttons_order.length > 0) {
+          buttonsOrder = data.buttons_order;
+        }
+      }
+    } catch (_) {
+      incenseTitle = localStorage.getItem('pagoda_incense_title') || incenseTitle;
+      cardTitle = localStorage.getItem('pagoda_card_title') || cardTitle;
+      wishTitle = localStorage.getItem('pagoda_wish_title') || wishTitle;
+      const cachedOrder = localStorage.getItem('pagoda_buttons_order');
+      if (cachedOrder) {
+        try { buttonsOrder = JSON.parse(cachedOrder); } catch (_) {}
+      }
+    }
+
+    // Đảm bảo buttonsOrder chứa đủ 3 phím
+    const validKeys = ['incense', 'card', 'wish'];
+    buttonsOrder = buttonsOrder.filter(k => validKeys.includes(k));
+    validKeys.forEach(k => {
+      if (!buttonsOrder.includes(k)) buttonsOrder.push(k);
+    });
+
+    // 2. Điền dữ liệu vào form & cập nhật giao diện
+    const updateUI = () => {
+      if (this.inputIncenseTitle) this.inputIncenseTitle.value = incenseTitle;
+      if (this.inputCardTitle) this.inputCardTitle.value = cardTitle;
+      if (this.inputWishTitle) this.inputWishTitle.value = wishTitle;
+
+      if (this.previewIncenseTitle) this.previewIncenseTitle.textContent = incenseTitle;
+      if (this.previewCardTitle) this.previewCardTitle.textContent = cardTitle;
+      if (this.previewWishTitle) this.previewWishTitle.textContent = wishTitle;
+
+      // Sắp xếp lại thứ tự DOM của các preview button trong Live Preview
+      if (this.adminPreviewBar) {
+        buttonsOrder.forEach(key => {
+          const previewEl = this.adminPreviewBar.querySelector(`[data-preview-key="${key}"]`);
+          if (previewEl) this.adminPreviewBar.appendChild(previewEl);
+        });
+      }
+
+      // Sắp xếp lại thứ tự DOM của các thẻ cấu hình
+      if (this.buttonsConfigCards) {
+        buttonsOrder.forEach((key, index) => {
+          const cardEl = this.buttonsConfigCards.querySelector(`[data-key="${key}"]`);
+          if (cardEl) {
+            this.buttonsConfigCards.appendChild(cardEl);
+            const label = cardEl.querySelector('.btn-order-indicator');
+            if (label) label.textContent = `Vị trí: ${index + 1}`;
+            const btnLeft = cardEl.querySelector('.btn-reorder-move[data-dir="-1"]');
+            const btnRight = cardEl.querySelector('.btn-reorder-move[data-dir="1"]');
+            if (btnLeft) btnLeft.disabled = (index === 0);
+            if (btnRight) btnRight.disabled = (index === buttonsOrder.length - 1);
+          }
+        });
+      }
+    };
+
+    updateUI();
+
+    // 3. Xử lý di chuyển thứ tự (Move Left / Right)
+    if (this.buttonsConfigCards) {
+      this.buttonsConfigCards.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-reorder-move');
+        if (!btn) return;
+        const key = btn.getAttribute('data-key');
+        const dir = parseInt(btn.getAttribute('data-dir'), 10);
+        const currentIndex = buttonsOrder.indexOf(key);
+        if (currentIndex === -1) return;
+
+        const newIndex = currentIndex + dir;
+        if (newIndex < 0 || newIndex >= buttonsOrder.length) return;
+
+        // Hoán đổi vị trí
+        const temp = buttonsOrder[currentIndex];
+        buttonsOrder[currentIndex] = buttonsOrder[newIndex];
+        buttonsOrder[newIndex] = temp;
+
+        updateUI();
+      });
+    }
+
+    // 4. Cập nhật preview thời gian thực khi gõ phím
+    if (this.inputIncenseTitle) {
+      this.inputIncenseTitle.addEventListener('input', () => {
+        incenseTitle = this.inputIncenseTitle.value.trim() || 'THẮP NÉN HƯƠNG THƠM';
+        if (this.previewIncenseTitle) this.previewIncenseTitle.textContent = incenseTitle;
+      });
+    }
+    if (this.inputCardTitle) {
+      this.inputCardTitle.addEventListener('input', () => {
+        cardTitle = this.inputCardTitle.value.trim() || 'RÚT THẺ CẦU AN';
+        if (this.previewCardTitle) this.previewCardTitle.textContent = cardTitle;
+      });
+    }
+    if (this.inputWishTitle) {
+      this.inputWishTitle.addEventListener('input', () => {
+        wishTitle = this.inputWishTitle.value.trim() || 'GỬI TÂM NGUYỆN';
+        if (this.previewWishTitle) this.previewWishTitle.textContent = wishTitle;
+      });
+    }
+
+    // 5. Lưu cấu hình vào MySQL qua API
+    if (this.btnSaveButtonsConfig) {
+      this.btnSaveButtonsConfig.addEventListener('click', async () => {
+        const payload = {
+          incense_title: this.inputIncenseTitle ? this.inputIncenseTitle.value.trim() || 'THẮP NÉN HƯƠNG THƠM' : 'THẮP NÉN HƯƠNG THƠM',
+          card_title: this.inputCardTitle ? this.inputCardTitle.value.trim() || 'RÚT THẺ CẦU AN' : 'RÚT THẺ CẦU AN',
+          wish_title: this.inputWishTitle ? this.inputWishTitle.value.trim() || 'GỬI TÂM NGUYỆN' : 'GỬI TÂM NGUYỆN',
+          buttons_order: buttonsOrder
+        };
+
+        try {
+          const res = await fetch('/api/settings/buttons', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const resData = await res.json();
+
+          localStorage.setItem('pagoda_incense_title', payload.incense_title);
+          localStorage.setItem('pagoda_card_title', payload.card_title);
+          localStorage.setItem('pagoda_wish_title', payload.wish_title);
+          localStorage.setItem('pagoda_buttons_order', JSON.stringify(payload.buttons_order));
+
+          this.showToast('Đã lưu cấu hình và thứ tự nút bấm thành công!');
+        } catch (err) {
+          localStorage.setItem('pagoda_incense_title', payload.incense_title);
+          localStorage.setItem('pagoda_card_title', payload.card_title);
+          localStorage.setItem('pagoda_wish_title', payload.wish_title);
+          localStorage.setItem('pagoda_buttons_order', JSON.stringify(payload.buttons_order));
+          this.showToast('Đã lưu cục bộ vào trình duyệt');
+        }
+      });
+    }
+
+    // 6. Khôi phục mặc định
+    if (this.btnResetButtonsDefault) {
+      this.btnResetButtonsDefault.addEventListener('click', async () => {
+        incenseTitle = 'THẮP NÉN HƯƠNG THƠM';
+        cardTitle = 'RÚT THẺ CẦU AN';
+        wishTitle = 'GỬI TÂM NGUYỆN';
+        buttonsOrder = ['incense', 'card', 'wish'];
+
+        updateUI();
+
+        const defaultPayload = {
+          incense_title: incenseTitle,
+          card_title: cardTitle,
+          wish_title: wishTitle,
+          buttons_order: buttonsOrder
+        };
+
+        try {
+          await fetch('/api/settings/buttons', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(defaultPayload)
+          });
+          localStorage.setItem('pagoda_incense_title', incenseTitle);
+          localStorage.setItem('pagoda_card_title', cardTitle);
+          localStorage.setItem('pagoda_wish_title', wishTitle);
+          localStorage.setItem('pagoda_buttons_order', JSON.stringify(buttonsOrder));
+          this.showToast('Đã khôi phục tiêu đề & thứ tự chuẩn mặc định');
+        } catch (err) {
+          this.showToast('Đã khôi phục mặc định');
+        }
+      });
+    }
+  }
+
+  // =========================================================================
+  // 8. TAB 7: QUẢN LÝ TÂM NGUYỆN PHẬT TỬ
+  // =========================================================================
+  initWishesTab() {
+    if (this.btnRefreshWishes) {
+      this.btnRefreshWishes.addEventListener('click', () => {
+        this.loadAdminWishes();
+      });
+    }
+  }
+
+  async loadAdminWishes() {
+    if (!this.adminWishesTbody) return;
+    this.adminWishesTbody.innerHTML = `
+      <tr>
+        <td colspan="9" style="text-align: center; color: #64748b; padding: 24px;">Đang tải danh sách tâm nguyện...</td>
+      </tr>
+    `;
+
+    try {
+      const res = await fetch('/api/admin/wishes');
+      if (!res.ok) throw new Error('Lỗi tải tâm nguyện');
+      const wishes = await res.json();
+
+      if (!wishes || wishes.length === 0) {
+        this.adminWishesTbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; color: #94a3b8; padding: 24px;">Chưa có tâm nguyện nào được gửi</td>
+          </tr>
+        `;
+        return;
+      }
+
+      this.adminWishesTbody.innerHTML = wishes.map(w => {
+        const isApproved = w.is_approved === 1 || w.is_approved === true;
+        const statusBadge = isApproved
+          ? `<span class="badge badge-success" style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 9999px; font-size: 0.76rem; font-weight: 700;">Hiển thị</span>`
+          : `<span class="badge badge-danger" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 9999px; font-size: 0.76rem; font-weight: 700;">Đã ẩn</span>`;
+
+        const toggleBtnLabel = isApproved ? 'Ẩn' : 'Hiện';
+
+        return `
+          <tr data-id="${w.id}">
+            <td style="font-weight: 600; color: #64748b;">#${w.id}</td>
+            <td>
+              <div style="font-weight: 700; color: #1e293b;">${w.masked_name}</div>
+              <div style="font-size: 0.75rem; color: #64748b;">Tên gốc: ${w.author_name}</div>
+            </td>
+            <td>${w.author_age || '—'}</td>
+            <td>${w.author_address || '—'}</td>
+            <td style="font-style: italic; color: #334155; max-width: 320px; line-height: 1.5;">"${w.content}"</td>
+            <td style="text-align: center; font-weight: 700; color: #d97706;">🙏 ${w.likes_count}</td>
+            <td style="font-size: 0.8rem; color: #64748b;">${w.time_ago}</td>
+            <td style="text-align: center;">${statusBadge}</td>
+            <td style="text-align: center;">
+              <div style="display: flex; gap: 6px; justify-content: center;">
+                <button class="btn-table-action btn-toggle-wish" data-id="${w.id}" title="${toggleBtnLabel} tâm nguyện">
+                  ${toggleBtnLabel}
+                </button>
+                <button class="btn-table-action btn-del-wish" data-id="${w.id}" style="color: #ef4444;" title="Xóa tâm nguyện">
+                  Xóa
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Gắn sự kiện Ẩn/Hiện và Xóa
+      this.adminWishesTbody.querySelectorAll('.btn-toggle-wish').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          try {
+            const patchRes = await fetch(`/api/admin/wishes/${id}/toggle`, { method: 'PATCH' });
+            if (patchRes.ok) {
+              this.showToast('Đã cập nhật trạng thái hiển thị');
+              this.loadAdminWishes();
+            }
+          } catch (e) {
+            this.showToast('Lỗi cập nhật', 'danger');
+          }
+        });
+      });
+
+      this.adminWishesTbody.querySelectorAll('.btn-del-wish').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-id');
+          if (!confirm(`Bạn có chắc chắn muốn xóa tâm nguyện #${id} không?`)) return;
+
+          try {
+            const delRes = await fetch(`/api/admin/wishes/${id}`, { method: 'DELETE' });
+            if (delRes.ok) {
+              this.showToast('Đã xóa tâm nguyện thành công');
+              this.loadAdminWishes();
+            }
+          } catch (e) {
+            this.showToast('Lỗi khi xóa', 'danger');
+          }
+        });
+      });
+
+    } catch (err) {
+      this.adminWishesTbody.innerHTML = `
+        <tr>
+          <td colspan="9" style="text-align: center; color: #ef4444; padding: 24px;">Không thể tải danh sách: ${err.message}</td>
+        </tr>
+      `;
+    }
   }
 
   // =========================================================================

@@ -55,10 +55,25 @@ Trang web chủ đề Phật giáo với không gian Chính Điện Tam Bảo 2D
 
 ---
 
-## 🚀 Khởi Chạy
+## 🚀 Khởi Chạy Hệ Thống Test
 
+### Cách 1: Click chạy trực tiếp (Windows - Khuyên dùng)
+- Nhấp đúp chuột vào file **`start.bat`** tại thư mục gốc của dự án.
+- Hệ thống sẽ:
+  1. Tự động kiểm tra Node.js và cài đặt gói phụ thuộc nếu chưa có.
+  2. Kiểm tra trạng thái cổng kết nối MySQL (3306).
+  3. Đồng thời khởi động cả **Backend API** (port 3001) và **Frontend** (port 5173).
+  4. Tự động mở trình duyệt truy cập website.
+  5. Nhấn `Ctrl + C` bất cứ lúc nào để dừng toàn bộ hệ thống an toàn.
+
+### Cách 2: Dùng dòng lệnh (Terminal / PowerShell / CMD)
 ```bash
-npm install
-npm run dev
-# Mở trình duyệt tại: http://localhost:5173
+# Khởi chạy đồng bộ cả Backend & Frontend:
+npm start
+# Hoặc: node start.js
+
+# Mở trình duyệt:
+# - Trang chính Tam Bảo:  http://localhost:5173
+# - Bảng quản trị Admin:   http://localhost:5173/admin.html
+# - Backend API:           http://localhost:3001
 ```

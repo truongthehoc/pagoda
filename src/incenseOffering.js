@@ -65,13 +65,14 @@ export class IncenseOfferingRitual {
     this.handPos.opacity = 0;
     this.handPos.bowOffset = 0;
 
-    let enterProgress = 0;
-    const enterDuration = 0.9;
+    let enterStart = null;
+    const enterDuration = 1200; // 1.2s dâng 3 nén hương chậm rãi, trang nghiêm
 
     // Đôi tay dâng 3 nén hương từ từ xuất hiện ở cự ly trang nghiêm
-    const animateEnter = () => {
-      enterProgress += 0.025;
-      const t = Math.min(1, enterProgress / enterDuration);
+    const animateEnter = (now) => {
+      if (!enterStart) enterStart = now;
+      const elapsed = now - enterStart;
+      const t = Math.min(1, elapsed / enterDuration);
       const ease = 0.5 - Math.cos(t * Math.PI) / 2;
 
       this.handPos.y = this.height * 1.15 - (this.height * 1.15 - this.handPos.targetY) * ease;
@@ -88,19 +89,19 @@ export class IncenseOfferingRitual {
         }
 
         setTimeout(() => {
-          // Bắt đầu 3 vái Tam Bảo
+          // Bắt đầu 3 vái Tam Bảo với tốc độ chậm rãi, cung kính
           this.performThreeBows(onProgress, () => {
-            // Sau khi vái xong: Đôi tay hạ xuống và mờ dần (không cắm que nhang giả)
+            // Sau khi vái xong: Đôi tay hạ xuống và mờ dần
             this.finishBowing(onComplete);
           });
-        }, 600);
+        }, 800);
       }
     };
 
-    animateEnter();
+    requestAnimationFrame(animateEnter);
   }
 
-  // Thực hiện 3 Vái Tam Bảo tôn nghiêm
+  // Thực hiện 3 Vái Tam Bảo tôn nghiêm (tốc độ chậm rãi, thư thái theo chuẩn thiền môn)
   performThreeBows(onProgress, onFinished) {
     this.offerPhase = 'bowing';
 
@@ -134,24 +135,28 @@ export class IncenseOfferingRitual {
         });
       }
 
-      let t = 0;
-      const duration = 1.35;
+      let bowStart = null;
+      // Tốc độ vái chậm lại (2.6 giây cho mỗi lần vái cúi xuống và ngẩng lên)
+      const bowDuration = 2600;
 
-      const bowLoop = () => {
-        t += 0.035;
-        const p = Math.min(1, t / duration);
-        // Chuyển động cúi vái nhịp nhàng
-        this.handPos.bowOffset = Math.sin(p * Math.PI) * 70;
+      const bowLoop = (now) => {
+        if (!bowStart) bowStart = now;
+        const elapsed = now - bowStart;
+        const p = Math.min(1, elapsed / bowDuration);
+        
+        // Chuyển động cúi vái nhịp nhàng, chậm rãi, tôn kính
+        this.handPos.bowOffset = Math.sin(p * Math.PI) * 75;
 
         if (p < 1) {
           requestAnimationFrame(bowLoop);
         } else {
           this.handPos.bowOffset = 0;
-          setTimeout(doNextBow, 400);
+          // Khoảng lặng an tịnh giữa các lần vái (750ms)
+          setTimeout(doNextBow, 750);
         }
       };
 
-      bowLoop();
+      requestAnimationFrame(bowLoop);
     };
 
     doNextBow();
@@ -160,14 +165,16 @@ export class IncenseOfferingRitual {
   // Sau khi hoàn thành 3 vái: Đôi tay cung kính hạ xuống và mờ dần
   finishBowing(onComplete) {
     this.offerPhase = 'exiting';
-    let exitProgress = 0;
+    let exitStart = null;
+    const exitDuration = 1200; // 1.2s hạ tay chậm rãi
 
-    const animateExit = () => {
-      exitProgress += 0.03;
-      const t = Math.min(1, exitProgress);
+    const animateExit = (now) => {
+      if (!exitStart) exitStart = now;
+      const elapsed = now - exitStart;
+      const t = Math.min(1, elapsed / exitDuration);
       const ease = 0.5 - Math.cos(t * Math.PI) / 2;
 
-      this.handPos.y += 2.8;
+      this.handPos.y = this.handPos.targetY + 70 * ease;
       this.handPos.opacity = Math.max(0, 1 - ease);
 
       if (t < 1) {
@@ -182,19 +189,20 @@ export class IncenseOfferingRitual {
           if (soundEngine && typeof soundEngine.playBell === 'function') soundEngine.playBell(1.0);
         } catch (e) {}
 
-        // Rơi nhẹ vài cánh hoa sen vàng chúc phúc
+        // Rơi nhẹ vài cánh hoa sen vàng chúc phúc (zIndex 30 để tuyệt đối không che chắn hay cản trở Modal thiệp)
         confetti({
           particleCount: 50,
           spread: 75,
           origin: { y: 0.65 },
-          colors: ['#ffd700', '#ff99aa', '#f59e0b', '#ffffff']
+          colors: ['#ffd700', '#ff99aa', '#f59e0b', '#ffffff'],
+          zIndex: 30
         });
 
         if (onComplete) onComplete();
       }
     };
 
-    animateExit();
+    requestAnimationFrame(animateExit);
   }
 
   // Sinh khói từ đầu que nhang: Mật độ thưa, hạt nhỏ mỏng, không bị dày đặc
