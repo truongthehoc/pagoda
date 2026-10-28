@@ -32,7 +32,7 @@ if (fs.existsSync(envPath)) {
 }
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '3002', 10);
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));

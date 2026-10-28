@@ -147,14 +147,14 @@ async function start() {
   }
 
   // Giải phóng port nếu có tiến trình Node cũ chiếm giữ
-  await freePortIfBusy(3001);
+  await freePortIfBusy(3002);
   await freePortIfBusy(5173);
 
-  // 1. Khởi chạy Backend Express API (port 3001)
+  // 1. Khởi chạy Backend Express API (port 3002)
   console.log(`\n${prefixSys} Đang khởi động Backend API Server (server.js)...`);
   backendProcess = spawn(process.execPath, [path.join(__dirname, 'server.js')], {
     cwd: __dirname,
-    env: { ...process.env, PORT: '3001' },
+    env: { ...process.env, PORT: '3002' },
     stdio: ['inherit', 'pipe', 'pipe']
   });
 
@@ -207,7 +207,7 @@ async function start() {
         console.log(`\n${prefixSys} ${colors.bold}${colors.green}✓ Hệ thống đã sẵn sàng phục vụ!${colors.reset}`);
         console.log(`${prefixSys} ➜ Trang chính Tam Bảo:  ${colors.cyan}${colors.bold}http://localhost:5173${colors.reset}`);
         console.log(`${prefixSys} ➜ Trang Quản trị Admin: ${colors.cyan}${colors.bold}http://localhost:5173/admin.html${colors.reset}`);
-        console.log(`${prefixSys} ➜ API Backend:          ${colors.cyan}${colors.bold}http://localhost:3001${colors.reset}`);
+        console.log(`${prefixSys} ➜ API Backend:          ${colors.cyan}${colors.bold}http://localhost:3002${colors.reset}`);
         console.log(`${prefixSys} ${colors.dim}(Nhấn Ctrl + C để dừng tất cả dịch vụ bất cứ lúc nào)${colors.reset}\n`);
         
         console.log(`${prefixSys} Đang tự động mở trình duyệt tới http://localhost:5173 ...`);

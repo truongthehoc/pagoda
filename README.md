@@ -62,7 +62,7 @@ Trang web chủ đề Phật giáo với không gian Chính Điện Tam Bảo 2D
 - Hệ thống sẽ:
   1. Tự động kiểm tra Node.js và cài đặt gói phụ thuộc nếu chưa có.
   2. Kiểm tra trạng thái cổng kết nối MySQL (3306).
-  3. Đồng thời khởi động cả **Backend API** (port 3001) và **Frontend** (port 5173).
+  3. Đồng thời khởi động cả **Backend API** (port 3002) và **Frontend** (port 5173).
   4. Tự động mở trình duyệt truy cập website.
   5. Nhấn `Ctrl + C` bất cứ lúc nào để dừng toàn bộ hệ thống an toàn.
 
@@ -75,5 +75,5 @@ npm start
 # Mở trình duyệt:
 # - Trang chính Tam Bảo:  http://localhost:5173
 # - Bảng quản trị Admin:   http://localhost:5173/admin.html
-# - Backend API:           http://localhost:3001
+# - Backend API:           http://localhost:3002
 ```
