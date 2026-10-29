@@ -762,6 +762,34 @@ class ModernAdminApp {
         }
       });
     }
+
+    // Xóa tất cả bài nhạc thiền trong hệ thống
+    const btnDeleteAllTracks = document.getElementById('btn-delete-all-tracks');
+    if (btnDeleteAllTracks) {
+      btnDeleteAllTracks.addEventListener('click', async () => {
+        const confirmDeleteAll = window.confirm(
+          '⚠️ BẠN CÓ CHẮC MUỐN XÓA TẤT CẢ BÀI NHẠC THIỀN?\n\n' +
+          'Thao tác này sẽ xóa sạch toàn bộ danh sách bài hát khỏi hệ thống.\n' +
+          'Bạn có thể thêm lại bất kỳ lúc nào bằng link URL hoặc tệp MP3.'
+        );
+        if (!confirmDeleteAll) return;
+
+        btnDeleteAllTracks.disabled = true;
+        try {
+          const success = await soundEngine.removeAllTracksFromDatabase();
+          if (success) {
+            this.renderMusicTable();
+            this.showToast('Đã xóa sạch toàn bộ danh sách nhạc thiền!');
+          } else {
+            this.showToast('Lỗi khi xóa danh sách nhạc từ cơ sở dữ liệu', 'warning');
+          }
+        } catch (err) {
+          this.showToast('Không thể kết nối máy chủ để xóa nhạc', 'warning');
+        } finally {
+          btnDeleteAllTracks.disabled = false;
+        }
+      });
+    }
   }
 
   renderMusicTable() {
@@ -771,6 +799,11 @@ class ModernAdminApp {
     const list = soundEngine.playlist || [];
     if (this.musicTrackCount) this.musicTrackCount.textContent = list.length;
     if (this.sidebarTrackBadge) this.sidebarTrackBadge.textContent = list.length;
+
+    const btnDeleteAllTracks = document.getElementById('btn-delete-all-tracks');
+    if (btnDeleteAllTracks) {
+      btnDeleteAllTracks.style.display = list.length > 0 ? 'inline-flex' : 'none';
+    }
 
     if (list.length === 0) {
       this.musicTableBody.innerHTML = `

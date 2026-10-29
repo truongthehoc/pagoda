@@ -28,6 +28,9 @@ function cleanLocalJson(filePath) {
       // Đặt lại danh sách tâm nguyện rỗng
       data.wishes = [];
 
+      // Đặt lại danh sách nhạc thiền rỗng
+      data.tracks = [];
+
       // Đặt lại số liệu thống kê về 0
       data.analytics = {
         totalVisits: 0,
@@ -98,6 +101,17 @@ async function cleanMySql() {
     } catch (e) {
       await conn.query('DELETE FROM prayers_wishes');
       console.log('✅ Đã xóa toàn bộ bản ghi trong: prayers_wishes');
+    }
+
+    // Xóa nhạc thiền mẫu (để chuẩn bị chạy dữ liệu thật)
+    try {
+      await conn.query('TRUNCATE TABLE playlist_tracks');
+      console.log('✅ Đã dọn sạch bảng: playlist_tracks (Danh sách nhạc thiền)');
+    } catch (e) {
+      try {
+        await conn.query('DELETE FROM playlist_tracks');
+        console.log('✅ Đã xóa toàn bộ bản ghi trong: playlist_tracks');
+      } catch (_) {}
     }
 
     // Xóa nhật ký hoạt động mẫu

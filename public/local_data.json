@@ -29,32 +29,7 @@
       "wish"
     ]
   },
-  "tracks": [
-    {
-      "id": 1,
-      "track_id": "track-1",
-      "title": "Tiếng Trúc & Suối Nước Chốn Thiền Môn",
-      "type": "url",
-      "url": "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=meditation-flute-22533.mp3",
-      "sort_order": 1
-    },
-    {
-      "id": 2,
-      "track_id": "track-2",
-      "title": "Nhạc Thiền An Lạc Thư Thái",
-      "type": "url",
-      "url": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=relaxing-meditation-10940.mp3",
-      "sort_order": 2
-    },
-    {
-      "id": 3,
-      "track_id": "track-synth",
-      "title": "Sóng Âm Thiền Định & Bát Xoay Tây Tạng (Tự Nhiên)",
-      "type": "synth",
-      "url": "",
-      "sort_order": 3
-    }
-  ],
+  "tracks": [],
   "wishes": [],
   "analytics": {
     "totalVisits": 0,

@@ -43,26 +43,8 @@ class SoundEngine {
     // Custom wooden fish audio player cho tiếng mõ
     this.customWoodenFishAudio = new Audio();
 
-    // Danh sách nhạc thiền
-    this.playlist = [
-      {
-        id: 'track-1',
-        title: 'Tiếng Trúc & Suối Nước Chốn Thiền Môn',
-        type: 'url',
-        url: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=meditation-flute-22533.mp3'
-      },
-      {
-        id: 'track-2',
-        title: 'Nhạc Thiền An Lạc Thư Thái',
-        type: 'url',
-        url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=relaxing-meditation-10940.mp3'
-      },
-      {
-        id: 'track-synth',
-        title: 'Sóng Âm Thiền Định & Bát Xoay Tây Tạng (Tự Nhiên)',
-        type: 'synth'
-      }
-    ];
+    // Danh sách nhạc thiền (đồng bộ từ cơ sở dữ liệu)
+    this.playlist = [];
     this.currentTrackIndex = 0;
 
     // Lắng nghe sự kiện quay lại trang trên Mobile để tiếp tục âm thanh
@@ -95,14 +77,21 @@ class SoundEngine {
 
       if (tracksRes.ok) {
         const tracks = await tracksRes.json();
-        if (Array.isArray(tracks) && tracks.length > 0) {
+        if (Array.isArray(tracks)) {
           this.playlist = tracks.map(t => ({
             id: t.track_id || t.id,
             title: t.title,
             type: t.type,
             url: t.url
           }));
-          if (this.currentTrackIndex >= this.playlist.length) {
+          if (this.playlist.length === 0) {
+            this.currentTrackIndex = 0;
+            if (this.customAudio) {
+              this.customAudio.pause();
+              this.customAudio.src = '';
+            }
+            this.stopSynthDrone();
+          } else if (this.currentTrackIndex >= this.playlist.length) {
             this.currentTrackIndex = 0;
           }
         }
@@ -554,6 +543,21 @@ class SoundEngine {
       }
     } catch (e) {
       console.warn('Lỗi xóa bài nhạc từ MySQL:', e);
+    }
+    return false;
+  }
+
+  async removeAllTracksFromDatabase() {
+    try {
+      const res = await fetch('/api/tracks', {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        await this.syncFromDatabase();
+        return true;
+      }
+    } catch (e) {
+      console.warn('Lỗi xóa toàn bộ bài nhạc từ MySQL:', e);
     }
     return false;
   }

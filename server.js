@@ -101,32 +101,7 @@ let fallbackDb = {
     wish_title: 'GỬI TÂM NGUYỆN',
     buttons_order: ['incense', 'card', 'wish']
   },
-  tracks: [
-    {
-      id: 1,
-      track_id: 'track-1',
-      title: 'Tiếng Trúc & Suối Nước Chốn Thiền Môn',
-      type: 'url',
-      url: 'https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=meditation-flute-22533.mp3',
-      sort_order: 1
-    },
-    {
-      id: 2,
-      track_id: 'track-2',
-      title: 'Nhạc Thiền An Lạc Thư Thái',
-      type: 'url',
-      url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=relaxing-meditation-10940.mp3',
-      sort_order: 2
-    },
-    {
-      id: 3,
-      track_id: 'track-synth',
-      title: 'Sóng Âm Thiền Định & Bát Xoay Tây Tạng (Tự Nhiên)',
-      type: 'synth',
-      url: '',
-      sort_order: 3
-    }
-  ],
+  tracks: [],
   wishes: [],
   stats: {
     totalVisits: 0,
@@ -261,6 +236,19 @@ pool.getConnection()
           likes_count INT DEFAULT 1,
           is_approved TINYINT(1) DEFAULT 1,
           ip_address VARCHAR(45) DEFAULT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+
+      // Bảng playlist_tracks (Danh sách nhạc thiền phát lần lượt)
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS playlist_tracks (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          track_id VARCHAR(64) NOT NULL UNIQUE,
+          title VARCHAR(255) NOT NULL,
+          type VARCHAR(20) NOT NULL DEFAULT 'url',
+          url MEDIUMTEXT DEFAULT NULL,
+          sort_order INT DEFAULT 0,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
       `);
@@ -603,12 +591,11 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 app.get('/api/tracks', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM playlist_tracks ORDER BY sort_order ASC, id ASC');
-    if (rows && rows.length > 0) {
-      return res.json(rows);
-    }
-    return res.json(fallbackDb.tracks);
+    // Khi MySQL query thành công, trả về danh sách thực tế (kể cả mảng rỗng [] khi người dùng đã xóa hết nhạc)
+    return res.json(rows || []);
   } catch (err) {
-    res.json(fallbackDb.tracks);
+    // Chỉ sử dụng fallbackDb khi không thể kết nối hoặc bảng chưa có
+    res.json(fallbackDb.tracks || []);
   }
 });
 
@@ -622,7 +609,7 @@ app.post('/api/tracks', async (req, res) => {
   try {
     // Sửa lỗi cú pháp subquery lồng nhau trong MySQL (Error 1093)
     const [orderRows] = await pool.query('SELECT IFNULL(MAX(sort_order), 0) + 1 AS next_order FROM playlist_tracks');
-    const nextOrder = (orderRows && orderRows[0]?.next_order) || (fallbackDb.tracks.length + 1);
+    const nextOrder = (orderRows && orderRows[0]?.next_order) || ((fallbackDb.tracks?.length || 0) + 1);
 
     const [result] = await pool.query(
       'INSERT INTO playlist_tracks (track_id, title, type, url, sort_order) VALUES (?, ?, ?, ?, ?)',
@@ -630,6 +617,7 @@ app.post('/api/tracks', async (req, res) => {
     );
 
     const newTrack = { id: result.insertId, track_id, title: trackTitle, type: trackType, url: trackUrl, sort_order: nextOrder };
+    if (!fallbackDb.tracks) fallbackDb.tracks = [];
     fallbackDb.tracks.push(newTrack);
     saveFallbackDb();
 
@@ -638,7 +626,7 @@ app.post('/api/tracks', async (req, res) => {
       track: newTrack
     });
   } catch (err) {
-    const nextOrder = fallbackDb.tracks.length + 1;
+    const nextOrder = (fallbackDb.tracks?.length || 0) + 1;
     const newTrack = {
       id: Date.now(),
       track_id,
@@ -647,6 +635,7 @@ app.post('/api/tracks', async (req, res) => {
       url: trackUrl,
       sort_order: nextOrder
     };
+    if (!fallbackDb.tracks) fallbackDb.tracks = [];
     fallbackDb.tracks.push(newTrack);
     saveFallbackDb();
 
@@ -657,11 +646,23 @@ app.post('/api/tracks', async (req, res) => {
   }
 });
 
+// Xóa 1 bài nhạc thiền theo ID hoặc track_id
 app.delete('/api/tracks/:id', async (req, res) => {
   const { id } = req.params;
+  const numericId = parseInt(id, 10);
+  const isNumeric = !isNaN(numericId) && String(numericId) === String(id);
+
   try {
-    // 1. Kiểm tra tệp vật lý lưu trong uploads để xóa giải phóng bộ nhớ ổ đĩa dự án
-    const [rows] = await pool.query('SELECT url FROM playlist_tracks WHERE track_id = ? OR id = ?', [id, id]);
+    // 1. Kiểm tra tệp vật lý lưu trong uploads để xóa giải phóng bộ nhớ ổ đĩa
+    let rows = [];
+    try {
+      if (isNumeric) {
+        [rows] = await pool.query('SELECT url FROM playlist_tracks WHERE id = ? OR track_id = ?', [numericId, String(id)]);
+      } else {
+        [rows] = await pool.query('SELECT url FROM playlist_tracks WHERE track_id = ?', [String(id)]);
+      }
+    } catch (_) {}
+
     if (rows && rows.length > 0 && rows[0].url) {
       const trackUrl = rows[0].url;
       if (trackUrl.startsWith('/uploads/')) {
@@ -674,15 +675,58 @@ app.delete('/api/tracks/:id', async (req, res) => {
       }
     }
 
-    // 2. Xóa dòng khỏi MySQL
-    await pool.query('DELETE FROM playlist_tracks WHERE track_id = ? OR id = ?', [id, id]);
-    fallbackDb.tracks = fallbackDb.tracks.filter(t => String(t.track_id) !== String(id) && String(t.id) !== String(id));
+    // 2. Xóa dòng khỏi MySQL an toàn theo kiểu dữ liệu
+    if (isNumeric) {
+      await pool.query('DELETE FROM playlist_tracks WHERE id = ? OR track_id = ?', [numericId, String(id)]);
+    } else {
+      await pool.query('DELETE FROM playlist_tracks WHERE track_id = ?', [String(id)]);
+    }
+
+    fallbackDb.tracks = (fallbackDb.tracks || []).filter(t => String(t.track_id) !== String(id) && String(t.id) !== String(id));
     saveFallbackDb();
     res.json({ success: true });
   } catch (err) {
-    fallbackDb.tracks = fallbackDb.tracks.filter(t => String(t.track_id) !== String(id) && String(t.id) !== String(id));
+    console.warn('Lỗi khi xóa bài nhạc từ MySQL:', err.message);
+    fallbackDb.tracks = (fallbackDb.tracks || []).filter(t => String(t.track_id) !== String(id) && String(t.id) !== String(id));
     saveFallbackDb();
     res.json({ success: true });
+  }
+});
+
+// Xóa toàn bộ danh sách nhạc thiền
+app.delete('/api/tracks', async (req, res) => {
+  try {
+    // 1. Dọn sạch các tệp upload trong playlist
+    try {
+      const [rows] = await pool.query("SELECT url FROM playlist_tracks WHERE url LIKE '/uploads/%'");
+      if (rows && rows.length > 0) {
+        for (const row of rows) {
+          const fileName = path.basename(row.url);
+          const filePath = path.join(uploadsDir, fileName);
+          if (fs.existsSync(filePath)) {
+            await fs.promises.unlink(filePath).catch(() => {});
+          }
+        }
+      }
+    } catch (_) {}
+
+    // 2. Truncate hoặc Delete bảng MySQL
+    try {
+      await pool.query('TRUNCATE TABLE playlist_tracks');
+    } catch (_) {
+      try {
+        await pool.query('DELETE FROM playlist_tracks');
+      } catch (_) {}
+    }
+
+    fallbackDb.tracks = [];
+    saveFallbackDb();
+    console.log('🗑️ Đã xóa toàn bộ danh sách nhạc thiền khỏi hệ thống');
+    res.json({ success: true, message: 'Đã xóa toàn bộ danh sách bài nhạc thiền' });
+  } catch (err) {
+    fallbackDb.tracks = [];
+    saveFallbackDb();
+    res.json({ success: true, message: 'Đã xóa toàn bộ danh sách bài nhạc thiền (Fallback)' });
   }
 });
 
