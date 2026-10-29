@@ -8,10 +8,13 @@ import confetti from 'canvas-confetti';
 
 class PagodaMainApp {
   constructor() {
+    this.templeView = document.getElementById('temple-view');
     this.bgEl = document.getElementById('tam-bao-bg');
     this.mistCanvas = document.getElementById('mist-canvas');
     this.incenseCanvas = document.getElementById('incense-canvas');
     this.flareEl = document.getElementById('buddha-flare');
+    this.flareLoaded = false;
+    this.flareTargetOpacity = 70;
 
     // Nút điều khiển âm lượng
     this.btnVolumeToggle = document.getElementById('btn-volume-toggle');
@@ -168,7 +171,39 @@ class PagodaMainApp {
     if (!finalBg || finalBg === 'null' || finalBg === 'undefined') {
       finalBg = '/images/tam-bao-main.jpg';
     }
-    this.bgEl.style.backgroundImage = `url('${finalBg}')`;
+
+    const revealAltarAndFlare = () => {
+      this.bgEl.style.backgroundImage = `url('${finalBg}')`;
+      this.bgEl.classList.add('loaded');
+      if (this.templeView) this.templeView.classList.add('altar-ready');
+
+      // Khi ảnh bàn thờ Tam Bảo đã sẵn sàng, cho phép vầng hào quang Phật toả sáng đồng bộ
+      this.flareLoaded = true;
+      if (this.flareEl) {
+        this.flareEl.classList.add('loaded');
+        this.flareEl.style.visibility = 'visible';
+        this.flareEl.style.opacity = (this.flareTargetOpacity / 100).toString();
+      }
+    };
+
+    // Preload hình ảnh để đảm bảo ảnh nạp vào GPU/RAM trước khi hiển thị
+    const img = new Image();
+    img.src = finalBg;
+    if (img.complete) {
+      revealAltarAndFlare();
+    } else {
+      img.onload = () => revealAltarAndFlare();
+      img.onerror = () => {
+        if (finalBg !== '/images/tam-bao-main.jpg') {
+          finalBg = '/images/tam-bao-main.jpg';
+        }
+        revealAltarAndFlare();
+      };
+      // Giới hạn thời gian tối đa 500ms để tránh chậm trễ nếu mạng yếu
+      setTimeout(() => {
+        if (!this.flareLoaded) revealAltarAndFlare();
+      }, 500);
+    }
   }
 
   // 1.1 ÁP DỤNG CẤU HÌNH VĂN BẢN VÀ VỊ TRÍ NÚT TƯƠNG TÁC TỪ DATABASE
@@ -229,11 +264,21 @@ class PagodaMainApp {
 
   renderFlare(x, y, opacity, size) {
     if (!this.flareEl) return;
+    this.flareTargetOpacity = opacity !== undefined ? opacity : 70;
     this.flareEl.style.left = `${x}%`;
     this.flareEl.style.top = `${y}%`;
-    this.flareEl.style.opacity = (opacity / 100).toString();
     this.flareEl.style.width = `${size}px`;
     this.flareEl.style.height = `${size}px`;
+
+    // Chỉ hiển thị vầng hào quang khi ảnh bàn thờ Tam Bảo đã nạp thành công
+    if (this.flareLoaded) {
+      this.flareEl.classList.add('loaded');
+      this.flareEl.style.visibility = 'visible';
+      this.flareEl.style.opacity = (this.flareTargetOpacity / 100).toString();
+    } else {
+      this.flareEl.style.opacity = '0';
+      this.flareEl.style.visibility = 'hidden';
+    }
   }
 
   setupStorageSync() {

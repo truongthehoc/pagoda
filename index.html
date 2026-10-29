@@ -8,6 +8,27 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css" />
+    <!-- Tối ưu tải trước ảnh bàn thờ Tam Bảo ưu tiên cao nhất -->
+    <link rel="preload" as="image" href="/images/tam-bao-main.jpg" fetchpriority="high" />
+    <script>
+      (function() {
+        try {
+          var isMobile = window.innerWidth <= 768;
+          var customBg = localStorage.getItem('pagoda_altar_bg');
+          var customMobile = localStorage.getItem('pagoda_altar_mobile_bg') || localStorage.getItem('pagoda_altar_bg_mobile');
+          var usePc = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
+          var targetBg = (isMobile && !usePc && customMobile) ? customMobile : (customBg || '/images/tam-bao-main.jpg');
+          if (targetBg && targetBg !== '/images/tam-bao-main.jpg') {
+            var l = document.createElement('link');
+            l.rel = 'preload';
+            l.as = 'image';
+            l.href = targetBg;
+            l.fetchPriority = 'high';
+            document.head.appendChild(l);
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- KHÔNG GIAN CHÍNH ĐIỆN TAM BẢO 2D -->
