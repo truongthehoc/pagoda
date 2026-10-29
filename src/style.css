@@ -2464,236 +2464,182 @@ html, body {
   color: #64748b;
 }
 
-/* 8.4. HÌNH ẢNH BÀN THỜ TAM BẢO */
-.altar-preview-section {
+/* 8.4. HÌNH ẢNH BÀN THỜ TAM BẢO (PC & MOBILE TINH GỌN) */
+.altar-cards-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
 }
 
-.preview-frame {
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
-  aspect-ratio: 16 / 9;
+@media (max-width: 900px) {
+  .altar-cards-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.preview-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.preview-tag {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(15, 23, 42, 0.85);
-  color: #ffffff;
-  font-size: 0.7rem;
-  font-weight: 400;
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-
-.upload-zone {
-  border: 1px dashed #cbd5e1;
-  border-radius: 10px;
+.altar-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
   padding: 20px;
-  text-align: center;
-  background: #f8fafc;
-  margin-bottom: 14px;
-}
-
-.upload-icon {
-  margin-bottom: 8px;
-  color: #64748b;
   display: flex;
-  justify-content: center;
-}
-
-.upload-zone h4 {
-  font-size: 0.9rem;
-  color: #1e293b;
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-.upload-zone p {
-  font-size: 0.78rem;
-  color: #64748b;
-  margin-bottom: 14px;
-  font-weight: 400;
-}
-
-.btn-upload-file {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #af177a;
-  color: #ffffff;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.82rem;
-  font-weight: 400;
-  cursor: pointer;
+  flex-direction: column;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   transition: all 0.2s ease;
 }
 
-.btn-upload-file:hover {
-  background: #951268;
+.altar-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.altar-info-box {
-  background: #fafafa;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px 16px;
-}
-
-.altar-info-box h4 {
-  font-size: 0.82rem;
-  color: #334155;
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-.altar-info-box ul {
-  padding-left: 16px;
-  font-size: 0.78rem;
-  color: #64748b;
-  line-height: 1.6;
-  font-weight: 400;
-}
-
-.altar-preset-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.preset-card {
-  border-radius: 8px;
-  overflow: hidden;
-  border: 2px solid #e2e8f0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  aspect-ratio: 4 / 3;
-}
-
-.preset-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.preset-card .preset-name {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(15, 23, 42, 0.8);
-  color: #ffffff;
-  font-size: 0.7rem;
-  padding: 5px 6px;
-  text-align: center;
-  font-weight: 400;
-}
-
-.preset-card:hover {
-  border-color: #af177a;
-}
-
-.preset-card.active {
-  border-color: #af177a;
-}
-
-/* TAB 2: TAM BẢO MOBILE & DÙNG CHUNG PC */
-.altar-device-block {
-  margin-top: 14px;
-}
-
-.device-block-title {
+.altar-card-header {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
   margin-bottom: 16px;
 }
 
-.device-block-title .device-icon {
-  font-size: 1.4rem;
+.altar-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.device-block-title h4 {
-  font-size: 0.96rem;
+.altar-card-icon.pc-icon {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.altar-card-icon.mobile-icon {
+  background: #fdf2f8;
+  color: #af177a;
+}
+
+.altar-card-header h4 {
+  font-size: 0.95rem;
   font-weight: 600;
   color: #0f172a;
   margin: 0;
 }
 
-.mobile-altar-toggle-card {
+.altar-subtext {
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
+.altar-mobile-toggle-strip {
   background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px 18px;
-  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
 }
 
-.mobile-preview-layout {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.mobile-mockup-frame {
-  width: 220px;
-  height: 380px;
-  background: #1e293b;
-  border-radius: 32px;
-  padding: 10px;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22);
-  border: 4px solid #334155;
-  display: flex;
-  flex-direction: column;
-}
-
-.mockup-screen {
+.altar-card-preview {
   position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 24px;
+  background: #0f172a;
+  border-radius: 10px;
   overflow: hidden;
-  background: #000000;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-.mockup-screen img {
+.altar-card-preview.pc-preview-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.mockup-pill-tag {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(8px);
-  color: #fef08a;
-  font-size: 0.64rem;
-  font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 9999px;
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  white-space: nowrap;
+.mobile-preview-frame {
+  background: #0f172a;
 }
 
-.mobile-upload-controls {
-  flex: 1;
+.mobile-preview-inner {
+  position: relative;
+  height: 234px;
+  width: 132px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 3px solid #334155;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  background: #000;
+}
+
+.mobile-preview-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.altar-badge-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  color: #fef08a;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.mobile-preview-inner .altar-badge-pill {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.62rem;
+  padding: 2px 7px;
+}
+
+.altar-card-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-altar-upload {
+  width: 100%;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.altar-format-hint {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.mobile-using-pc-hint {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.altar-info-text {
+  font-size: 0.78rem;
+  color: #475569;
+  line-height: 1.45;
 }
 
 /* 8.5. DANH SÁCH NHẠC THIỀN & BẢNG NHẠC */
@@ -3281,7 +3227,7 @@ html, body {
     grid-template-columns: repeat(2, 1fr);
   }
   .stats-two-columns,
-  .altar-preview-section,
+  .altar-cards-grid,
   .bell-settings-grid,
   .flare-settings-grid {
     grid-template-columns: 1fr;
@@ -3308,9 +3254,6 @@ html, body {
   }
   .admin-main-content {
     padding: 16px;
-  }
-  .altar-preset-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 

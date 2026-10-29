@@ -7,9 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/admin-BlzQ0qb4.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/analytics-B6-BBnkd.js">
-    <link rel="stylesheet" crossorigin href="/assets/analytics-DjrQtYG9.css">
+    <script type="module" crossorigin src="/assets/admin-Cl2bWi_m.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/analytics-DLp6gFqY.js">
+    <link rel="stylesheet" crossorigin href="/assets/analytics-DstqPKxt.css">
   </head>
   <body class="admin-light-body">
 
@@ -407,140 +407,101 @@
           <div class="modern-card">
             <div class="card-header-row">
               <div>
-                <h3>Cập nhật hình ảnh bàn thờ Tam Bảo</h3>
-                <p class="text-muted">Hình ảnh được dùng làm phông nền 2D chính điện khi khách thập phương chiêm bái</p>
+                <h3>Hình Ảnh Bàn Thờ Tam Bảo</h3>
+                <p class="text-muted">Cập nhật hình ảnh tôn tượng Tam Bảo hiển thị trang nghiêm cho giao diện Máy tính (PC) và Điện thoại (Mobile)</p>
               </div>
             </div>
 
-            <!-- PHẦN 1: HÌNH ẢNH GIAO DIỆN MÁY TÍNH (PC / DESKTOP) -->
-            <div class="altar-device-block">
-              <div class="device-block-title">
-                <span class="device-icon">💻</span>
-                <div>
-                  <h4>1. Hình ảnh hiển thị trên Máy tính (PC / Desktop)</h4>
-                  <p class="text-muted">Hiển thị chuẩn màn hình ngang tỉ lệ 16:9 sắc nét, trang nghiêm</p>
-                </div>
-              </div>
-
-              <div class="altar-preview-section">
-                <div class="preview-frame">
-                  <img id="altar-current-preview" src="/images/tam-bao-main.jpg" alt="Bàn thờ Tam Bảo hiện tại trên PC" />
-                  <div class="preview-tag">ẢNH PC HIỆN TẠI</div>
-                </div>
-
-                <div class="altar-upload-options">
-                  <div class="upload-zone">
-                    <div class="upload-icon">
-                      <svg class="mono-svg-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                      </svg>
-                    </div>
-                    <h4>Tải ảnh bàn thờ PC từ máy tính</h4>
-                    <p>Khuyến nghị tỉ lệ 16:9, định dạng JPG, PNG, WEBP</p>
-                    <label class="btn-upload-file">
-                      <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                      </svg>
-                      <span>Chọn tệp ảnh PC</span>
-                      <input type="file" id="input-altar-file" accept="image/*" style="display: none;" />
-                    </label>
+            <!-- LƯỚI 2 THẺ GỌN GÀNG CHO PC VÀ MOBILE -->
+            <div class="altar-cards-grid">
+              
+              <!-- THẺ 1: HÌNH ẢNH MÁY TÍNH (PC) -->
+              <div class="altar-card">
+                <div class="altar-card-header">
+                  <div class="altar-card-icon pc-icon">
+                    <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
                   </div>
-                </div>
-              </div>
-
-              <!-- Thư viện ảnh mẫu PC -->
-              <div style="margin-top: 18px;">
-                <h5 style="font-size: 0.88rem; color: #334155; margin-bottom: 10px; font-weight: 600;">Hoặc chọn từ thư viện ảnh Tam Bảo mẫu cho PC:</h5>
-                <div class="altar-preset-grid" id="pc-presets-grid">
-                  <div class="preset-card active" data-src="/images/tam-bao-main.jpg">
-                    <img src="/images/tam-bao-main.jpg" alt="Tam Bảo Uy Nghiêm" />
-                    <div class="preset-name">Tam Bảo Chùa Uy Nghiêm (Mặc định)</div>
-                  </div>
-                  <div class="preset-card" data-src="/images/tam-bao-1.jpg">
-                    <img src="/images/tam-bao-1.jpg" alt="Phật Thích Ca Dát Vàng" />
-                    <div class="preset-name">Đức Phật Thích Ca Dát Vàng</div>
-                  </div>
-                  <div class="preset-card" data-src="/images/tam-bao-2.jpg">
-                    <img src="/images/tam-bao-2.jpg" alt="Chính Điện Cổ Tự" />
-                    <div class="preset-name">Chính Điện Cổ Tự Trầm Mặc</div>
-                  </div>
-                  <div class="preset-card" data-src="/images/tam-bao-3.jpg">
-                    <img src="/images/tam-bao-3.jpg" alt="Tam Bảo Kim Thân" />
-                    <div class="preset-name">Tam Thế Phật Kim Thân</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- PHẦN 2: HÌNH ẢNH GIAO DIỆN ĐIỆN THOẠI (MOBILE) -->
-            <div class="altar-device-block mobile-device-block" style="margin-top: 36px; padding-top: 28px; border-top: 1.5px dashed #e2e8f0;">
-              <div class="device-block-title">
-                <span class="device-icon">📱</span>
-                <div>
-                  <h4>2. Hình ảnh hiển thị trên Điện thoại (Mobile)</h4>
-                  <p class="text-muted">Tùy chọn dùng chung ảnh PC hoặc tải ảnh chụp dọc riêng phù hợp với màn hình điện thoại</p>
-                </div>
-              </div>
-
-              <!-- Switch tùy chọn dùng chung ảnh PC -->
-              <div class="mobile-altar-toggle-card">
-                <div class="toggle-switch-wrapper">
-                  <input type="checkbox" id="cb-use-pc-for-mobile" checked />
-                  <label for="cb-use-pc-for-mobile" class="toggle-switch"></label>
                   <div>
-                    <span class="toggle-status-text" style="font-weight: 600;">Dùng chung hình ảnh của Máy tính (PC) cho điện thoại</span>
-                    <p class="text-muted" style="font-size: 0.78rem; margin: 2px 0 0 0;">Hệ thống sẽ tự động canh giữa ảnh PC trên màn hình điện thoại. Bỏ chọn nếu bạn muốn tải lên ảnh dọc riêng biệt.</p>
+                    <h4>Ảnh Cho Máy Tính (PC)</h4>
+                    <span class="altar-subtext">Khung hình ngang (tỉ lệ 16:9)</span>
                   </div>
+                </div>
+
+                <div class="altar-card-preview pc-preview-frame">
+                  <img id="altar-current-preview" src="/images/tam-bao-main.jpg" alt="Ảnh Tam Bảo PC" />
+                  <span class="altar-badge-pill">Ảnh PC Hiện Tại</span>
+                </div>
+
+                <div class="altar-card-actions">
+                  <label class="btn-primary-action btn-altar-upload">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Tải Ảnh Mới Cho PC</span>
+                    <input type="file" id="input-altar-file" accept="image/*" style="display: none;" />
+                  </label>
+                  <span class="altar-format-hint">Hỗ trợ JPG, PNG, WEBP (tự động tối ưu dung lượng)</span>
                 </div>
               </div>
 
-              <!-- Khung cấu hình riêng cho Mobile (ẩn khi chọn dùng chung) -->
-              <div id="mobile-altar-custom-box" class="mobile-custom-box" style="display: none; margin-top: 18px;">
-                <div class="mobile-preview-layout">
-                  <!-- Phone Mockup Preview -->
-                  <div class="mobile-mockup-frame">
-                    <div class="mockup-screen">
-                      <img id="altar-mobile-preview" src="/images/tam-bao-main.jpg" alt="Bàn thờ Tam Bảo trên điện thoại" />
-                      <div class="mockup-pill-tag">XEM TRƯỚC MOBILE</div>
-                    </div>
+              <!-- THẺ 2: HÌNH ẢNH ĐIỆN THOẠI (MOBILE) -->
+              <div class="altar-card">
+                <div class="altar-card-header">
+                  <div class="altar-card-icon mobile-icon">
+                    <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
                   </div>
-
-                  <!-- Upload Zone cho Mobile -->
-                  <div class="mobile-upload-controls">
-                    <div class="upload-zone">
-                      <div class="upload-icon">
-                        <svg class="mono-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                          <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                        </svg>
-                      </div>
-                      <h4>Tải ảnh chụp dọc riêng cho Điện Thoại</h4>
-                      <p>Khuyến nghị tỉ lệ 9:16 hoặc 3:4 (ảnh chụp dọc thẳng bàn thờ)</p>
-                      <label class="btn-upload-file">
-                        <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="17 8 12 3 7 8"></polyline>
-                          <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <span>Chọn tệp ảnh Mobile</span>
-                        <input type="file" id="input-altar-mobile-file" accept="image/*" style="display: none;" />
-                      </label>
-                    </div>
-
-                    <div class="altar-info-box" style="margin-top: 14px;">
-                      <h4>Gợi ý chụp ảnh điện thoại đẹp:</h4>
-                      <ul>
-                        <li>Cầm máy ảnh đứng (chụp dọc), đặt máy ngay chính giữa bàn thờ Tam Bảo.</li>
-                        <li>Đảm bảo thấy trọn vẹn tôn tượng Phật và bát nhang phía trước.</li>
-                      </ul>
-                    </div>
+                  <div style="flex: 1;">
+                    <h4>Ảnh Cho Điện Thoại (Mobile)</h4>
+                    <span class="altar-subtext">Khung hình dọc hoặc dùng chung ảnh PC</span>
                   </div>
                 </div>
+
+                <!-- Nút gạt dùng chung ảnh PC -->
+                <div class="altar-mobile-toggle-strip">
+                  <div class="toggle-switch-wrapper">
+                    <input type="checkbox" id="cb-use-pc-for-mobile" checked />
+                    <label for="cb-use-pc-for-mobile" class="toggle-switch"></label>
+                    <span class="toggle-status-text" style="font-weight: 600;">Dùng chung hình ảnh của Máy tính (PC)</span>
+                  </div>
+                </div>
+
+                <!-- Khung xem trước điện thoại -->
+                <div class="altar-card-preview mobile-preview-frame">
+                  <div class="mobile-preview-inner">
+                    <img id="altar-mobile-preview" src="/images/tam-bao-main.jpg" alt="Ảnh Tam Bảo Mobile" />
+                    <span class="altar-badge-pill" id="mobile-preview-badge">Đang dùng ảnh PC</span>
+                  </div>
+                </div>
+
+                <!-- Vùng nút tải ảnh riêng cho Mobile (ẩn khi chọn dùng chung PC) -->
+                <div class="altar-card-actions" id="mobile-altar-custom-box" style="display: none;">
+                  <label class="btn-primary-action btn-altar-upload">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Tải Ảnh Riêng Cho Mobile</span>
+                    <input type="file" id="input-altar-mobile-file" accept="image/*" style="display: none;" />
+                  </label>
+                  <span class="altar-format-hint">Khuyến nghị ảnh chụp dọc (tỉ lệ 9:16 hoặc 3:4)</span>
+                </div>
+
+                <!-- Ghi chú thân thiện khi đang dùng chung PC -->
+                <div class="altar-card-actions mobile-using-pc-hint" id="mobile-using-pc-hint">
+                  <span class="altar-info-text">💡 Điện thoại đang tự động canh giữa ảnh PC. Hãy gạt tắt công tắc ở trên nếu bạn muốn tải ảnh chụp dọc riêng.</span>
+                </div>
               </div>
+
             </div>
 
           </div>

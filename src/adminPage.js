@@ -40,11 +40,12 @@ class ModernAdminApp {
     // Tab 2: Ảnh bàn thờ (PC & Mobile)
     this.currentAltarPreview = document.getElementById('altar-current-preview');
     this.inputAltarFile = document.getElementById('input-altar-file');
-    this.presetAltarCards = document.querySelectorAll('.preset-card');
     this.cbUsePcForMobile = document.getElementById('cb-use-pc-for-mobile');
     this.mobileAltarCustomBox = document.getElementById('mobile-altar-custom-box');
     this.altarMobilePreview = document.getElementById('altar-mobile-preview');
     this.inputAltarMobileFile = document.getElementById('input-altar-mobile-file');
+    this.mobilePreviewBadge = document.getElementById('mobile-preview-badge');
+    this.mobileUsingPcHint = document.getElementById('mobile-using-pc-hint');
 
     // Tab 3: Nhạc thiền
     this.musicTableBody = document.getElementById('music-table-body');
@@ -419,7 +420,7 @@ class ModernAdminApp {
   }
 
   // =========================================================================
-  // 4. TAB 2: CẬP NHẬT HÌNH ẢNH TAM BẢO (PC & MOBILE)
+  // 4. TAB 2: CẬP NHẬT HÌNH ẢNH TAM BẢO (PC & MOBILE TINH GỌN)
   // =========================================================================
   async initAltarTab() {
     let currentBg = '/images/tam-bao-main.jpg';
@@ -443,33 +444,36 @@ class ModernAdminApp {
       usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
     }
 
+    const updateMobileUI = (usingPc) => {
+      if (this.mobileAltarCustomBox) {
+        this.mobileAltarCustomBox.style.display = usingPc ? 'none' : 'flex';
+      }
+      if (this.mobileUsingPcHint) {
+        this.mobileUsingPcHint.style.display = usingPc ? 'flex' : 'none';
+      }
+      if (this.mobilePreviewBadge) {
+        this.mobilePreviewBadge.textContent = usingPc ? 'Đang dùng ảnh PC' : 'Ảnh Mobile riêng';
+      }
+      if (this.altarMobilePreview) {
+        this.altarMobilePreview.src = usingPc ? (this.currentAltarPreview?.src || currentBg) : currentMobileBg;
+      }
+    };
+
     if (this.currentAltarPreview) {
       this.currentAltarPreview.src = currentBg;
-    }
-
-    if (this.altarMobilePreview) {
-      this.altarMobilePreview.src = usePcForMobile ? currentBg : currentMobileBg;
     }
 
     if (this.cbUsePcForMobile) {
       this.cbUsePcForMobile.checked = usePcForMobile;
     }
 
-    if (this.mobileAltarCustomBox) {
-      this.mobileAltarCustomBox.style.display = usePcForMobile ? 'none' : 'block';
-    }
+    updateMobileUI(usePcForMobile);
 
     // Toggle switch dùng chung ảnh PC cho Mobile
     if (this.cbUsePcForMobile) {
       this.cbUsePcForMobile.addEventListener('change', async () => {
         const checked = this.cbUsePcForMobile.checked;
-        if (this.mobileAltarCustomBox) {
-          this.mobileAltarCustomBox.style.display = checked ? 'none' : 'block';
-        }
-
-        if (this.altarMobilePreview) {
-          this.altarMobilePreview.src = checked ? (this.currentAltarPreview?.src || currentBg) : currentMobileBg;
-        }
+        updateMobileUI(checked);
 
         try {
           await fetch('/api/settings/altar', {
@@ -481,42 +485,10 @@ class ModernAdminApp {
 
         localStorage.setItem('pagoda_use_pc_for_mobile', checked ? 'true' : 'false');
         this.showToast(checked
-          ? 'Đã chọn dùng chung hình ảnh PC cho thiết bị di động'
-          : 'Đã bật chế độ dùng hình ảnh riêng biệt cho thiết bị di động');
+          ? 'Đã chọn dùng chung hình ảnh PC cho điện thoại'
+          : 'Đã mở chế độ tải ảnh riêng cho điện thoại');
       });
     }
-
-    // Preset cards cho PC
-    this.presetAltarCards.forEach(card => {
-      const src = card.getAttribute('data-src');
-      if (src === currentBg) {
-        card.classList.add('active');
-      } else {
-        card.classList.remove('active');
-      }
-
-      card.addEventListener('click', async () => {
-        this.presetAltarCards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-
-        // Lưu vào MySQL
-        try {
-          await fetch('/api/settings/altar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ bg_image_url: src })
-          });
-        } catch (e) {}
-
-        localStorage.setItem('pagoda_altar_bg', src);
-        if (this.currentAltarPreview) this.currentAltarPreview.src = src;
-        if (this.cbUsePcForMobile?.checked && this.altarMobilePreview) {
-          this.altarMobilePreview.src = src;
-        }
-
-        this.showToast(`Đã lưu ảnh bàn thờ PC vào MySQL: ${card.querySelector('.preset-name')?.textContent || 'Mẫu mới'}`);
-      });
-    });
 
     // Tải ảnh PC từ máy tính lên Server & lưu vào MySQL
     if (this.inputAltarFile) {
@@ -536,6 +508,7 @@ class ModernAdminApp {
           if (uploadRes.ok) {
             const uploadData = await uploadRes.json();
             const uploadedUrl = uploadData.url;
+            currentBg = uploadedUrl;
 
             await fetch('/api/settings/altar', {
               method: 'POST',
@@ -543,11 +516,10 @@ class ModernAdminApp {
               body: JSON.stringify({ bg_image_url: uploadedUrl })
             });
 
-            this.presetAltarCards.forEach(c => c.classList.remove('active'));
             localStorage.setItem('pagoda_altar_bg', uploadedUrl);
             if (this.currentAltarPreview) this.currentAltarPreview.src = uploadedUrl;
-            if (this.cbUsePcForMobile?.checked && this.altarMobilePreview) {
-              this.altarMobilePreview.src = uploadedUrl;
+            if (this.cbUsePcForMobile?.checked) {
+              updateMobileUI(true);
             }
 
             const saveMsg = uploadData.savedPercent > 0 
@@ -592,8 +564,7 @@ class ModernAdminApp {
             });
 
             if (this.cbUsePcForMobile) this.cbUsePcForMobile.checked = false;
-            if (this.mobileAltarCustomBox) this.mobileAltarCustomBox.style.display = 'block';
-            if (this.altarMobilePreview) this.altarMobilePreview.src = mobileUrl;
+            updateMobileUI(false);
 
             localStorage.setItem('pagoda_altar_mobile_bg', mobileUrl);
             localStorage.setItem('pagoda_use_pc_for_mobile', 'false');
