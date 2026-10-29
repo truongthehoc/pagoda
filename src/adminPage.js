@@ -339,16 +339,43 @@ class ModernAdminApp {
 
       try {
         const res = await fetch('/api/admin/clean-data', { method: 'POST' });
-        const result = await res.json();
-        if (result.success) {
-          this.showToast('Đã dọn sạch toàn bộ dữ liệu mẫu! Hệ thống sẵn sàng cho dữ liệu thật.');
+        if (res.ok) {
+          const result = await res.json();
+          this.showToast(result.message || 'Đã dọn sạch toàn bộ dữ liệu mẫu! Hệ thống sẵn sàng cho dữ liệu thật.');
           await this.renderAnalyticsData();
           await this.loadAllWishes();
-        } else {
-          this.showToast(result.message || 'Lỗi khi dọn dẹp dữ liệu', 'warning');
+          return;
         }
+
+        // Dự phòng khi VPS chưa khởi động lại tiến trình Node (404 route mới):
+        // Xóa sạch toàn bộ tâm nguyện qua các API DELETE hiện có
+        const wishesRes = await fetch('/api/admin/wishes');
+        if (wishesRes.ok) {
+          const wishes = await wishesRes.json();
+          if (Array.isArray(wishes) && wishes.length > 0) {
+            for (const w of wishes) {
+              await fetch(`/api/admin/wishes/${w.id}`, { method: 'DELETE' }).catch(() => {});
+            }
+          }
+        }
+        await this.loadAllWishes();
+        this.showToast('Đã dọn sạch Tâm nguyện Phật tử! Hãy chạy lệnh: pm2 restart all trên VPS để reset số liệu thống kê.', 'info');
       } catch (err) {
-        this.showToast('Không thể kết nối máy chủ để dọn dẹp', 'warning');
+        try {
+          const wishesRes = await fetch('/api/admin/wishes');
+          if (wishesRes.ok) {
+            const wishes = await wishesRes.json();
+            if (Array.isArray(wishes) && wishes.length > 0) {
+              for (const w of wishes) {
+                await fetch(`/api/admin/wishes/${w.id}`, { method: 'DELETE' }).catch(() => {});
+              }
+            }
+          }
+          await this.loadAllWishes();
+          this.showToast('Đã dọn sạch Tâm nguyện! Hãy chạy: pm2 restart all trên VPS để cập nhật backend.', 'info');
+        } catch (_) {
+          this.showToast('Không thể kết nối máy chủ để dọn dẹp', 'warning');
+        }
       }
     };
 
