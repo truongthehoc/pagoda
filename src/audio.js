@@ -11,16 +11,23 @@ class SoundEngine {
     this.bellIntervalTimer = null;
     this.synthCycleTimer = null;
     this.initialized = false;
+    this.isMobileUnlocked = false;
 
     // Âm lượng mặc định (0.0 đến 1.0)
     this.volume = parseFloat(localStorage.getItem('pagoda_volume') || '0.75');
 
-    // Cấu hình chuông chùa
+    // Cấu hình chuông chùa (Đại Hồng Chung)
     this.bellConfig = {
       customUrl: '',
       autoPlay: true,
       intervalSeconds: 60,
       volume: 0.85
+    };
+
+    // Cấu hình tiếng Mõ chùa (Wooden Fish)
+    this.woodenFishConfig = {
+      customUrl: '',
+      volume: 0.90
     };
 
     // Custom audio player cho nhạc thiền
@@ -32,6 +39,9 @@ class SoundEngine {
 
     // Custom bell audio player cho chuông
     this.customBellAudio = new Audio();
+
+    // Custom wooden fish audio player cho tiếng mõ
+    this.customWoodenFishAudio = new Audio();
 
     // Danh sách nhạc thiền
     this.playlist = [
@@ -55,6 +65,23 @@ class SoundEngine {
     ];
     this.currentTrackIndex = 0;
 
+    // Lắng nghe sự kiện quay lại trang trên Mobile để tiếp tục âm thanh
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && this.isAmbientPlaying) {
+          this.ensureContext();
+          if (this.customAudio && this.customAudio.paused && !this.isMuted) {
+            this.customAudio.play().catch(() => {});
+          }
+        }
+      });
+      window.addEventListener('pageshow', () => {
+        if (this.isAmbientPlaying) {
+          this.ensureContext();
+        }
+      });
+    }
+
     // Tự động đồng bộ từ MySQL Database
     this.syncFromDatabase();
   }
@@ -68,7 +95,7 @@ class SoundEngine {
 
       if (tracksRes.ok) {
         const tracks = await tracksRes.json();
-        if (Array.isArray(tracks)) {
+        if (Array.isArray(tracks) && tracks.length > 0) {
           this.playlist = tracks.map(t => ({
             id: t.track_id || t.id,
             title: t.title,
@@ -78,9 +105,6 @@ class SoundEngine {
           if (this.currentTrackIndex >= this.playlist.length) {
             this.currentTrackIndex = 0;
           }
-          if (this.playlist.length === 0 && this.isAmbientPlaying) {
-            this.stopAmbient();
-          }
         }
       }
 
@@ -88,9 +112,13 @@ class SoundEngine {
         const bell = await bellRes.json();
         this.bellConfig = {
           customUrl: bell.custom_url || '',
-          autoPlay: Boolean(bell.auto_play),
+          autoPlay: bell.auto_play !== undefined ? Boolean(bell.auto_play) : true,
           intervalSeconds: bell.interval_seconds || 60,
-          volume: bell.volume || 0.85
+          volume: bell.volume !== undefined ? parseFloat(bell.volume) : 0.85
+        };
+        this.woodenFishConfig = {
+          customUrl: bell.wooden_fish_url || '',
+          volume: bell.wooden_fish_volume !== undefined ? parseFloat(bell.wooden_fish_volume) : 0.90
         };
         this.restartBellScheduler();
       }
@@ -120,8 +148,35 @@ class SoundEngine {
   ensureContext() {
     if (!this.initialized) this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
+  }
+
+  // Tối ưu hóa đặc biệt mở khóa âm thanh trên các trình duyệt di động (iOS Safari, Android Chrome)
+  unlockMobileAudio() {
+    this.ensureContext();
+    if (this.isMobileUnlocked) return;
+    this.isMobileUnlocked = true;
+
+    // Mồi âm thanh trống cho thẻ HTML5 Audio để vượt qua rào cản Autoplay trên Mobile
+    const primeAudio = (audioEl) => {
+      if (!audioEl) return;
+      try {
+        const playPromise = audioEl.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              audioEl.pause();
+              audioEl.currentTime = 0;
+            })
+            .catch(() => {});
+        }
+      } catch (_) {}
+    };
+
+    primeAudio(this.customAudio);
+    primeAudio(this.customBellAudio);
+    primeAudio(this.customWoodenFishAudio);
   }
 
   // ĐIỀU CHỈNH ÂM LƯỢNG (TĂNG / GIẢM TỪ 0 ĐẾN 100%)
@@ -138,6 +193,7 @@ class SoundEngine {
       }
       this.customAudio.volume = this.volume * 0.75;
       this.customBellAudio.volume = this.volume * (this.bellConfig.volume || 0.85);
+      this.customWoodenFishAudio.volume = this.volume * (this.woodenFishConfig.volume || 0.90);
     }
     return this.volume;
   }
@@ -151,6 +207,7 @@ class SoundEngine {
     }
     this.customAudio.volume = this.isMuted ? 0 : this.volume * 0.75;
     this.customBellAudio.volume = this.isMuted ? 0 : this.volume * (this.bellConfig.volume || 0.85);
+    this.customWoodenFishAudio.volume = this.isMuted ? 0 : this.volume * (this.woodenFishConfig.volume || 0.90);
     return !this.isMuted;
   }
 
@@ -283,14 +340,30 @@ class SoundEngine {
   playBell(pitchScale = 1.0) {
     this.ensureContext();
 
+    // Nếu người dùng có tệp chuông riêng, thử phát tệp
     if (this.bellConfig.customUrl) {
-      this.customBellAudio.src = this.bellConfig.customUrl;
-      this.customBellAudio.currentTime = 0;
-      this.customBellAudio.volume = this.isMuted ? 0 : this.volume * (this.bellConfig.volume || 0.85);
-      this.customBellAudio.play().catch(() => {});
-      return;
+      try {
+        this.customBellAudio.src = this.bellConfig.customUrl;
+        this.customBellAudio.currentTime = 0;
+        this.customBellAudio.volume = this.isMuted ? 0 : this.volume * (this.bellConfig.volume || 0.85);
+        const p = this.customBellAudio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            // Dự phòng phát tiếng chuông tổng hợp nếu tệp lỗi hoặc bị chặn trên mobile
+            this.playSynthesizedBell(pitchScale);
+          });
+        }
+        return;
+      } catch (_) {
+        this.playSynthesizedBell(pitchScale);
+        return;
+      }
     }
 
+    this.playSynthesizedBell(pitchScale);
+  }
+
+  playSynthesizedBell(pitchScale = 1.0) {
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
     const baseFreq = 130.81 * pitchScale;
@@ -311,7 +384,7 @@ class SoundEngine {
       osc.frequency.setValueAtTime(baseFreq * p.ratio, now);
 
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(p.amp * 0.18, now + 0.04);
+      gain.gain.linearRampToValueAtTime(p.amp * 0.18 * (this.bellConfig.volume || 0.85), now + 0.04);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
 
       osc.connect(gain);
@@ -364,9 +437,33 @@ class SoundEngine {
     });
   }
 
-  // Tiếng mõ chùa (Wooden Fish) thanh tịnh, ấm áp khi vái lạy Tam Bảo
+  // Tiếng mõ chùa (Wooden Fish) thanh tịnh, ấm áp - Phát khi bấm Thắp Hương, Rút Thẻ hoặc vái lạy
   playWoodenFish() {
     this.ensureContext();
+
+    // Nếu người dùng tải lên tệp âm thanh mõ riêng, phát tệp
+    if (this.woodenFishConfig.customUrl) {
+      try {
+        this.customWoodenFishAudio.src = this.woodenFishConfig.customUrl;
+        this.customWoodenFishAudio.currentTime = 0;
+        this.customWoodenFishAudio.volume = this.isMuted ? 0 : this.volume * (this.woodenFishConfig.volume || 0.90);
+        const p = this.customWoodenFishAudio.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            this.playSynthesizedWoodenFish();
+          });
+        }
+        return;
+      } catch (_) {
+        this.playSynthesizedWoodenFish();
+        return;
+      }
+    }
+
+    this.playSynthesizedWoodenFish();
+  }
+
+  playSynthesizedWoodenFish() {
     if (!this.ctx) return;
     const now = this.ctx.currentTime;
 
@@ -377,8 +474,9 @@ class SoundEngine {
     osc.frequency.setValueAtTime(580, now);
     osc.frequency.exponentialRampToValueAtTime(320, now + 0.09);
 
+    const fishVol = (this.woodenFishConfig.volume || 0.90) * 0.28;
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.25, now + 0.005);
+    gain.gain.linearRampToValueAtTime(fishVol, now + 0.005);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
 
     const filter = this.ctx.createBiquadFilter();
@@ -460,30 +558,46 @@ class SoundEngine {
     return false;
   }
 
-  async updateBellSettingsInDatabase(customUrl, autoPlay, intervalSeconds, volume) {
+  async updateSystemSoundSettingsInDatabase(bellUrl, autoPlay, intervalSeconds, bellVolume, woodenFishUrl, woodenFishVolume) {
     try {
       const res = await fetch('/api/bell', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          custom_url: customUrl,
+          custom_url: bellUrl,
           auto_play: autoPlay,
           interval_seconds: intervalSeconds,
-          volume: volume
+          volume: bellVolume,
+          wooden_fish_url: woodenFishUrl,
+          wooden_fish_volume: woodenFishVolume
         })
       });
       if (res.ok) {
-        this.bellConfig.customUrl = customUrl;
+        this.bellConfig.customUrl = bellUrl;
         this.bellConfig.autoPlay = Boolean(autoPlay);
         this.bellConfig.intervalSeconds = parseInt(intervalSeconds, 10) || 60;
-        this.bellConfig.volume = parseFloat(volume) || 0.85;
+        this.bellConfig.volume = parseFloat(bellVolume) || 0.85;
+        this.woodenFishConfig.customUrl = woodenFishUrl || '';
+        this.woodenFishConfig.volume = parseFloat(woodenFishVolume) || 0.90;
         this.restartBellScheduler();
         return true;
       }
     } catch (e) {
-      console.warn('Lỗi lưu chuông vào MySQL:', e);
+      console.warn('Lỗi lưu âm thanh hệ thống vào MySQL:', e);
     }
     return false;
+  }
+
+  // Tương thích ngược với tên hàm cũ
+  async updateBellSettingsInDatabase(customUrl, autoPlay, intervalSeconds, volume) {
+    return this.updateSystemSoundSettingsInDatabase(
+      customUrl,
+      autoPlay,
+      intervalSeconds,
+      volume,
+      this.woodenFishConfig.customUrl,
+      this.woodenFishConfig.volume
+    );
   }
 }
 

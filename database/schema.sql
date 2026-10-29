@@ -24,6 +24,8 @@ ON DUPLICATE KEY UPDATE fullname = VALUES(fullname);
 CREATE TABLE IF NOT EXISTS altar_settings (
   id INT PRIMARY KEY DEFAULT 1,
   bg_image_url TEXT NOT NULL,
+  bg_image_mobile_url TEXT DEFAULT NULL,
+  use_pc_for_mobile TINYINT(1) DEFAULT 1,
   flare_x FLOAT DEFAULT 50.0,
   flare_y FLOAT DEFAULT 26.5,
   flare_opacity FLOAT DEFAULT 70.0,
@@ -31,8 +33,8 @@ CREATE TABLE IF NOT EXISTS altar_settings (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO altar_settings (id, bg_image_url, flare_x, flare_y, flare_opacity, flare_size)
-VALUES (1, '/images/tam-bao-main.jpg', 50.0, 26.5, 70.0, 480.0)
+INSERT INTO altar_settings (id, bg_image_url, bg_image_mobile_url, use_pc_for_mobile, flare_x, flare_y, flare_opacity, flare_size)
+VALUES (1, '/images/tam-bao-main.jpg', NULL, 1, 50.0, 26.5, 70.0, 480.0)
 ON DUPLICATE KEY UPDATE id = 1;
 
 -- 3. BẢNG DANH SÁCH NHẠC THIỀN PHÁT LẦN LƯỢT
@@ -52,18 +54,20 @@ INSERT INTO playlist_tracks (track_id, title, type, url, sort_order) VALUES
 ('track-synth', 'Sóng Âm Thiền Định & Bát Xoay Tây Tạng (Tự Nhiên)', 'synth', '', 3)
 ON DUPLICATE KEY UPDATE title = VALUES(title);
 
--- 4. BẢNG CẤU HÌNH CHUÔNG CHÙA
+-- 4. BẢNG CẤU HÌNH ÂM THANH HỆ THỐNG (CHUÔNG & MÕ)
 CREATE TABLE IF NOT EXISTS bell_settings (
   id INT PRIMARY KEY DEFAULT 1,
   custom_url MEDIUMTEXT DEFAULT NULL,
   auto_play TINYINT(1) DEFAULT 1,
   interval_seconds INT DEFAULT 60,
   volume FLOAT DEFAULT 0.85,
+  wooden_fish_url VARCHAR(500) DEFAULT '',
+  wooden_fish_volume FLOAT DEFAULT 0.90,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO bell_settings (id, custom_url, auto_play, interval_seconds, volume)
-VALUES (1, '', 1, 60, 0.85)
+INSERT INTO bell_settings (id, custom_url, auto_play, interval_seconds, volume, wooden_fish_url, wooden_fish_volume)
+VALUES (1, '', 1, 60, 0.85, '', 0.90)
 ON DUPLICATE KEY UPDATE id = 1;
 
 -- 5. BẢNG NHẬT KÝ HOẠT ĐỘNG THỜI GIAN THỰC

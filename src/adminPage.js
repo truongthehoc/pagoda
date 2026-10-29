@@ -15,9 +15,15 @@ class ModernAdminApp {
     this.loginErrorAlert = document.getElementById('login-error-msg');
     this.loginErrorText = document.getElementById('login-error-text');
 
-    // Layout chính
+    // Layout chính & Header
     this.appLayout = document.getElementById('admin-app-layout');
     this.btnLogout = document.getElementById('btn-admin-logout');
+    this.userDropdownWrap = document.getElementById('admin-user-dropdown-wrap');
+    this.userDropdownToggle = document.getElementById('btn-user-dropdown-toggle');
+    this.userDropdownMenu = document.getElementById('admin-user-dropdown-menu');
+    this.topbarUserFullname = document.getElementById('topbar-user-fullname');
+    this.dropdownUserFullname = document.getElementById('dropdown-user-fullname');
+    this.dropdownUserEmail = document.getElementById('dropdown-user-email');
 
     // Sidebar & Navigation
     this.navItems = document.querySelectorAll('.sidebar-nav .nav-item');
@@ -31,10 +37,14 @@ class ModernAdminApp {
     this.barChartContainer = document.getElementById('analytics-bar-chart');
     this.logsListContainer = document.getElementById('analytics-logs-list');
 
-    // Tab 2: Ảnh bàn thờ
+    // Tab 2: Ảnh bàn thờ (PC & Mobile)
     this.currentAltarPreview = document.getElementById('altar-current-preview');
     this.inputAltarFile = document.getElementById('input-altar-file');
     this.presetAltarCards = document.querySelectorAll('.preset-card');
+    this.cbUsePcForMobile = document.getElementById('cb-use-pc-for-mobile');
+    this.mobileAltarCustomBox = document.getElementById('mobile-altar-custom-box');
+    this.altarMobilePreview = document.getElementById('altar-mobile-preview');
+    this.inputAltarMobileFile = document.getElementById('input-altar-mobile-file');
 
     // Tab 3: Nhạc thiền
     this.musicTableBody = document.getElementById('music-table-body');
@@ -44,7 +54,7 @@ class ModernAdminApp {
     this.inputMusicFile = document.getElementById('input-music-file');
     this.btnAddMusicUrl = document.getElementById('btn-add-music-url');
 
-    // Tab 4: Chuông chùa
+    // Tab 4: Âm thanh hệ thống (Chuông & Mõ)
     this.bellCustomUrl = document.getElementById('bell-custom-url');
     this.bellCustomFile = document.getElementById('bell-custom-file');
     this.bellAutoplayToggle = document.getElementById('bell-autoplay-toggle');
@@ -53,6 +63,13 @@ class ModernAdminApp {
     this.bellVolumeLabel = document.getElementById('bell-volume-label');
     this.intervalChips = document.querySelectorAll('.btn-interval-chip');
     this.btnTestBell = document.getElementById('btn-test-bell');
+
+    this.woodenFishCustomUrl = document.getElementById('wooden-fish-custom-url');
+    this.woodenFishCustomFile = document.getElementById('wooden-fish-custom-file');
+    this.woodenFishVolumeSlider = document.getElementById('wooden-fish-volume-slider');
+    this.woodenFishVolumeLabel = document.getElementById('wooden-fish-volume-label');
+    this.btnTestWoodenFish = document.getElementById('btn-test-wooden-fish');
+
     this.btnSaveBellConfig = document.getElementById('btn-save-bell-config');
     this.btnResetBellDefault = document.getElementById('btn-reset-bell-default');
 
@@ -67,7 +84,7 @@ class ModernAdminApp {
     this.lblFlareSize = document.getElementById('lbl-admin-flare-size');
     this.btnResetFlare = document.getElementById('admin-btn-reset-flare');
 
-    // Tab 6: Cấu hình & sắp xếp nút tương tác
+    // Tab 6: Quản lý chức năng (Tỉ lệ 7/3)
     this.inputIncenseTitle = document.getElementById('admin-input-incense-title');
     this.inputCardTitle = document.getElementById('admin-input-card-title');
     this.inputWishTitle = document.getElementById('admin-input-wish-title');
@@ -82,9 +99,21 @@ class ModernAdminApp {
     this.btnSaveButtonsConfig = document.getElementById('btn-save-buttons-config');
     this.btnResetButtonsDefault = document.getElementById('btn-reset-buttons-default');
 
-    // Tab 7: Quản lý tâm nguyện
+    // Tab 7: Quản lý tâm nguyện (Fullwidth List & Filters)
     this.adminWishesTbody = document.getElementById('admin-wishes-tbody');
     this.btnRefreshWishes = document.getElementById('btn-refresh-wishes');
+    this.wishesSearchInput = document.getElementById('wishes-search-input');
+    this.wishFilterChips = document.querySelectorAll('.wish-filter-chip');
+    this.wishCountAll = document.getElementById('wish-count-all');
+    this.wishCountApproved = document.getElementById('wish-count-approved');
+    this.wishCountHidden = document.getElementById('wish-count-hidden');
+    this.wishesTotalLabel = document.getElementById('wishes-total-label');
+    this.wishesSummaryHint = document.getElementById('wishes-summary-hint');
+
+    // Cache danh sách tâm nguyện & trạng thái lọc
+    this.allWishes = [];
+    this.wishesSearchText = '';
+    this.wishesFilterState = 'all'; // 'all' | 'approved' | 'hidden'
 
     // Toast
     this.toastEl = document.getElementById('admin-modern-toast');
@@ -106,15 +135,36 @@ class ModernAdminApp {
   }
 
   // =========================================================================
-  // 1. QUẢN LÝ ĐĂNG NHẬP XÁC THỰC VỚI MYSQL
+  // 1. QUẢN LÝ ĐĂNG NHẬP XÁC THỰC VỚI MYSQL & DROPDOWN TÀI KHOẢN HEADER
   // =========================================================================
   setupAuth() {
     const isAuthenticated = sessionStorage.getItem(this.authKey) === 'true';
+
+    // Cập nhật thông tin tài khoản trên Header
+    this.updateHeaderUserInfo();
 
     if (isAuthenticated) {
       this.showAppLayout();
     } else {
       this.showLoginModal();
+    }
+
+    // Toggle Dropdown Menu ở Header bên phải
+    if (this.userDropdownToggle && this.userDropdownMenu) {
+      this.userDropdownToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = this.userDropdownMenu.style.display === 'block';
+        this.userDropdownMenu.style.display = isOpen ? 'none' : 'block';
+        this.userDropdownToggle.setAttribute('aria-expanded', !isOpen);
+      });
+
+      // Tự động đóng dropdown khi click ra ngoài
+      document.addEventListener('click', (e) => {
+        if (this.userDropdownWrap && !this.userDropdownWrap.contains(e.target)) {
+          this.userDropdownMenu.style.display = 'none';
+          this.userDropdownToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
 
     if (this.loginForm) {
@@ -137,6 +187,7 @@ class ModernAdminApp {
             sessionStorage.setItem(this.authKey, 'true');
             sessionStorage.setItem('pagoda_admin_user', JSON.stringify(data.user));
             this.loginErrorAlert.style.display = 'none';
+            this.updateHeaderUserInfo();
             this.showAppLayout();
             this.showToast(`Đăng nhập thành công! Kính chào ${data.user.fullname}`);
           } else {
@@ -144,9 +195,12 @@ class ModernAdminApp {
             this.loginErrorText.textContent = data.message || 'Tài khoản hoặc mật khẩu không chính xác';
           }
         } catch (err) {
-          // Dự phòng nếu mất kết nối
+          // Dự phòng nếu kết nối máy chủ gián đoạn
           if (user === 'admin' && pass === 'admin123') {
+            const fallbackUser = { username: 'admin', fullname: 'Ban Quản Trị Tam Bảo', email: 'admin@pagoda.vn', role: 'admin' };
             sessionStorage.setItem(this.authKey, 'true');
+            sessionStorage.setItem('pagoda_admin_user', JSON.stringify(fallbackUser));
+            this.updateHeaderUserInfo();
             this.showAppLayout();
             this.showToast('Đăng nhập thành công');
           } else {
@@ -162,11 +216,24 @@ class ModernAdminApp {
         if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi trang quản trị?')) {
           sessionStorage.removeItem(this.authKey);
           sessionStorage.removeItem('pagoda_admin_user');
+          if (this.userDropdownMenu) this.userDropdownMenu.style.display = 'none';
           this.showLoginModal();
           this.showToast('Đã đăng xuất khỏi hệ thống');
         }
       });
     }
+  }
+
+  updateHeaderUserInfo() {
+    try {
+      const stored = sessionStorage.getItem('pagoda_admin_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (this.topbarUserFullname) this.topbarUserFullname.textContent = u.fullname || u.username || 'Quản trị viên';
+        if (this.dropdownUserFullname) this.dropdownUserFullname.textContent = u.fullname || 'Quản Trị Viên';
+        if (this.dropdownUserEmail) this.dropdownUserEmail.textContent = u.email || 'admin@pagoda.vn';
+      }
+    } catch (_) {}
   }
 
   showLoginModal() {
@@ -192,28 +259,28 @@ class ModernAdminApp {
         subtitle: 'Dữ liệu được lưu trữ và truy vấn trực tiếp từ MySQL Database'
       },
       'tab-altar': {
-        title: 'Cập nhật hình ảnh bàn thờ Tam Bảo',
-        subtitle: 'Lưu trữ thông tin hình ảnh và cài đặt trong cơ sở dữ liệu'
+        title: 'Cập nhật hình ảnh Tam Bảo (PC & Mobile)',
+        subtitle: 'Cấu hình ảnh nền riêng cho máy tính và điện thoại hoặc dùng chung tiện lợi'
       },
       'tab-music': {
         title: 'Quản lý danh sách nhạc thiền phát lần lượt',
         subtitle: 'Danh sách nhạc lưu trong MySQL, phát tuần tự trên trang public và có nút chỉnh âm lượng'
       },
       'tab-bell': {
-        title: 'Cài đặt & Quản lý chuông chùa (Đại Hồng Chung)',
-        subtitle: 'Cấu hình âm thanh chuông và thời gian phát tự động lưu trong MySQL'
+        title: 'Cài đặt Âm thanh hệ thống (Chuông & Mõ)',
+        subtitle: 'Cấu hình chuông chùa định kỳ và tiếng mõ thanh tịnh gán với thao tác người dùng'
       },
       'tab-flare': {
         title: 'Tùy chỉnh Flare ánh sáng quang minh quanh Phật',
         subtitle: 'Đồng bộ tọa độ và độ sáng hào quang từ cơ sở dữ liệu'
       },
       'tab-action-buttons': {
-        title: 'Cấu hình văn bản nút tương tác (Thắp Hương & Rút Thẻ)',
-        subtitle: 'Tùy chỉnh tiêu đề chính, phụ cho các nút hành động, lưu trực tiếp vào cơ sở dữ liệu'
+        title: 'Quản lý chức năng tương tác (Thắp Hương, Rút Thẻ, Tâm Nguyện)',
+        subtitle: 'Sắp xếp thứ tự, chỉnh sửa tên nút chức năng và xem mô phỏng trực tiếp tỉ lệ 7/3'
       },
       'tab-wishes': {
         title: 'Quản lý danh sách Tâm Nguyện của Phật Tử',
-        subtitle: 'Kiểm duyệt, theo dõi và bảo vệ quyền riêng tư các tâm nguyện kính dâng lên Tam Bảo'
+        subtitle: 'Kiểm duyệt, tìm kiếm và bảo vệ quyền riêng tư các tâm nguyện kính dâng lên Tam Bảo'
       }
     };
 
@@ -352,24 +419,74 @@ class ModernAdminApp {
   }
 
   // =========================================================================
-  // 4. TAB 2: CẬP NHẬT HÌNH ẢNH TAM BẢO VỚI MYSQL
+  // 4. TAB 2: CẬP NHẬT HÌNH ẢNH TAM BẢO (PC & MOBILE)
   // =========================================================================
   async initAltarTab() {
     let currentBg = '/images/tam-bao-main.jpg';
+    let currentMobileBg = '/images/tam-bao-main.jpg';
+    let usePcForMobile = true;
 
-    // Đọc ảnh hiện tại từ MySQL
+    // Đọc ảnh PC và ảnh Mobile hiện tại từ MySQL
     try {
       const res = await fetch('/api/settings/altar');
       if (res.ok) {
         const data = await res.json();
         if (data.bg_image_url) currentBg = data.bg_image_url;
+        if (data.bg_image_mobile_url) currentMobileBg = data.bg_image_mobile_url;
+        if (data.use_pc_for_mobile !== undefined) {
+          usePcForMobile = data.use_pc_for_mobile === 1 || data.use_pc_for_mobile === true;
+        }
       }
-    } catch (e) {}
+    } catch (e) {
+      currentBg = localStorage.getItem('pagoda_altar_bg') || currentBg;
+      currentMobileBg = localStorage.getItem('pagoda_altar_mobile_bg') || currentBg;
+      usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
+    }
 
     if (this.currentAltarPreview) {
       this.currentAltarPreview.src = currentBg;
     }
 
+    if (this.altarMobilePreview) {
+      this.altarMobilePreview.src = usePcForMobile ? currentBg : currentMobileBg;
+    }
+
+    if (this.cbUsePcForMobile) {
+      this.cbUsePcForMobile.checked = usePcForMobile;
+    }
+
+    if (this.mobileAltarCustomBox) {
+      this.mobileAltarCustomBox.style.display = usePcForMobile ? 'none' : 'block';
+    }
+
+    // Toggle switch dùng chung ảnh PC cho Mobile
+    if (this.cbUsePcForMobile) {
+      this.cbUsePcForMobile.addEventListener('change', async () => {
+        const checked = this.cbUsePcForMobile.checked;
+        if (this.mobileAltarCustomBox) {
+          this.mobileAltarCustomBox.style.display = checked ? 'none' : 'block';
+        }
+
+        if (this.altarMobilePreview) {
+          this.altarMobilePreview.src = checked ? (this.currentAltarPreview?.src || currentBg) : currentMobileBg;
+        }
+
+        try {
+          await fetch('/api/settings/altar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ use_pc_for_mobile: checked ? 1 : 0 })
+          });
+        } catch (_) {}
+
+        localStorage.setItem('pagoda_use_pc_for_mobile', checked ? 'true' : 'false');
+        this.showToast(checked
+          ? 'Đã chọn dùng chung hình ảnh PC cho thiết bị di động'
+          : 'Đã bật chế độ dùng hình ảnh riêng biệt cho thiết bị di động');
+      });
+    }
+
+    // Preset cards cho PC
     this.presetAltarCards.forEach(card => {
       const src = card.getAttribute('data-src');
       if (src === currentBg) {
@@ -393,12 +510,15 @@ class ModernAdminApp {
 
         localStorage.setItem('pagoda_altar_bg', src);
         if (this.currentAltarPreview) this.currentAltarPreview.src = src;
+        if (this.cbUsePcForMobile?.checked && this.altarMobilePreview) {
+          this.altarMobilePreview.src = src;
+        }
 
-        this.showToast(`Đã lưu ảnh bàn thờ vào MySQL: ${card.querySelector('.preset-name')?.textContent || 'Mẫu mới'}`);
+        this.showToast(`Đã lưu ảnh bàn thờ PC vào MySQL: ${card.querySelector('.preset-name')?.textContent || 'Mẫu mới'}`);
       });
     });
 
-    // Tải ảnh từ máy tính lên Server & lưu vào MySQL
+    // Tải ảnh PC từ máy tính lên Server & lưu vào MySQL
     if (this.inputAltarFile) {
       this.inputAltarFile.addEventListener('change', async (e) => {
         const file = e.target.files && e.target.files[0];
@@ -408,7 +528,6 @@ class ModernAdminApp {
         formData.append('file', file);
 
         try {
-          // 1. Tải file lên server
           const uploadRes = await fetch('/api/upload', {
             method: 'POST',
             body: formData
@@ -418,7 +537,6 @@ class ModernAdminApp {
             const uploadData = await uploadRes.json();
             const uploadedUrl = uploadData.url;
 
-            // 2. Lưu đường dẫn vào MySQL
             await fetch('/api/settings/altar', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -428,14 +546,66 @@ class ModernAdminApp {
             this.presetAltarCards.forEach(c => c.classList.remove('active'));
             localStorage.setItem('pagoda_altar_bg', uploadedUrl);
             if (this.currentAltarPreview) this.currentAltarPreview.src = uploadedUrl;
+            if (this.cbUsePcForMobile?.checked && this.altarMobilePreview) {
+              this.altarMobilePreview.src = uploadedUrl;
+            }
+
             const saveMsg = uploadData.savedPercent > 0 
-              ? `Đã tối ưu nén ảnh (tiết kiệm ${uploadData.savedPercent}% dung lượng) và lưu vào MySQL!`
-              : 'Đã tải ảnh lên Server và lưu vào MySQL Database thành công!';
+              ? `Đã tối ưu nén ảnh PC (tiết kiệm ${uploadData.savedPercent}% dung lượng) và lưu vào MySQL!`
+              : 'Đã tải ảnh PC lên Server và lưu vào MySQL Database thành công!';
             this.showToast(saveMsg);
             this.inputAltarFile.value = '';
           }
         } catch (err) {
-          this.showToast('Lỗi khi tải ảnh lên máy chủ', 'warning');
+          this.showToast('Lỗi khi tải ảnh PC lên máy chủ', 'warning');
+        }
+      });
+    }
+
+    // Tải ảnh Mobile riêng từ máy tính lên Server & lưu vào MySQL
+    if (this.inputAltarMobileFile) {
+      this.inputAltarMobileFile.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            const mobileUrl = uploadData.url;
+            currentMobileBg = mobileUrl;
+
+            await fetch('/api/settings/altar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                bg_image_mobile_url: mobileUrl,
+                use_pc_for_mobile: 0
+              })
+            });
+
+            if (this.cbUsePcForMobile) this.cbUsePcForMobile.checked = false;
+            if (this.mobileAltarCustomBox) this.mobileAltarCustomBox.style.display = 'block';
+            if (this.altarMobilePreview) this.altarMobilePreview.src = mobileUrl;
+
+            localStorage.setItem('pagoda_altar_mobile_bg', mobileUrl);
+            localStorage.setItem('pagoda_use_pc_for_mobile', 'false');
+
+            const saveMsg = uploadData.savedPercent > 0 
+              ? `Đã tối ưu ảnh Mobile (tiết kiệm ${uploadData.savedPercent}% dung lượng) và lưu vào MySQL!`
+              : 'Đã lưu ảnh chụp dọc riêng cho Mobile thành công!';
+            this.showToast(saveMsg);
+            this.inputAltarMobileFile.value = '';
+          }
+        } catch (err) {
+          this.showToast('Lỗi khi tải ảnh Mobile lên máy chủ', 'warning');
         }
       });
     }
@@ -448,25 +618,61 @@ class ModernAdminApp {
     await soundEngine.syncFromDatabase();
     this.renderMusicTable();
 
-    // Thêm qua URL
-    if (this.btnAddMusicUrl) {
-      this.btnAddMusicUrl.addEventListener('click', async () => {
-        const title = this.inputMusicTitle.value.trim();
-        const url = this.inputMusicUrl.value.trim();
+    const handleAddMusicUrl = async () => {
+      const title = this.inputMusicTitle ? this.inputMusicTitle.value.trim() : '';
+      const url = this.inputMusicUrl ? this.inputMusicUrl.value.trim() : '';
 
-        if (!url) {
-          this.showToast('Vui lòng nhập đường dẫn URL file âm thanh (.mp3)', 'warning');
-          return;
-        }
+      if (!url) {
+        this.showToast('Vui lòng nhập đường dẫn URL file âm thanh (.mp3, .wav, ...)', 'warning');
+        if (this.inputMusicUrl) this.inputMusicUrl.focus();
+        return;
+      }
 
+      if (this.btnAddMusicUrl) {
+        this.btnAddMusicUrl.disabled = true;
+        this.btnAddMusicUrl.textContent = 'Đang thêm...';
+      }
+
+      try {
         const success = await soundEngine.addTrackToDatabase(title || 'Nhạc Thiền An Lạc', url, 'url');
         if (success) {
-          this.inputMusicTitle.value = '';
-          this.inputMusicUrl.value = '';
+          if (this.inputMusicTitle) this.inputMusicTitle.value = '';
+          if (this.inputMusicUrl) this.inputMusicUrl.value = '';
           this.renderMusicTable();
           this.showToast('Đã lưu bài nhạc mới vào MySQL Database!');
         } else {
-          this.showToast('Lỗi thêm bài nhạc vào cơ sở dữ liệu', 'warning');
+          this.showToast('Lỗi thêm bài nhạc vào cơ sở dữ liệu. Vui lòng kiểm tra lại đường dẫn.', 'warning');
+        }
+      } catch (err) {
+        this.showToast('Không thể thêm bài nhạc lúc này', 'warning');
+      } finally {
+        if (this.btnAddMusicUrl) {
+          this.btnAddMusicUrl.disabled = false;
+          this.btnAddMusicUrl.textContent = 'Thêm';
+        }
+      }
+    };
+
+    // Thêm qua Click nút bấm
+    if (this.btnAddMusicUrl) {
+      this.btnAddMusicUrl.addEventListener('click', handleAddMusicUrl);
+    }
+
+    // Hỗ trợ phím Enter trên ô nhập link nhạc
+    if (this.inputMusicUrl) {
+      this.inputMusicUrl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleAddMusicUrl();
+        }
+      });
+    }
+
+    if (this.inputMusicTitle) {
+      this.inputMusicTitle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleAddMusicUrl();
         }
       });
     }
@@ -602,7 +808,7 @@ class ModernAdminApp {
   }
 
   // =========================================================================
-  // 6. TAB 4: QUẢN LÝ CHUÔNG CHÙA VỚI MYSQL
+  // 6. TAB 4: CÀI ĐẶT ÂM THANH HỆ THỐNG (CHUÔNG ĐỊNH KỲ & MÕ TƯƠNG TÁC)
   // =========================================================================
   async initBellTab() {
     let bellConfig = soundEngine.bellConfig || {};
@@ -614,14 +820,24 @@ class ModernAdminApp {
       }
     } catch (e) {}
 
+    // Cấu hình Chuông
     if (this.bellCustomUrl) this.bellCustomUrl.value = bellConfig.custom_url || bellConfig.customUrl || '';
     if (this.bellAutoplayToggle) this.bellAutoplayToggle.checked = Boolean(bellConfig.auto_play ?? bellConfig.autoPlay ?? true);
     if (this.bellIntervalInput) this.bellIntervalInput.value = bellConfig.interval_seconds || bellConfig.intervalSeconds || 60;
 
-    const initialVol = Math.round((bellConfig.volume || 0.85) * 100);
-    if (this.bellVolumeSlider) this.bellVolumeSlider.value = initialVol;
-    if (this.bellVolumeLabel) this.bellVolumeLabel.textContent = `${initialVol}%`;
+    const initialBellVol = Math.round((bellConfig.volume || 0.85) * 100);
+    if (this.bellVolumeSlider) this.bellVolumeSlider.value = initialBellVol;
+    if (this.bellVolumeLabel) this.bellVolumeLabel.textContent = `${initialBellVol}%`;
 
+    // Cấu hình Mõ
+    if (this.woodenFishCustomUrl) {
+      this.woodenFishCustomUrl.value = bellConfig.wooden_fish_url || bellConfig.woodenFishUrl || '';
+    }
+    const initialWfVol = Math.round((bellConfig.wooden_fish_volume ?? bellConfig.woodenFishVolume ?? 0.9) * 100);
+    if (this.woodenFishVolumeSlider) this.woodenFishVolumeSlider.value = initialWfVol;
+    if (this.woodenFishVolumeLabel) this.woodenFishVolumeLabel.textContent = `${initialWfVol}%`;
+
+    // Chips chọn nhanh chu kỳ chuông
     this.intervalChips.forEach(chip => {
       const sec = parseInt(chip.getAttribute('data-sec'), 10);
       if (sec === (bellConfig.interval_seconds || bellConfig.intervalSeconds || 60)) {
@@ -643,7 +859,13 @@ class ModernAdminApp {
       });
     }
 
-    // Tải file chuông lên server
+    if (this.woodenFishVolumeSlider) {
+      this.woodenFishVolumeSlider.addEventListener('input', (e) => {
+        if (this.woodenFishVolumeLabel) this.woodenFishVolumeLabel.textContent = `${e.target.value}%`;
+      });
+    }
+
+    // Tải tệp chuông lên server
     if (this.bellCustomFile) {
       this.bellCustomFile.addEventListener('change', async (e) => {
         const file = e.target.files && e.target.files[0];
@@ -661,7 +883,7 @@ class ModernAdminApp {
           if (uploadRes.ok) {
             const data = await uploadRes.json();
             if (this.bellCustomUrl) this.bellCustomUrl.value = data.url;
-            this.showToast('Đã tải tệp chuông lên thư mục dự án. Nhấn "Lưu cấu hình chuông" để lưu vào MySQL.');
+            this.showToast('Đã tải tệp chuông lên server. Nhấn "Lưu Cấu Hình Âm Thanh Hệ Thống" để lưu.');
             this.bellCustomFile.value = '';
           }
         } catch (err) {
@@ -670,14 +892,50 @@ class ModernAdminApp {
       });
     }
 
-    if (this.btnTestBell) {
-      this.btnTestBell.addEventListener('click', () => {
-        soundEngine.playBell();
-        this.showToast('Đang thỉnh tiếng Đại Hồng Chung');
+    // Tải tệp tiếng mõ lên server
+    if (this.woodenFishCustomFile) {
+      this.woodenFishCustomFile.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          if (uploadRes.ok) {
+            const data = await uploadRes.json();
+            if (this.woodenFishCustomUrl) this.woodenFishCustomUrl.value = data.url;
+            this.showToast('Đã tải tệp tiếng mõ lên server. Nhấn "Lưu Cấu Hình Âm Thanh Hệ Thống" để lưu.');
+            this.woodenFishCustomFile.value = '';
+          }
+        } catch (err) {
+          this.showToast('Lỗi khi tải tệp tiếng mõ', 'warning');
+        }
       });
     }
 
-    // Lưu vào MySQL
+    // Nghe thử tiếng chuông
+    if (this.btnTestBell) {
+      this.btnTestBell.addEventListener('click', () => {
+        soundEngine.playBell();
+        this.showToast('Đang thỉnh tiếng Đại Hồng Chung ngân vang');
+      });
+    }
+
+    // Nghe thử tiếng mõ
+    if (this.btnTestWoodenFish) {
+      this.btnTestWoodenFish.addEventListener('click', () => {
+        soundEngine.playWoodenFish();
+        this.showToast('Đang gõ tiếng mõ chùa thanh tịnh');
+      });
+    }
+
+    // Lưu toàn bộ cấu hình âm thanh hệ thống (Chuông & Mõ) vào MySQL
     if (this.btnSaveBellConfig) {
       this.btnSaveBellConfig.addEventListener('click', async () => {
         const customUrl = this.bellCustomUrl ? this.bellCustomUrl.value.trim() : '';
@@ -685,15 +943,27 @@ class ModernAdminApp {
         const intervalSec = parseInt(this.bellIntervalInput ? this.bellIntervalInput.value : '60', 10) || 60;
         const volume = (parseInt(this.bellVolumeSlider ? this.bellVolumeSlider.value : '85', 10) || 85) / 100;
 
-        const success = await soundEngine.updateBellSettingsInDatabase(customUrl, autoPlay, intervalSec, volume);
+        const wfUrl = this.woodenFishCustomUrl ? this.woodenFishCustomUrl.value.trim() : '';
+        const wfVolume = (parseInt(this.woodenFishVolumeSlider ? this.woodenFishVolumeSlider.value : '90', 10) || 90) / 100;
+
+        const success = await soundEngine.updateSystemSoundSettingsInDatabase(
+          customUrl,
+          autoPlay,
+          intervalSec,
+          volume,
+          wfUrl,
+          wfVolume
+        );
+
         if (success) {
-          this.showToast(`Đã lưu cấu hình chuông vào MySQL Database (${intervalSec} giây/lần)!`);
+          this.showToast(`Đã lưu cấu hình Âm thanh hệ thống (Chuông & Mõ) vào MySQL!`);
         } else {
           this.showToast('Lỗi khi lưu cấu hình vào cơ sở dữ liệu', 'warning');
         }
       });
     }
 
+    // Khôi phục mặc định
     if (this.btnResetBellDefault) {
       this.btnResetBellDefault.addEventListener('click', async () => {
         if (this.bellCustomUrl) this.bellCustomUrl.value = '';
@@ -702,12 +972,16 @@ class ModernAdminApp {
         if (this.bellVolumeSlider) this.bellVolumeSlider.value = 85;
         if (this.bellVolumeLabel) this.bellVolumeLabel.textContent = '85%';
 
+        if (this.woodenFishCustomUrl) this.woodenFishCustomUrl.value = '';
+        if (this.woodenFishVolumeSlider) this.woodenFishVolumeSlider.value = 90;
+        if (this.woodenFishVolumeLabel) this.woodenFishVolumeLabel.textContent = '90%';
+
         this.intervalChips.forEach(chip => {
           chip.classList.toggle('active', chip.getAttribute('data-sec') === '60');
         });
 
-        await soundEngine.updateBellSettingsInDatabase('', true, 60, 0.85);
-        this.showToast('Đã khôi phục tiếng chuông Đại Hồng Chung mặc định');
+        await soundEngine.updateSystemSoundSettingsInDatabase('', true, 60, 0.85, '', 0.9);
+        this.showToast('Đã khôi phục âm thanh Chuông & Mõ chuẩn mặc định');
       });
     }
   }
@@ -812,7 +1086,7 @@ class ModernAdminApp {
   }
 
   // =========================================================================
-  // 7. CẤU HÌNH & SẮP XẾP NÚT TƯƠNG TÁC (THẮP HƯƠNG, RÚT THẺ, GỬI TÂM NGUYỆN)
+  // 8. TAB 6: QUẢN LÝ CHỨC NĂNG TƯƠNG TÁC (TỈ LỆ 7/3 & LIVEVIEW)
   // =========================================================================
   async initActionButtonsTab() {
     let incenseTitle = 'THẮP NÉN HƯƠNG THƠM';
@@ -867,18 +1141,20 @@ class ModernAdminApp {
         });
       }
 
-      // Sắp xếp lại thứ tự DOM của các thẻ cấu hình
+      // Sắp xếp lại thứ tự DOM của các thẻ cấu hình danh sách dọc (Cột 7 phần)
       if (this.buttonsConfigCards) {
         buttonsOrder.forEach((key, index) => {
           const cardEl = this.buttonsConfigCards.querySelector(`[data-key="${key}"]`);
           if (cardEl) {
             this.buttonsConfigCards.appendChild(cardEl);
-            const label = cardEl.querySelector('.btn-order-indicator');
-            if (label) label.textContent = `Vị trí: ${index + 1}`;
-            const btnLeft = cardEl.querySelector('.btn-reorder-move[data-dir="-1"]');
-            const btnRight = cardEl.querySelector('.btn-reorder-move[data-dir="1"]');
-            if (btnLeft) btnLeft.disabled = (index === 0);
-            if (btnRight) btnRight.disabled = (index === buttonsOrder.length - 1);
+
+            const orderNumEl = cardEl.querySelector('.feature-order-num');
+            if (orderNumEl) orderNumEl.textContent = `${index + 1}`;
+
+            const btnUp = cardEl.querySelector('.btn-reorder-move[data-dir="-1"]');
+            const btnDown = cardEl.querySelector('.btn-reorder-move[data-dir="1"]');
+            if (btnUp) btnUp.disabled = (index === 0);
+            if (btnDown) btnDown.disabled = (index === buttonsOrder.length - 1);
           }
         });
       }
@@ -886,7 +1162,7 @@ class ModernAdminApp {
 
     updateUI();
 
-    // 3. Xử lý di chuyển thứ tự (Move Left / Right)
+    // 3. Xử lý di chuyển thứ tự (Move Up / Down)
     if (this.buttonsConfigCards) {
       this.buttonsConfigCards.addEventListener('click', (e) => {
         const btn = e.target.closest('.btn-reorder-move');
@@ -939,19 +1215,18 @@ class ModernAdminApp {
         };
 
         try {
-          const res = await fetch('/api/settings/buttons', {
+          await fetch('/api/settings/buttons', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-          const resData = await res.json();
 
           localStorage.setItem('pagoda_incense_title', payload.incense_title);
           localStorage.setItem('pagoda_card_title', payload.card_title);
           localStorage.setItem('pagoda_wish_title', payload.wish_title);
           localStorage.setItem('pagoda_buttons_order', JSON.stringify(payload.buttons_order));
 
-          this.showToast('Đã lưu cấu hình và thứ tự nút bấm thành công!');
+          this.showToast('Đã lưu cấu hình và sắp xếp vị trí chức năng thành công!');
         } catch (err) {
           localStorage.setItem('pagoda_incense_title', payload.incense_title);
           localStorage.setItem('pagoda_card_title', payload.card_title);
@@ -998,12 +1273,30 @@ class ModernAdminApp {
   }
 
   // =========================================================================
-  // 8. TAB 7: QUẢN LÝ TÂM NGUYỆN PHẬT TỬ
+  // 9. TAB 7: QUẢN LÝ TÂM NGUYỆN PHẬT TỬ (FULLWIDTH LIST & TÌM KIẾM BỘ LỌC)
   // =========================================================================
   initWishesTab() {
     if (this.btnRefreshWishes) {
       this.btnRefreshWishes.addEventListener('click', () => {
         this.loadAdminWishes();
+      });
+    }
+
+    // Bộ lọc trạng thái: Tất cả, Đang hiển thị, Đang ẩn
+    this.wishFilterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        this.wishFilterChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        this.wishesFilterState = chip.getAttribute('data-filter') || 'all';
+        this.renderFilteredWishes();
+      });
+    });
+
+    // Tìm kiếm tức thời
+    if (this.wishesSearchInput) {
+      this.wishesSearchInput.addEventListener('input', (e) => {
+        this.wishesSearchText = e.target.value.trim().toLowerCase();
+        this.renderFilteredWishes();
       });
     }
   }
@@ -1012,99 +1305,202 @@ class ModernAdminApp {
     if (!this.adminWishesTbody) return;
     this.adminWishesTbody.innerHTML = `
       <tr>
-        <td colspan="9" style="text-align: center; color: #64748b; padding: 24px;">Đang tải danh sách tâm nguyện...</td>
+        <td colspan="7" style="text-align: center; color: #64748b; padding: 36px;">
+          <div class="loading-state-box">
+            <span class="pulse-spin">🪷</span>
+            <span style="margin-left: 8px;">Đang tải danh sách tâm nguyện từ MySQL Database...</span>
+          </div>
+        </td>
       </tr>
     `;
 
     try {
       const res = await fetch('/api/admin/wishes');
-      if (!res.ok) throw new Error('Lỗi tải tâm nguyện');
-      const wishes = await res.json();
-
-      if (!wishes || wishes.length === 0) {
-        this.adminWishesTbody.innerHTML = `
-          <tr>
-            <td colspan="9" style="text-align: center; color: #94a3b8; padding: 24px;">Chưa có tâm nguyện nào được gửi</td>
-          </tr>
-        `;
-        return;
-      }
-
-      this.adminWishesTbody.innerHTML = wishes.map(w => {
-        const isApproved = w.is_approved === 1 || w.is_approved === true;
-        const statusBadge = isApproved
-          ? `<span class="badge badge-success" style="background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 9999px; font-size: 0.76rem; font-weight: 700;">Hiển thị</span>`
-          : `<span class="badge badge-danger" style="background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 9999px; font-size: 0.76rem; font-weight: 700;">Đã ẩn</span>`;
-
-        const toggleBtnLabel = isApproved ? 'Ẩn' : 'Hiện';
-
-        return `
-          <tr data-id="${w.id}">
-            <td style="font-weight: 600; color: #64748b;">#${w.id}</td>
-            <td>
-              <div style="font-weight: 700; color: #1e293b;">${w.masked_name}</div>
-              <div style="font-size: 0.75rem; color: #64748b;">Tên gốc: ${w.author_name}</div>
-            </td>
-            <td>${w.author_age || '—'}</td>
-            <td>${w.author_address || '—'}</td>
-            <td style="font-style: italic; color: #334155; max-width: 320px; line-height: 1.5;">"${w.content}"</td>
-            <td style="text-align: center; font-weight: 700; color: #d97706;">🙏 ${w.likes_count}</td>
-            <td style="font-size: 0.8rem; color: #64748b;">${w.time_ago}</td>
-            <td style="text-align: center;">${statusBadge}</td>
-            <td style="text-align: center;">
-              <div style="display: flex; gap: 6px; justify-content: center;">
-                <button class="btn-table-action btn-toggle-wish" data-id="${w.id}" title="${toggleBtnLabel} tâm nguyện">
-                  ${toggleBtnLabel}
-                </button>
-                <button class="btn-table-action btn-del-wish" data-id="${w.id}" style="color: #ef4444;" title="Xóa tâm nguyện">
-                  Xóa
-                </button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      // Gắn sự kiện Ẩn/Hiện và Xóa
-      this.adminWishesTbody.querySelectorAll('.btn-toggle-wish').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id');
-          try {
-            const patchRes = await fetch(`/api/admin/wishes/${id}/toggle`, { method: 'PATCH' });
-            if (patchRes.ok) {
-              this.showToast('Đã cập nhật trạng thái hiển thị');
-              this.loadAdminWishes();
-            }
-          } catch (e) {
-            this.showToast('Lỗi cập nhật', 'danger');
-          }
-        });
-      });
-
-      this.adminWishesTbody.querySelectorAll('.btn-del-wish').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.getAttribute('data-id');
-          if (!confirm(`Bạn có chắc chắn muốn xóa tâm nguyện #${id} không?`)) return;
-
-          try {
-            const delRes = await fetch(`/api/admin/wishes/${id}`, { method: 'DELETE' });
-            if (delRes.ok) {
-              this.showToast('Đã xóa tâm nguyện thành công');
-              this.loadAdminWishes();
-            }
-          } catch (e) {
-            this.showToast('Lỗi khi xóa', 'danger');
-          }
-        });
-      });
-
+      if (!res.ok) throw new Error('Lỗi tải danh sách từ server');
+      const data = await res.json();
+      this.allWishes = Array.isArray(data) ? data : [];
+      this.renderFilteredWishes();
     } catch (err) {
       this.adminWishesTbody.innerHTML = `
         <tr>
-          <td colspan="9" style="text-align: center; color: #ef4444; padding: 24px;">Không thể tải danh sách: ${err.message}</td>
+          <td colspan="7" style="text-align: center; color: #ef4444; padding: 28px;">
+            Không thể tải danh sách tâm nguyện: ${err.message}
+          </td>
         </tr>
       `;
     }
+  }
+
+  renderFilteredWishes() {
+    if (!this.adminWishesTbody) return;
+
+    // Cập nhật số liệu trên các Chip lọc
+    const totalCount = this.allWishes.length;
+    const approvedCount = this.allWishes.filter(w => w.is_approved === 1 || w.is_approved === true).length;
+    const hiddenCount = totalCount - approvedCount;
+
+    if (this.wishCountAll) this.wishCountAll.textContent = totalCount;
+    if (this.wishCountApproved) this.wishCountApproved.textContent = approvedCount;
+    if (this.wishCountHidden) this.wishCountHidden.textContent = hiddenCount;
+
+    // Lọc theo trạng thái và từ khóa tìm kiếm
+    let filtered = this.allWishes.filter(w => {
+      const isApproved = w.is_approved === 1 || w.is_approved === true;
+
+      // Lọc trạng thái
+      if (this.wishesFilterState === 'approved' && !isApproved) return false;
+      if (this.wishesFilterState === 'hidden' && isApproved) return false;
+
+      // Lọc từ khóa tìm kiếm
+      if (this.wishesSearchText) {
+        const name = (w.author_name || '').toLowerCase();
+        const masked = (w.masked_name || '').toLowerCase();
+        const addr = (w.author_address || '').toLowerCase();
+        const content = (w.content || '').toLowerCase();
+        const match = name.includes(this.wishesSearchText) ||
+                      masked.includes(this.wishesSearchText) ||
+                      addr.includes(this.wishesSearchText) ||
+                      content.includes(this.wishesSearchText);
+        if (!match) return false;
+      }
+
+      return true;
+    });
+
+    if (this.wishesTotalLabel) {
+      this.wishesTotalLabel.textContent = `Hiển thị ${filtered.length} trên tổng số ${totalCount} tâm nguyện`;
+    }
+
+    if (this.wishesSummaryHint) {
+      if (this.wishesFilterState === 'approved') {
+        this.wishesSummaryHint.textContent = 'Đang lọc các tâm nguyện hiển thị công khai trên vách';
+      } else if (this.wishesFilterState === 'hidden') {
+        this.wishesSummaryHint.textContent = 'Đang lọc các tâm nguyện đã ẩn kiểm duyệt';
+      } else {
+        this.wishesSummaryHint.textContent = 'Hiển thị toàn bộ tâm nguyện';
+      }
+    }
+
+    if (filtered.length === 0) {
+      this.adminWishesTbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; color: #94a3b8; padding: 36px;">
+            <div style="font-size: 1.5rem; margin-bottom: 8px;">📭</div>
+            <div style="font-size: 0.9rem; font-weight: 500; color: #64748b;">Không tìm thấy tâm nguyện nào phù hợp</div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    this.adminWishesTbody.innerHTML = filtered.map((w, index) => {
+      const isApproved = w.is_approved === 1 || w.is_approved === true;
+      const statusBadge = isApproved
+        ? `<span class="badge-status status-visible">Hiển thị</span>`
+        : `<span class="badge-status status-hidden">Đã ẩn</span>`;
+
+      const toggleBtnLabel = isApproved ? 'Ẩn' : 'Hiện';
+      const toggleBtnClass = isApproved ? 'btn-wish-hide' : 'btn-wish-show';
+      const initialChar = (w.author_name || 'P').trim().charAt(0).toUpperCase();
+
+      return `
+        <tr data-id="${w.id}">
+          <td class="td-wish-stt">${index + 1}</td>
+          <td class="td-wish-author">
+            <div class="wish-author-card">
+              <div class="author-avatar-mini">${initialChar}</div>
+              <div class="author-names">
+                <span class="author-display-name">${w.masked_name || 'Phật tử'}</span>
+                <span class="author-real-name">Tên thật: <strong>${w.author_name || 'Khuyết danh'}</strong></span>
+                <span class="author-meta-info">${w.author_address ? `📍 ${w.author_address}` : 'Toàn quốc'}${w.author_age ? ` • ${w.author_age} tuổi` : ''}</span>
+              </div>
+            </div>
+          </td>
+          <td class="td-wish-content">
+            <div class="wish-content-bubble">
+              <span class="quote-mark">“</span>
+              <span class="wish-content-text">${this.escapeHtml(w.content)}</span>
+              <span class="quote-mark">”</span>
+            </div>
+          </td>
+          <td class="td-wish-likes">
+            <div class="likes-count-pill">
+              <span>🙏</span>
+              <span class="likes-val">${w.likes_count || 0}</span>
+            </div>
+          </td>
+          <td class="td-wish-time">
+            <div class="time-block">
+              <span class="time-relative">${w.time_ago || 'Gần đây'}</span>
+              <span class="time-id-sub">Mã: #${w.id}</span>
+            </div>
+          </td>
+          <td class="td-wish-status">
+            ${statusBadge}
+          </td>
+          <td class="td-wish-actions">
+            <div class="wish-action-buttons">
+              <button type="button" class="btn-wish-action ${toggleBtnClass}" data-id="${w.id}" title="${toggleBtnLabel} tâm nguyện">
+                ${toggleBtnLabel}
+              </button>
+              <button type="button" class="btn-wish-action btn-wish-delete" data-id="${w.id}" title="Xóa tâm nguyện">
+                Xóa
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Gắn sự kiện Ẩn / Hiện và Xóa
+    this.adminWishesTbody.querySelectorAll('.btn-wish-action:not(.btn-wish-delete)').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        try {
+          const patchRes = await fetch(`/api/admin/wishes/${id}/toggle`, { method: 'PATCH' });
+          if (patchRes.ok) {
+            // Cập nhật local cache
+            const target = this.allWishes.find(w => String(w.id) === String(id));
+            if (target) {
+              target.is_approved = (target.is_approved === 1 || target.is_approved === true) ? 0 : 1;
+            }
+            this.renderFilteredWishes();
+            this.showToast('Đã cập nhật trạng thái hiển thị tâm nguyện');
+          }
+        } catch (e) {
+          this.showToast('Lỗi cập nhật trạng thái', 'warning');
+        }
+      });
+    });
+
+    this.adminWishesTbody.querySelectorAll('.btn-wish-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (!confirm(`Bạn có chắc chắn muốn xóa tâm nguyện #${id} khỏi MySQL Database không?`)) return;
+
+        try {
+          const delRes = await fetch(`/api/admin/wishes/${id}`, { method: 'DELETE' });
+          if (delRes.ok) {
+            this.allWishes = this.allWishes.filter(w => String(w.id) !== String(id));
+            this.renderFilteredWishes();
+            this.showToast('Đã xóa tâm nguyện thành công');
+          }
+        } catch (e) {
+          this.showToast('Lỗi khi xóa tâm nguyện', 'warning');
+        }
+      });
+    });
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
   // =========================================================================

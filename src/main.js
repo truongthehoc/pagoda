@@ -107,9 +107,11 @@ class PagodaMainApp {
     this.startLoop();
   }
 
-  // 1. ÁP DỤNG HÌNH NỀN VÀ FLARE TỪ MYSQL DATABASE
+  // 1. ÁP DỤNG HÌNH NỀN VÀ FLARE TỪ MYSQL DATABASE (HỖ TRỢ PC & MOBILE RIÊNG HOẶC DÙNG CHUNG)
   async applyAltarSettingsFromDatabase() {
     let bgUrl = localStorage.getItem('pagoda_altar_bg') || '/images/tam-bao-main.jpg';
+    let bgMobileUrl = localStorage.getItem('pagoda_altar_bg_mobile') || null;
+    let usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
     let flareX = parseFloat(localStorage.getItem('pagoda_flare_x') || '50');
     let flareY = parseFloat(localStorage.getItem('pagoda_flare_y') || '26.5');
     let flareOpacity = parseFloat(localStorage.getItem('pagoda_flare_opacity') || '70');
@@ -120,17 +122,40 @@ class PagodaMainApp {
       if (res.ok) {
         const data = await res.json();
         if (data.bg_image_url) bgUrl = data.bg_image_url;
+        if (data.bg_image_mobile_url !== undefined) bgMobileUrl = data.bg_image_mobile_url;
+        if (data.use_pc_for_mobile !== undefined) usePcForMobile = Boolean(data.use_pc_for_mobile);
         if (data.flare_x !== undefined) flareX = data.flare_x;
         if (data.flare_y !== undefined) flareY = data.flare_y;
         if (data.flare_opacity !== undefined) flareOpacity = data.flare_opacity;
         if (data.flare_size !== undefined) flareSize = data.flare_size;
+
+        localStorage.setItem('pagoda_altar_bg', bgUrl);
+        if (bgMobileUrl) localStorage.setItem('pagoda_altar_bg_mobile', bgMobileUrl);
+        else localStorage.removeItem('pagoda_altar_bg_mobile');
+        localStorage.setItem('pagoda_use_pc_for_mobile', usePcForMobile ? 'true' : 'false');
       }
     } catch (e) {}
 
-    if (this.bgEl) {
-      this.bgEl.style.backgroundImage = `url('${bgUrl}')`;
-    }
+    this.altarSettings = { bgUrl, bgMobileUrl, usePcForMobile, flareX, flareY, flareOpacity, flareSize };
+    this.updateAltarBackground();
     this.renderFlare(flareX, flareY, flareOpacity, flareSize);
+
+    // Lắng nghe thay đổi kích thước màn hình để tự động đổi ảnh nền PC / Mobile
+    window.addEventListener('resize', () => {
+      this.updateAltarBackground();
+    });
+  }
+
+  updateAltarBackground() {
+    if (!this.bgEl || !this.altarSettings) return;
+    const isMobile = window.innerWidth <= 768;
+    const { bgUrl, bgMobileUrl, usePcForMobile } = this.altarSettings;
+
+    let finalBg = bgUrl;
+    if (isMobile && !usePcForMobile && bgMobileUrl) {
+      finalBg = bgMobileUrl;
+    }
+    this.bgEl.style.backgroundImage = `url('${finalBg}')`;
   }
 
   // 1.1 ÁP DỤNG CẤU HÌNH VĂN BẢN VÀ VỊ TRÍ NÚT TƯƠNG TÁC TỪ DATABASE
@@ -200,8 +225,17 @@ class PagodaMainApp {
 
   setupStorageSync() {
     window.addEventListener('storage', (e) => {
-      if (e.key === 'pagoda_altar_bg') {
-        if (this.bgEl) this.bgEl.style.backgroundImage = `url('${e.newValue}')`;
+      if (
+        e.key === 'pagoda_altar_bg' || 
+        e.key === 'pagoda_altar_bg_mobile' || 
+        e.key === 'pagoda_use_pc_for_mobile'
+      ) {
+        if (this.altarSettings) {
+          this.altarSettings.bgUrl = localStorage.getItem('pagoda_altar_bg') || '/images/tam-bao-main.jpg';
+          this.altarSettings.bgMobileUrl = localStorage.getItem('pagoda_altar_bg_mobile') || null;
+          this.altarSettings.usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
+          this.updateAltarBackground();
+        }
       } else if (
         e.key === 'pagoda_flare_x' ||
         e.key === 'pagoda_flare_y' ||
@@ -234,7 +268,7 @@ class PagodaMainApp {
     });
   }
 
-  // 2. ĐIỀU KHIỂN ÂM LƯỢNG (TĂNG / GIẢM & BẬT / TẮT)
+  // 2. ĐIỀU KHIỂN ÂM LƯỢNG (TĂNG / GIẢM & BẬT / TẮT & TỰ ĐỘNG PHÁT MOBILE)
   setupAudioControls() {
     let hasInteracted = false;
 
@@ -243,19 +277,27 @@ class PagodaMainApp {
     if (this.volumePercent) this.volumePercent.textContent = `${initialVol}%`;
 
     const startAudioOnFirstInteraction = () => {
-      if (hasInteracted) return;
-      hasInteracted = true;
+      soundEngine.unlockMobileAudio();
       soundEngine.ensureContext();
-      if (!soundEngine.isAmbientPlaying && !soundEngine.isMuted) {
-        soundEngine.startAmbient();
+
+      if (!hasInteracted) {
+        hasInteracted = true;
+        if (!soundEngine.isAmbientPlaying && !soundEngine.isMuted) {
+          soundEngine.startAmbient();
+        }
       }
     };
 
-    window.addEventListener('pointerdown', startAudioOnFirstInteraction, { once: true });
-    window.addEventListener('keydown', startAudioOnFirstInteraction, { once: true });
+    // Bắt toàn bộ sự kiện chạm và nhấp trên di động và máy tính để mở khóa âm thanh
+    ['touchstart', 'touchend', 'click', 'pointerdown', 'keydown'].forEach(evtType => {
+      window.addEventListener(evtType, startAudioOnFirstInteraction, { passive: true, capture: true });
+      document.addEventListener(evtType, startAudioOnFirstInteraction, { passive: true, capture: true });
+    });
 
     if (this.btnVolumeToggle) {
-      this.btnVolumeToggle.addEventListener('click', () => {
+      this.btnVolumeToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundEngine.unlockMobileAudio();
         soundEngine.ensureContext();
 
         if (!soundEngine.isAmbientPlaying) {
@@ -273,6 +315,7 @@ class PagodaMainApp {
     if (this.volumeSlider) {
       this.volumeSlider.addEventListener('input', (e) => {
         const val = parseInt(e.target.value, 10);
+        soundEngine.unlockMobileAudio();
         soundEngine.ensureContext();
         if (!soundEngine.isAmbientPlaying) {
           soundEngine.startAmbient();
@@ -296,11 +339,17 @@ class PagodaMainApp {
     }
   }
 
-  // 3. NGHI THỨC THẮP NÉN HƯƠNG THƠM (FPOV)
+  // 3. NGHI THỨC THẮP NÉN HƯƠNG THƠM (FPOV) & TIẾNG MÕ GÕ KHI TƯƠNG TÁC
   setupRitualEvents() {
     if (this.btnOfferIncense) {
       this.btnOfferIncense.addEventListener('click', () => {
         if (!this.incenseRitual || this.incenseRitual.isOffering) return;
+
+        // Gõ tiếng mõ ngay khi Phật tử bấm nút thắp hương
+        try {
+          soundEngine.unlockMobileAudio();
+          soundEngine.playWoodenFish();
+        } catch (_) {}
 
         this.btnOfferIncense.disabled = true;
         this.btnOfferIncense.style.opacity = '0.6';
@@ -329,7 +378,13 @@ class PagodaMainApp {
 
     if (this.btnDrawCard) {
       this.btnDrawCard.addEventListener('click', () => {
-        soundEngine.playChime();
+        // Gõ tiếng mõ thanh tịnh và tiếng chuông khánh khi bấm rút thẻ cầu an
+        try {
+          soundEngine.unlockMobileAudio();
+          soundEngine.playWoodenFish();
+          soundEngine.playChime();
+        } catch (_) {}
+
         // Ghi nhận sự kiện rút thẻ cầu an vào MySQL
         AnalyticsTracker.trackBlessing();
         this.openBlessingModal();

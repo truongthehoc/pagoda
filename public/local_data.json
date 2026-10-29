@@ -1,0 +1,99 @@
+{
+  "altar": {
+    "id": 1,
+    "bg_image_url": "/images/tam-bao-main.jpg",
+    "bg_image_mobile_url": "/images/tam-bao-main.jpg",
+    "use_pc_for_mobile": 1,
+    "flare_x": 50,
+    "flare_y": 26.5,
+    "flare_opacity": 70,
+    "flare_size": 480
+  },
+  "bell": {
+    "id": 1,
+    "custom_url": "",
+    "auto_play": 1,
+    "interval_seconds": 60,
+    "volume": 0.85,
+    "wooden_fish_url": "",
+    "wooden_fish_volume": 0.9
+  },
+  "buttons": {
+    "id": 1,
+    "incense_title": "THẮP NÉN HƯƠNG THƠM",
+    "card_title": "RÚT THẺ CẦU AN",
+    "wish_title": "GỬI TÂM NGUYỆN",
+    "buttons_order": [
+      "incense",
+      "card",
+      "wish"
+    ]
+  },
+  "tracks": [
+    {
+      "id": 1,
+      "track_id": "track-1",
+      "title": "Tiếng Trúc & Suối Nước Chốn Thiền Môn",
+      "type": "url",
+      "url": "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=meditation-flute-22533.mp3",
+      "sort_order": 1
+    },
+    {
+      "id": 2,
+      "track_id": "track-2",
+      "title": "Nhạc Thiền An Lạc Thư Thái",
+      "type": "url",
+      "url": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=relaxing-meditation-10940.mp3",
+      "sort_order": 2
+    },
+    {
+      "id": 3,
+      "track_id": "track-synth",
+      "title": "Sóng Âm Thiền Định & Bát Xoay Tây Tạng (Tự Nhiên)",
+      "type": "synth",
+      "url": "",
+      "sort_order": 3
+    }
+  ],
+  "wishes": [
+    {
+      "id": 1,
+      "author_name": "Nguyễn Thị Hoa",
+      "author_age": "34 tuổi",
+      "author_address": "Hà Nội",
+      "content": "Nguyện cầu mười phương chư Phật từ bi gia hộ cho cha mẹ hai bên sức khỏe dồi dào, tai qua nạn khỏi, bệnh tật tiêu trừ, sống đời an lạc bên con cháu.",
+      "likes_count": 18,
+      "is_approved": 1,
+      "ip_address": "127.0.0.1",
+      "created_at": "2026-10-29T00:13:07.788Z"
+    },
+    {
+      "id": 2,
+      "author_name": "Trần Văn Tuấn",
+      "author_age": "42 tuổi",
+      "author_address": "Đà Nẵng",
+      "content": "Cầu mong cho gia đạo êm ấm, trong ấm ngoài êm, công việc hanh thông, các con chăm ngoan học giỏi, luôn biết hướng thiện.",
+      "likes_count": 26,
+      "is_approved": 1,
+      "ip_address": "127.0.0.1",
+      "created_at": "2026-10-28T22:58:07.789Z"
+    },
+    {
+      "id": 3,
+      "author_name": "Lê Hoàng Nam",
+      "author_age": "27 tuổi",
+      "author_address": "TP. Hồ Chí Minh",
+      "content": "Con xin sám hối mọi lỗi lầm vô minh trong quá khứ, nguyện cho thân tâm được an lạc, buông bỏ muộn phiền, công việc thuận buồm xuôi gió.",
+      "likes_count": 15,
+      "is_approved": 1,
+      "ip_address": "127.0.0.1",
+      "created_at": "2026-10-28T19:58:07.789Z"
+    }
+  ],
+  "analytics": {
+    "totalVisits": 128,
+    "todayVisits": 42,
+    "totalOfferings": 68,
+    "totalBlessings": 39
+  }
+}
