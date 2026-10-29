@@ -9,6 +9,7 @@
     "dev:all": "node start.js",
     "server": "node server.js",
     "build": "vite build",
+    "clean-data": "node clean-data.js",
     "preview": "vite preview"
   },
   "devDependencies": {

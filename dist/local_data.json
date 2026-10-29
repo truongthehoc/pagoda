@@ -55,45 +55,21 @@
       "sort_order": 3
     }
   ],
-  "wishes": [
-    {
-      "id": 1,
-      "author_name": "Nguyễn Thị Hoa",
-      "author_age": "34 tuổi",
-      "author_address": "Hà Nội",
-      "content": "Nguyện cầu mười phương chư Phật từ bi gia hộ cho cha mẹ hai bên sức khỏe dồi dào, tai qua nạn khỏi, bệnh tật tiêu trừ, sống đời an lạc bên con cháu.",
-      "likes_count": 18,
-      "is_approved": 1,
-      "ip_address": "127.0.0.1",
-      "created_at": "2026-10-29T00:13:07.788Z"
-    },
-    {
-      "id": 2,
-      "author_name": "Trần Văn Tuấn",
-      "author_age": "42 tuổi",
-      "author_address": "Đà Nẵng",
-      "content": "Cầu mong cho gia đạo êm ấm, trong ấm ngoài êm, công việc hanh thông, các con chăm ngoan học giỏi, luôn biết hướng thiện.",
-      "likes_count": 26,
-      "is_approved": 1,
-      "ip_address": "127.0.0.1",
-      "created_at": "2026-10-28T22:58:07.789Z"
-    },
-    {
-      "id": 3,
-      "author_name": "Lê Hoàng Nam",
-      "author_age": "27 tuổi",
-      "author_address": "TP. Hồ Chí Minh",
-      "content": "Con xin sám hối mọi lỗi lầm vô minh trong quá khứ, nguyện cho thân tâm được an lạc, buông bỏ muộn phiền, công việc thuận buồm xuôi gió.",
-      "likes_count": 15,
-      "is_approved": 1,
-      "ip_address": "127.0.0.1",
-      "created_at": "2026-10-28T19:58:07.789Z"
-    }
-  ],
+  "wishes": [],
   "analytics": {
-    "totalVisits": 128,
-    "todayVisits": 42,
-    "totalOfferings": 68,
-    "totalBlessings": 39
+    "totalVisits": 0,
+    "todayVisits": 0,
+    "totalOfferings": 0,
+    "totalBlessings": 0
+  },
+  "stats": {
+    "totalVisits": 0,
+    "todayVisits": 0,
+    "totalOfferings": 0,
+    "todayOfferings": 0,
+    "totalBlessings": 0,
+    "todayBlessings": 0,
+    "history": [],
+    "recentLogs": []
   }
 }

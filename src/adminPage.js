@@ -324,6 +324,46 @@ class ModernAdminApp {
         this.showToast('Đã làm mới dữ liệu thống kê từ MySQL Database');
       });
     }
+
+    const handleCleanData = async () => {
+      const confirmClean = window.confirm(
+        '⚠️ XÁC NHẬN DỌN SẠCH DỮ LIỆU MẪU:\n\n' +
+        'Thao tác này sẽ dọn sạch toàn bộ:\n' +
+        '1. Danh sách Tâm nguyện Phật tử mẫu.\n' +
+        '2. Toàn bộ nhật ký tương tác thời gian thực.\n' +
+        '3. Toàn bộ số liệu thống kê lượt truy cập 7 ngày mẫu (reset về 0).\n\n' +
+        'Hệ thống sẽ bắt đầu đếm số liệu thật từ đầu.\nBạn có chắc chắn muốn thực hiện không?'
+      );
+
+      if (!confirmClean) return;
+
+      try {
+        const res = await fetch('/api/admin/clean-data', { method: 'POST' });
+        const result = await res.json();
+        if (result.success) {
+          this.showToast('Đã dọn sạch toàn bộ dữ liệu mẫu! Hệ thống sẵn sàng cho dữ liệu thật.');
+          await this.renderAnalyticsData();
+          await this.loadAllWishes();
+        } else {
+          this.showToast(result.message || 'Lỗi khi dọn dẹp dữ liệu', 'warning');
+        }
+      } catch (err) {
+        this.showToast('Không thể kết nối máy chủ để dọn dẹp', 'warning');
+      }
+    };
+
+    const btnCleanDashboard = document.getElementById('btn-clean-data-dashboard');
+    if (btnCleanDashboard) {
+      btnCleanDashboard.addEventListener('click', handleCleanData);
+    }
+
+    const btnCleanHeader = document.getElementById('btn-admin-clean-data');
+    if (btnCleanHeader) {
+      btnCleanHeader.addEventListener('click', () => {
+        if (this.adminUserDropdownMenu) this.adminUserDropdownMenu.style.display = 'none';
+        handleCleanData();
+      });
+    }
   }
 
   async renderAnalyticsData() {
@@ -343,28 +383,32 @@ class ModernAdminApp {
     if (this.barChartContainer) {
       this.barChartContainer.innerHTML = '';
       const history = data.history || [];
-      const maxVal = Math.max(1, ...history.map(h => Math.max(h.visits || 0, h.offerings || 0)));
+      if (history.length === 0) {
+        this.barChartContainer.innerHTML = '<div class="empty-state" style="padding: 30px; text-align: center; color: #94a3b8; font-size: 0.84rem; width: 100%;">Chưa có dữ liệu thống kê theo ngày. Số liệu sẽ tự động hiển thị khi có khách viếng thăm.</div>';
+      } else {
+        const maxVal = Math.max(1, ...history.map(h => Math.max(h.visits || 0, h.offerings || 0)));
 
-      history.forEach(day => {
-        const col = document.createElement('div');
-        col.className = 'bar-chart-col';
+        history.forEach(day => {
+          const col = document.createElement('div');
+          col.className = 'bar-chart-col';
 
-        const visitHeightPct = Math.round(((day.visits || 0) / maxVal) * 85);
-        const offerHeightPct = Math.round(((day.offerings || 0) / maxVal) * 85);
+          const visitHeightPct = Math.round(((day.visits || 0) / maxVal) * 85);
+          const offerHeightPct = Math.round(((day.offerings || 0) / maxVal) * 85);
 
-        col.innerHTML = `
-          <div class="bars-pair">
-            <div class="bar-bar bar-visit" style="height: ${visitHeightPct}%;" title="${day.date}: ${day.visits} lượt viếng thăm">
-              <span class="bar-val">${day.visits}</span>
+          col.innerHTML = `
+            <div class="bars-pair">
+              <div class="bar-bar bar-visit" style="height: ${visitHeightPct}%;" title="${day.date}: ${day.visits} lượt viếng thăm">
+                <span class="bar-val">${day.visits}</span>
+              </div>
+              <div class="bar-bar bar-offer" style="height: ${offerHeightPct}%;" title="${day.date}: ${day.offerings} lượt thắp hương">
+                <span class="bar-val">${day.offerings}</span>
+              </div>
             </div>
-            <div class="bar-bar bar-offer" style="height: ${offerHeightPct}%;" title="${day.date}: ${day.offerings} lượt thắp hương">
-              <span class="bar-val">${day.offerings}</span>
-            </div>
-          </div>
-          <span class="bar-day-label">${day.date}</span>
-        `;
-        this.barChartContainer.appendChild(col);
-      });
+            <span class="bar-day-label">${day.date}</span>
+          `;
+          this.barChartContainer.appendChild(col);
+        });
+      }
     }
 
     // Nhật ký hoạt động từ MySQL

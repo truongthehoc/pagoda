@@ -127,62 +127,16 @@ let fallbackDb = {
       sort_order: 3
     }
   ],
-  wishes: [
-    {
-      id: 1,
-      author_name: 'Nguyễn Thị Hoa',
-      author_age: '34 tuổi',
-      author_address: 'Hà Nội',
-      content: 'Nguyện cầu mười phương chư Phật từ bi gia hộ cho cha mẹ hai bên sức khỏe dồi dào, tai qua nạn khỏi, bệnh tật tiêu trừ, sống đời an lạc bên con cháu.',
-      likes_count: 18,
-      is_approved: 1,
-      ip_address: '127.0.0.1',
-      created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString()
-    },
-    {
-      id: 2,
-      author_name: 'Trần Văn Tuấn',
-      author_age: '42 tuổi',
-      author_address: 'Đà Nẵng',
-      content: 'Cầu mong cho gia đạo êm ấm, trong ấm ngoài êm, công việc hanh thông, các con chăm ngoan học giỏi, luôn biết hướng thiện.',
-      likes_count: 26,
-      is_approved: 1,
-      ip_address: '127.0.0.1',
-      created_at: new Date(Date.now() - 2 * 3600 * 1000).toISOString()
-    },
-    {
-      id: 3,
-      author_name: 'Lê Hoàng Nam',
-      author_age: '27 tuổi',
-      author_address: 'TP. Hồ Chí Minh',
-      content: 'Con xin sám hối mọi lỗi lầm vô minh trong quá khứ, nguyện cho thân tâm được an lạc, buông bỏ muộn phiền, công việc thuận buồm xuôi gió.',
-      likes_count: 15,
-      is_approved: 1,
-      ip_address: '127.0.0.1',
-      created_at: new Date(Date.now() - 5 * 3600 * 1000).toISOString()
-    }
-  ],
+  wishes: [],
   stats: {
-    totalVisits: 72,
-    todayVisits: 28,
-    totalOfferings: 31,
-    todayOfferings: 14,
-    totalBlessings: 24,
-    todayBlessings: 11,
-    history: [
-      { date: '23/10', visits: 38, offerings: 14, blessings: 9 },
-      { date: '24/10', visits: 45, offerings: 18, blessings: 12 },
-      { date: '25/10', visits: 52, offerings: 21, blessings: 15 },
-      { date: '26/10', visits: 60, offerings: 24, blessings: 16 },
-      { date: '27/10', visits: 58, offerings: 20, blessings: 14 },
-      { date: '28/10', visits: 64, offerings: 23, blessings: 15 },
-      { date: '29/10', visits: 72, offerings: 26, blessings: 19 }
-    ],
-    recentLogs: [
-      { id: 3, type: 'blessing', label: 'Phật tử rút thẻ Cầu Gia Đạo Bình An', time: '07:15' },
-      { id: 2, type: 'offering', label: 'Phật tử thành kính dâng 3 nén tâm hương thơm', time: '07:05' },
-      { id: 1, type: 'visit', label: 'Khách thập phương viếng thăm Chính Điện Tam Bảo', time: '06:50' }
-    ]
+    totalVisits: 0,
+    todayVisits: 0,
+    totalOfferings: 0,
+    todayOfferings: 0,
+    totalBlessings: 0,
+    todayBlessings: 0,
+    history: [],
+    recentLogs: []
   }
 };
 
@@ -1187,6 +1141,68 @@ app.patch('/api/admin/wishes/:id/toggle', async (req, res) => {
       return res.json({ success: true, is_approved: wish.is_approved });
     }
     res.json({ success: true, is_approved: 1 });
+  }
+});
+
+// ========================================================
+// 8. API DỌN SẠCH DỮ LIỆU MẪU ĐỂ CHẠY CHÍNH THỨC
+// ========================================================
+app.post('/api/admin/clean-data', async (req, res) => {
+  try {
+    try {
+      await pool.query('SET FOREIGN_KEY_CHECKS = 0');
+      try { await pool.query('TRUNCATE TABLE prayers_wishes'); } catch (_) { await pool.query('DELETE FROM prayers_wishes'); }
+      try { await pool.query('TRUNCATE TABLE analytics_logs'); } catch (_) { await pool.query('DELETE FROM analytics_logs'); }
+      try { await pool.query('TRUNCATE TABLE analytics_daily_stats'); } catch (_) { await pool.query('DELETE FROM analytics_daily_stats'); }
+      await pool.query('SET FOREIGN_KEY_CHECKS = 1');
+    } catch (dbErr) {
+      console.warn('Cảnh báo xóa bảng MySQL trong /api/admin/clean-data:', dbErr.message);
+    }
+
+    fallbackDb.wishes = [];
+    fallbackDb.stats = {
+      totalVisits: 0,
+      todayVisits: 0,
+      totalOfferings: 0,
+      todayOfferings: 0,
+      totalBlessings: 0,
+      todayBlessings: 0,
+      history: [],
+      recentLogs: []
+    };
+    if (fallbackDb.analytics) {
+      fallbackDb.analytics = {
+        totalVisits: 0,
+        todayVisits: 0,
+        totalOfferings: 0,
+        totalBlessings: 0
+      };
+    }
+    saveFallbackDb();
+
+    console.log('🧹 [DỌN DẸP DỮ LIỆU MẪU] Đã reset toàn bộ Tâm nguyện & Số liệu thống kê về 0');
+    res.json({
+      success: true,
+      message: 'Đã dọn sạch toàn bộ dữ liệu mẫu thành công! Hệ thống sẵn sàng cho dữ liệu thật.'
+    });
+  } catch (err) {
+    fallbackDb.wishes = [];
+    fallbackDb.stats = {
+      totalVisits: 0,
+      todayVisits: 0,
+      totalOfferings: 0,
+      todayOfferings: 0,
+      totalBlessings: 0,
+      todayBlessings: 0,
+      history: [],
+      recentLogs: []
+    };
+    saveFallbackDb();
+    res.json({
+      success: true,
+      message: 'Đã dọn sạch dữ liệu bộ nhớ dự phòng (Fallback Store).',
+      error: err.message
+    });
   }
 });
 

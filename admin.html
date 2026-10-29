@@ -270,6 +270,13 @@
                   </svg>
                   <span>Mở trang Chính Điện (Public)</span>
                 </a>
+                <button type="button" class="dropdown-menu-item" id="btn-admin-clean-data" style="color: #ef4444;">
+                  <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>Dọn dữ liệu mẫu (Reset về 0)</span>
+                </button>
                 <div class="dropdown-menu-divider"></div>
                 <button type="button" class="dropdown-menu-item item-logout" id="btn-admin-logout">
                   <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -383,14 +390,23 @@
                   <h3>Nhật ký tương tác gần đây</h3>
                   <p class="text-muted">Các hoạt động vừa diễn ra trên hệ thống</p>
                 </div>
-                <button id="btn-refresh-stats" class="btn-card-action" title="Tải lại số liệu">
-                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M23 4v6h-6"></path>
-                    <path d="M1 20v-6h6"></path>
-                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                  </svg>
-                  <span>Làm mới</span>
-                </button>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button id="btn-refresh-stats" class="btn-card-action" title="Tải lại số liệu">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M23 4v6h-6"></path>
+                      <path d="M1 20v-6h6"></path>
+                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    <span>Làm mới</span>
+                  </button>
+                  <button id="btn-clean-data-dashboard" class="btn-card-action" title="Dọn sạch dữ liệu mẫu để chạy dữ liệu thật" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.35);">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Dọn dữ liệu mẫu</span>
+                  </button>
+                </div>
               </div>
 
               <div id="analytics-logs-list" class="activity-logs-list"></div>
