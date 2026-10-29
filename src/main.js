@@ -110,12 +110,17 @@ class PagodaMainApp {
   // 1. ÁP DỤNG HÌNH NỀN VÀ FLARE TỪ MYSQL DATABASE (HỖ TRỢ PC & MOBILE RIÊNG HOẶC DÙNG CHUNG)
   async applyAltarSettingsFromDatabase() {
     let bgUrl = localStorage.getItem('pagoda_altar_bg') || '/images/tam-bao-main.jpg';
-    let bgMobileUrl = localStorage.getItem('pagoda_altar_bg_mobile') || null;
+    let bgMobileUrl = localStorage.getItem('pagoda_altar_mobile_bg') || localStorage.getItem('pagoda_altar_bg_mobile') || null;
     let usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
     let flareX = parseFloat(localStorage.getItem('pagoda_flare_x') || '50');
     let flareY = parseFloat(localStorage.getItem('pagoda_flare_y') || '26.5');
     let flareOpacity = parseFloat(localStorage.getItem('pagoda_flare_opacity') || '70');
     let flareSize = parseFloat(localStorage.getItem('pagoda_flare_size') || '480');
+
+    // Hiển thị ngay ảnh nền từ cache / mặc định để tránh màn hình trống
+    this.altarSettings = { bgUrl, bgMobileUrl, usePcForMobile, flareX, flareY, flareOpacity, flareSize };
+    this.updateAltarBackground();
+    this.renderFlare(flareX, flareY, flareOpacity, flareSize);
 
     try {
       const res = await fetch('/api/settings/altar');
@@ -130,15 +135,20 @@ class PagodaMainApp {
         if (data.flare_size !== undefined) flareSize = data.flare_size;
 
         localStorage.setItem('pagoda_altar_bg', bgUrl);
-        if (bgMobileUrl) localStorage.setItem('pagoda_altar_bg_mobile', bgMobileUrl);
-        else localStorage.removeItem('pagoda_altar_bg_mobile');
+        if (bgMobileUrl) {
+          localStorage.setItem('pagoda_altar_mobile_bg', bgMobileUrl);
+          localStorage.setItem('pagoda_altar_bg_mobile', bgMobileUrl);
+        } else {
+          localStorage.removeItem('pagoda_altar_mobile_bg');
+          localStorage.removeItem('pagoda_altar_bg_mobile');
+        }
         localStorage.setItem('pagoda_use_pc_for_mobile', usePcForMobile ? 'true' : 'false');
+
+        this.altarSettings = { bgUrl, bgMobileUrl, usePcForMobile, flareX, flareY, flareOpacity, flareSize };
+        this.updateAltarBackground();
+        this.renderFlare(flareX, flareY, flareOpacity, flareSize);
       }
     } catch (e) {}
-
-    this.altarSettings = { bgUrl, bgMobileUrl, usePcForMobile, flareX, flareY, flareOpacity, flareSize };
-    this.updateAltarBackground();
-    this.renderFlare(flareX, flareY, flareOpacity, flareSize);
 
     // Lắng nghe thay đổi kích thước màn hình để tự động đổi ảnh nền PC / Mobile
     window.addEventListener('resize', () => {
@@ -147,13 +157,16 @@ class PagodaMainApp {
   }
 
   updateAltarBackground() {
-    if (!this.bgEl || !this.altarSettings) return;
+    if (!this.bgEl) return;
     const isMobile = window.innerWidth <= 768;
-    const { bgUrl, bgMobileUrl, usePcForMobile } = this.altarSettings;
+    const { bgUrl, bgMobileUrl, usePcForMobile } = this.altarSettings || {};
 
-    let finalBg = bgUrl;
-    if (isMobile && !usePcForMobile && bgMobileUrl) {
+    let finalBg = (bgUrl && String(bgUrl).trim()) ? bgUrl : '/images/tam-bao-main.jpg';
+    if (isMobile && !usePcForMobile && bgMobileUrl && String(bgMobileUrl).trim()) {
       finalBg = bgMobileUrl;
+    }
+    if (!finalBg || finalBg === 'null' || finalBg === 'undefined') {
+      finalBg = '/images/tam-bao-main.jpg';
     }
     this.bgEl.style.backgroundImage = `url('${finalBg}')`;
   }
@@ -228,11 +241,12 @@ class PagodaMainApp {
       if (
         e.key === 'pagoda_altar_bg' || 
         e.key === 'pagoda_altar_bg_mobile' || 
+        e.key === 'pagoda_altar_mobile_bg' ||
         e.key === 'pagoda_use_pc_for_mobile'
       ) {
         if (this.altarSettings) {
           this.altarSettings.bgUrl = localStorage.getItem('pagoda_altar_bg') || '/images/tam-bao-main.jpg';
-          this.altarSettings.bgMobileUrl = localStorage.getItem('pagoda_altar_bg_mobile') || null;
+          this.altarSettings.bgMobileUrl = localStorage.getItem('pagoda_altar_mobile_bg') || localStorage.getItem('pagoda_altar_bg_mobile') || null;
           this.altarSettings.usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
           this.updateAltarBackground();
         }

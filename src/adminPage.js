@@ -440,7 +440,7 @@ class ModernAdminApp {
       }
     } catch (e) {
       currentBg = localStorage.getItem('pagoda_altar_bg') || currentBg;
-      currentMobileBg = localStorage.getItem('pagoda_altar_mobile_bg') || currentBg;
+      currentMobileBg = localStorage.getItem('pagoda_altar_mobile_bg') || localStorage.getItem('pagoda_altar_bg_mobile') || currentBg;
       usePcForMobile = localStorage.getItem('pagoda_use_pc_for_mobile') !== 'false';
     }
 
@@ -479,7 +479,11 @@ class ModernAdminApp {
           await fetch('/api/settings/altar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ use_pc_for_mobile: checked ? 1 : 0 })
+            body: JSON.stringify({
+              bg_image_url: currentBg,
+              bg_image_mobile_url: currentMobileBg,
+              use_pc_for_mobile: checked ? 1 : 0
+            })
           });
         } catch (_) {}
 
@@ -513,10 +517,16 @@ class ModernAdminApp {
             await fetch('/api/settings/altar', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ bg_image_url: uploadedUrl })
+              body: JSON.stringify({
+                bg_image_url: uploadedUrl,
+                bg_image_mobile_url: currentMobileBg,
+                use_pc_for_mobile: this.cbUsePcForMobile?.checked ? 1 : 0
+              })
             });
 
             localStorage.setItem('pagoda_altar_bg', uploadedUrl);
+            localStorage.setItem('pagoda_altar_mobile_bg', currentMobileBg);
+            localStorage.setItem('pagoda_altar_bg_mobile', currentMobileBg);
             if (this.currentAltarPreview) this.currentAltarPreview.src = uploadedUrl;
             if (this.cbUsePcForMobile?.checked) {
               updateMobileUI(true);
@@ -558,6 +568,7 @@ class ModernAdminApp {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
+                bg_image_url: currentBg,
                 bg_image_mobile_url: mobileUrl,
                 use_pc_for_mobile: 0
               })
@@ -566,7 +577,9 @@ class ModernAdminApp {
             if (this.cbUsePcForMobile) this.cbUsePcForMobile.checked = false;
             updateMobileUI(false);
 
+            localStorage.setItem('pagoda_altar_bg', currentBg);
             localStorage.setItem('pagoda_altar_mobile_bg', mobileUrl);
+            localStorage.setItem('pagoda_altar_bg_mobile', mobileUrl);
             localStorage.setItem('pagoda_use_pc_for_mobile', 'false');
 
             const saveMsg = uploadData.savedPercent > 0 

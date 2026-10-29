@@ -46,6 +46,10 @@ if (!fs.existsSync(uploadsDir)) {
 // Phục vụ các file tĩnh trong thư mục uploads (ảnh, nhạc do người dùng tải lên)
 app.use('/uploads', express.static(uploadsDir));
 
+// Phục vụ các file tĩnh trong thư mục public (images, audio, icons...)
+app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Phục vụ frontend tĩnh đã build trong thư mục dist/ (chế độ Production)
 const distDir = path.join(__dirname, 'dist');
 if (fs.existsSync(distDir)) {
@@ -383,52 +387,69 @@ app.get('/api/settings/altar', async (req, res) => {
 app.post('/api/settings/altar', async (req, res) => {
   const { bg_image_url, bg_image_mobile_url, use_pc_for_mobile } = req.body;
   try {
-    // Kiểm tra và dọn dẹp ảnh cũ nếu cần
-    const [currentRows] = await pool.query('SELECT bg_image_url, bg_image_mobile_url FROM altar_settings WHERE id = 1');
-    if (currentRows && currentRows.length > 0) {
-      const oldUrl = currentRows[0].bg_image_url;
-      const oldMobileUrl = currentRows[0].bg_image_mobile_url;
-      if (oldUrl && oldUrl.startsWith('/uploads/') && oldUrl !== bg_image_url) {
-        const oldFilename = path.basename(oldUrl);
-        const oldFilePath = path.join(uploadsDir, oldFilename);
-        if (fs.existsSync(oldFilePath)) {
-          fs.promises.unlink(oldFilePath).catch(() => {});
-        }
-      }
-      if (oldMobileUrl && oldMobileUrl.startsWith('/uploads/') && oldMobileUrl !== bg_image_mobile_url) {
-        const oldFilename = path.basename(oldMobileUrl);
-        const oldFilePath = path.join(uploadsDir, oldFilename);
-        if (fs.existsSync(oldFilePath)) {
-          fs.promises.unlink(oldFilePath).catch(() => {});
-        }
+    let currentRows = [];
+    try {
+      [currentRows] = await pool.query('SELECT bg_image_url, bg_image_mobile_url, use_pc_for_mobile FROM altar_settings WHERE id = 1');
+    } catch (_) {}
+
+    const oldRow = (currentRows && currentRows[0]) || fallbackDb.altar || {};
+    const oldUrl = oldRow.bg_image_url;
+    const oldMobileUrl = oldRow.bg_image_mobile_url;
+
+    // Chỉ dọn dẹp file PC cũ nếu req.body cung cấp URL PC MỚI khác với URL cũ
+    if (bg_image_url !== undefined && bg_image_url !== null && oldUrl && oldUrl.startsWith('/uploads/') && oldUrl !== bg_image_url) {
+      const oldFilename = path.basename(oldUrl);
+      const oldFilePath = path.join(uploadsDir, oldFilename);
+      if (fs.existsSync(oldFilePath)) {
+        fs.promises.unlink(oldFilePath).catch(() => {});
       }
     }
 
-    const usePcVal = use_pc_for_mobile === false || use_pc_for_mobile === 0 ? 0 : 1;
+    // Chỉ dọn dẹp file Mobile cũ nếu req.body cung cấp URL Mobile MỚI khác với URL cũ
+    if (bg_image_mobile_url !== undefined && bg_image_mobile_url !== null && oldMobileUrl && oldMobileUrl.startsWith('/uploads/') && oldMobileUrl !== bg_image_mobile_url) {
+      const oldFilename = path.basename(oldMobileUrl);
+      const oldFilePath = path.join(uploadsDir, oldFilename);
+      if (fs.existsSync(oldFilePath)) {
+        fs.promises.unlink(oldFilePath).catch(() => {});
+      }
+    }
 
-    await pool.query(
-      `UPDATE altar_settings 
-       SET bg_image_url = ?, 
-           bg_image_mobile_url = ?, 
-           use_pc_for_mobile = ? 
-       WHERE id = 1`,
-      [
-        bg_image_url || '/images/tam-bao-main.jpg',
-        bg_image_mobile_url || null,
-        usePcVal
-      ]
-    );
+    // Giữ nguyên giá trị hiện có nếu trường tương ứng không được gửi trong req.body
+    const finalBgUrl = bg_image_url !== undefined 
+      ? (bg_image_url || '/images/tam-bao-main.jpg')
+      : (oldUrl || fallbackDb.altar.bg_image_url || '/images/tam-bao-main.jpg');
 
-    fallbackDb.altar.bg_image_url = bg_image_url || '/images/tam-bao-main.jpg';
-    fallbackDb.altar.bg_image_mobile_url = bg_image_mobile_url || null;
-    fallbackDb.altar.use_pc_for_mobile = usePcVal;
+    const finalMobileUrl = bg_image_mobile_url !== undefined 
+      ? (bg_image_mobile_url || null)
+      : (oldMobileUrl !== undefined ? oldMobileUrl : (fallbackDb.altar.bg_image_mobile_url || null));
+
+    const finalUsePc = use_pc_for_mobile !== undefined 
+      ? (use_pc_for_mobile === false || use_pc_for_mobile === 0 ? 0 : 1)
+      : (oldRow.use_pc_for_mobile !== undefined ? (oldRow.use_pc_for_mobile ? 1 : 0) : (fallbackDb.altar.use_pc_for_mobile ? 1 : 0));
+
+    try {
+      await pool.query(
+        `UPDATE altar_settings 
+         SET bg_image_url = ?, 
+             bg_image_mobile_url = ?, 
+             use_pc_for_mobile = ? 
+         WHERE id = 1`,
+        [finalBgUrl, finalMobileUrl, finalUsePc]
+      );
+    } catch (dbErr) {
+      console.warn('Cảnh báo ghi MySQL altar_settings:', dbErr.message);
+    }
+
+    fallbackDb.altar.bg_image_url = finalBgUrl;
+    fallbackDb.altar.bg_image_mobile_url = finalMobileUrl;
+    fallbackDb.altar.use_pc_for_mobile = finalUsePc;
     saveFallbackDb();
 
     res.json({
       success: true,
-      bg_image_url: bg_image_url || '/images/tam-bao-main.jpg',
-      bg_image_mobile_url: bg_image_mobile_url || null,
-      use_pc_for_mobile: Boolean(usePcVal)
+      bg_image_url: finalBgUrl,
+      bg_image_mobile_url: finalMobileUrl,
+      use_pc_for_mobile: Boolean(finalUsePc)
     });
   } catch (err) {
     if (bg_image_url !== undefined) fallbackDb.altar.bg_image_url = bg_image_url;
@@ -1178,7 +1199,7 @@ if (fs.existsSync(distDir)) {
     res.sendFile(path.join(distDir, 'admin.html'));
   });
   app.use((req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/images')) {
       return next();
     }
     res.sendFile(path.join(distDir, 'index.html'));
