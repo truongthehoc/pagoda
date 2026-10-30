@@ -144,6 +144,24 @@ class ModernAdminApp {
     // Cập nhật thông tin tài khoản trên Header
     this.updateHeaderUserInfo();
 
+    // Khởi tạo hiệu ứng hạt bụi vàng quang minh lơ lửng
+    this.initLoginParticles();
+
+    // Toggle Hiện / Ẩn Mật khẩu trong ô nhập
+    const btnTogglePw = document.getElementById('btn-toggle-login-password');
+    if (btnTogglePw && this.loginPassword) {
+      btnTogglePw.addEventListener('click', () => {
+        const isPw = this.loginPassword.getAttribute('type') === 'password';
+        this.loginPassword.setAttribute('type', isPw ? 'text' : 'password');
+        const eyeIcon = btnTogglePw.querySelector('.icon-eye');
+        const eyeOffIcon = btnTogglePw.querySelector('.icon-eye-off');
+        if (eyeIcon && eyeOffIcon) {
+          eyeIcon.style.display = isPw ? 'none' : 'block';
+          eyeOffIcon.style.display = isPw ? 'block' : 'none';
+        }
+      });
+    }
+
     if (isAuthenticated) {
       this.showAppLayout();
     } else {
@@ -237,10 +255,93 @@ class ModernAdminApp {
     } catch (_) {}
   }
 
+  initLoginParticles() {
+    const canvas = document.getElementById('login-particles-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let particles = [];
+    const PARTICLE_COUNT = 42;
+
+    const resize = () => {
+      canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+      canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    class SparkleParticle {
+      constructor(w, h, initial = false) {
+        this.reset(w, h, initial);
+      }
+      reset(w, h, initial = false) {
+        this.x = Math.random() * w;
+        this.y = initial ? Math.random() * h : h + 10;
+        this.size = Math.random() * 2.2 + 0.8;
+        this.speedY = Math.random() * 0.45 + 0.2;
+        this.speedX = (Math.random() - 0.5) * 0.35;
+        this.baseOpacity = Math.random() * 0.55 + 0.3;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.pulseSpeed = Math.random() * 0.025 + 0.01;
+        // Sắc vàng hoàng kim và hổ phách ấm áp
+        this.hue = Math.random() > 0.4 ? 44 : 36;
+      }
+      update(w, h) {
+        this.y -= this.speedY;
+        this.pulse += this.pulseSpeed;
+        this.x += Math.sin(this.pulse) * 0.4 + this.speedX;
+        if (this.y < -10 || this.x < -10 || this.x > w + 10) {
+          this.reset(w, h, false);
+        }
+      }
+      draw(c) {
+        const alpha = Math.max(0, this.baseOpacity * (0.6 + 0.4 * Math.sin(this.pulse)));
+        c.save();
+        c.beginPath();
+        c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        c.fillStyle = `hsla(${this.hue}, 95%, 65%, ${alpha})`;
+        c.shadowBlur = this.size * 3.5;
+        c.shadowColor = `hsla(${this.hue}, 100%, 55%, 0.9)`;
+        c.fill();
+        c.restore();
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new SparkleParticle(canvas.width, canvas.height, true));
+    }
+
+    const animate = () => {
+      const modal = document.getElementById('admin-login-modal');
+      if (!modal || modal.style.display === 'none') {
+        this.loginParticleLoopId = requestAnimationFrame(animate);
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update(w, h);
+        particles[i].draw(ctx);
+      }
+      this.loginParticleLoopId = requestAnimationFrame(animate);
+    };
+
+    if (this.loginParticleLoopId) {
+      cancelAnimationFrame(this.loginParticleLoopId);
+    }
+    this.loginParticleLoopId = requestAnimationFrame(animate);
+  }
+
   showLoginModal() {
     if (this.loginModal) this.loginModal.style.display = 'flex';
     if (this.appLayout) this.appLayout.style.display = 'none';
     if (this.loginPassword) this.loginPassword.value = '';
+    if (this.loginUsername && !this.loginUsername.value) {
+      setTimeout(() => this.loginUsername.focus(), 150);
+    }
   }
 
   showAppLayout() {

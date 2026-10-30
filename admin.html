@@ -15,43 +15,214 @@
          1. MÀN HÌNH ĐĂNG NHẬP (LOGIN OVERLAY)
          ======================================================== -->
     <div id="admin-login-modal" class="login-overlay">
+      <!-- Vầng hào quang trung tâm tỏa sáng huyền ảo -->
+      <div class="login-ambient-aura" aria-hidden="true"></div>
+
+      <!-- Bánh xe Pháp Luân (Dharmachakra / Mandala) thiêng liêng xoay chậm nền -->
+      <div class="login-mandala-bg" aria-hidden="true">
+        <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="mandalaGold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef3c7" stop-opacity="0.95"/>
+              <stop offset="40%" stop-color="#fbbf24" stop-opacity="0.8"/>
+              <stop offset="80%" stop-color="#f59e0b" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#b45309" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="goldCornerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef3c7"/>
+              <stop offset="50%" stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#b45309"/>
+            </linearGradient>
+            <linearGradient id="lotusPetalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fbcfe8"/>
+              <stop offset="50%" stop-color="#e11d48"/>
+              <stop offset="100%" stop-color="#9f1239"/>
+            </linearGradient>
+            <linearGradient id="lotusCenterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fef08a"/>
+              <stop offset="45%" stop-color="#f59e0b"/>
+              <stop offset="100%" stop-color="#b45309"/>
+            </linearGradient>
+            <linearGradient id="lotusGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef3c7"/>
+              <stop offset="60%" stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#b45309"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Vành đai ngoài cùng với họa tiết chấm bi hào quang -->
+          <circle cx="300" cy="300" r="286" stroke="url(#mandalaGold)" stroke-width="1.5" stroke-dasharray="3 6"/>
+          <circle cx="300" cy="300" r="270" stroke="url(#mandalaGold)" stroke-width="2"/>
+          <circle cx="300" cy="300" r="256" stroke="url(#mandalaGold)" stroke-width="1" stroke-dasharray="6 8"/>
+          <circle cx="300" cy="300" r="238" stroke="url(#mandalaGold)" stroke-width="2.5"/>
+          <circle cx="300" cy="300" r="222" stroke="url(#mandalaGold)" stroke-width="1.2"/>
+
+          <!-- Vành bánh xe trong -->
+          <circle cx="300" cy="300" r="92" stroke="url(#mandalaGold)" stroke-width="2"/>
+          <circle cx="300" cy="300" r="82" stroke="url(#mandalaGold)" stroke-width="1" stroke-dasharray="4 4"/>
+          <circle cx="300" cy="300" r="50" stroke="url(#mandalaGold)" stroke-width="2"/>
+
+          <!-- Tâm Tam Bảo (Xoáy ngọc Mani biểu tượng Phật - Pháp - Tăng) -->
+          <circle cx="300" cy="300" r="22" stroke="url(#mandalaGold)" stroke-width="1.5"/>
+          <path d="M 300 278 C 314 278 322 288 322 300 C 322 312 312 322 300 322 C 288 322 278 312 278 300 C 278 288 288 278 300 278 Z" stroke="url(#mandalaGold)" stroke-width="1" opacity="0.6"/>
+          <circle cx="300" cy="300" r="6" fill="url(#mandalaGold)"/>
+
+          <!-- 8 Nan Hoa Bát Chánh Đạo (The 8 Spokes of Wisdom) -->
+          <g stroke="url(#mandalaGold)" stroke-width="1.6">
+            <line x1="300" y1="92" x2="300" y2="222"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(45 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(45 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(45 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(45 300 300)"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(90 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(90 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(90 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(90 300 300)"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(135 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(135 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(135 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(135 300 300)"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(180 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(180 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(180 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(180 300 300)"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(225 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(225 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(225 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(225 300 300)"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(270 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(270 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(270 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(270 300 300)"/>
+
+            <line x1="300" y1="92" x2="300" y2="222" transform="rotate(315 300 300)"/>
+            <line x1="295" y1="92" x2="295" y2="222" stroke-width="1" opacity="0.6" transform="rotate(315 300 300)"/>
+            <line x1="305" y1="92" x2="305" y2="222" stroke-width="1" opacity="0.6" transform="rotate(315 300 300)"/>
+            <circle cx="300" cy="157" r="5" fill="none" stroke-width="1.5" transform="rotate(315 300 300)"/>
+          </g>
+
+          <!-- 16 Cánh hoa sen hào quang quanh vành ngoài -->
+          <g fill="url(#mandalaGold)" opacity="0.8">
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(0 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(22.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(45 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(67.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(90 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(112.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(135 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(157.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(180 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(202.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(225 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(247.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(270 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(292.5 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(315 300 300)"/>
+            <path d="M 300 238 C 294 250 286 260 300 270 C 314 260 306 250 300 238 Z" transform="rotate(337.5 300 300)"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Canvas hạt bụi vàng quang minh lơ lửng -->
+      <canvas id="login-particles-canvas" class="login-particles-canvas"></canvas>
+
+      <!-- Khung thẻ đăng nhập chính -->
       <div class="login-card">
+        <!-- 4 Họa tiết hoa văn góc Phật giáo hoàng kim -->
+        <div class="card-corner corner-tl" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none"><path d="M2 34V6C2 3.8 3.8 2 6 2H34" stroke="url(#goldCornerGrad)" stroke-width="2" stroke-linecap="round"/><path d="M8 30V10C8 8.9 8.9 8 10 8H30" stroke="url(#goldCornerGrad)" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.75"/><circle cx="10" cy="10" r="2.5" fill="url(#goldCornerGrad)"/><path d="M2 14C5 14 8 11 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/><path d="M14 2C14 5 11 8 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/></svg>
+        </div>
+        <div class="card-corner corner-tr" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none"><path d="M2 34V6C2 3.8 3.8 2 6 2H34" stroke="url(#goldCornerGrad)" stroke-width="2" stroke-linecap="round"/><path d="M8 30V10C8 8.9 8.9 8 10 8H30" stroke="url(#goldCornerGrad)" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.75"/><circle cx="10" cy="10" r="2.5" fill="url(#goldCornerGrad)"/><path d="M2 14C5 14 8 11 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/><path d="M14 2C14 5 11 8 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/></svg>
+        </div>
+        <div class="card-corner corner-bl" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none"><path d="M2 34V6C2 3.8 3.8 2 6 2H34" stroke="url(#goldCornerGrad)" stroke-width="2" stroke-linecap="round"/><path d="M8 30V10C8 8.9 8.9 8 10 8H30" stroke="url(#goldCornerGrad)" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.75"/><circle cx="10" cy="10" r="2.5" fill="url(#goldCornerGrad)"/><path d="M2 14C5 14 8 11 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/><path d="M14 2C14 5 11 8 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/></svg>
+        </div>
+        <div class="card-corner corner-br" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none"><path d="M2 34V6C2 3.8 3.8 2 6 2H34" stroke="url(#goldCornerGrad)" stroke-width="2" stroke-linecap="round"/><path d="M8 30V10C8 8.9 8.9 8 10 8H30" stroke="url(#goldCornerGrad)" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.75"/><circle cx="10" cy="10" r="2.5" fill="url(#goldCornerGrad)"/><path d="M2 14C5 14 8 11 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/><path d="M14 2C14 5 11 8 8 8" stroke="url(#goldCornerGrad)" stroke-width="1.2"/></svg>
+        </div>
+
+        <!-- Chỉ viền đôi hoàng kim -->
+        <div class="card-inner-frame" aria-hidden="true"></div>
+
         <div class="login-header">
+          <!-- Huy hiệu Hoa Sen Tinh Khiết & Hào Quang Xoay -->
           <div class="login-badge-icon">
-            <svg class="mono-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3c1.5 3 4.5 6 4.5 9 0 3-2 5-4.5 6-2.5-1-4.5-3-4.5-6 0-3 3-6 4.5-9z"></path>
-              <path d="M7.5 12c-2.5 1-4 3-4 5.5 0 2 2 3.5 5 3.5 1.5 0 2.5-.5 3.5-1.5"></path>
-              <path d="M16.5 12c2.5 1 4 3 4 5.5 0 2-2 3.5-5 3.5-1.5 0-2.5-.5-3.5-1.5"></path>
+            <div class="lotus-halo-ring" aria-hidden="true"></div>
+            <svg class="sacred-lotus-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 47C24 51 40 51 46 47C44 51 38 53 32 53C26 53 20 51 18 47Z" fill="url(#lotusGoldGrad)"/>
+              <path d="M11 38C13 30 21 28 25 36C20 38 15 43 11 47C10 44 10 40 11 38Z" fill="url(#lotusPetalGrad)" opacity="0.85"/>
+              <path d="M53 38C51 30 43 28 39 36C44 38 49 43 53 47C54 44 54 40 53 38Z" fill="url(#lotusPetalGrad)" opacity="0.85"/>
+              <path d="M18 28C21 20 29 22 30 34C25 36 20 42 18 46C16 40 17 32 18 28Z" fill="url(#lotusPetalGrad)"/>
+              <path d="M46 28C43 20 35 22 34 34C39 36 44 42 46 46C48 40 47 32 46 28Z" fill="url(#lotusPetalGrad)"/>
+              <path d="M32 12C37 20 38 31 32 45C26 31 27 20 32 12Z" fill="url(#lotusCenterGrad)"/>
+              <path d="M32 12C34 19 34 27 32 37C30 27 30 19 32 12Z" fill="#fff" opacity="0.45"/>
+              <circle cx="32" cy="10" r="2.2" fill="#fffbeb"/>
             </svg>
           </div>
           <h2>Đăng nhập quản trị</h2>
           <p class="login-subtitle">Hệ thống quản lý không gian Chính Điện Tam Bảo</p>
+
+          <!-- Dải phân cách hoa sen Phật giáo -->
+          <div class="login-lotus-divider" aria-hidden="true">
+            <span class="divider-line"></span>
+            <svg class="divider-icon" viewBox="0 0 32 16" fill="none">
+              <path d="M16 1C17.2 4 19 6.5 19 8.5C19 10.5 17.8 11.8 16 12.8C14.2 11.8 13 10.5 13 8.5C13 6.5 14.8 4 16 1Z" fill="#fbbf24"/>
+              <path d="M12 7C10.5 8 9 9.5 9 11C9 12.5 10.2 13.5 11.8 13.5C12.8 13.5 13.8 13 14.5 12C13 11.2 12.2 9.5 12 7Z" fill="#f59e0b" opacity="0.85"/>
+              <path d="M20 7C21.5 8 23 9.5 23 11C23 12.5 21.8 13.5 20.2 13.5C19.2 13.5 18.2 13 17.5 12C19 11.2 19.8 9.5 20 7Z" fill="#f59e0b" opacity="0.85"/>
+              <circle cx="16" cy="14" r="1.5" fill="#fef3c7"/>
+            </svg>
+            <span class="divider-line"></span>
+          </div>
         </div>
 
         <form id="admin-login-form" class="login-form">
           <div class="form-group">
-            <label for="login-username">Tài khoản quản trị</label>
+            <label for="login-username">
+              <span class="label-bullet">❖</span> Tài khoản quản trị
+            </label>
             <div class="input-with-icon">
               <span class="input-icon">
-                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </span>
-              <input type="text" id="login-username" placeholder="Nhập tên đăng nhập..." autocomplete="username" required value="admin" />
+              <input type="text" id="login-username" placeholder="Nhập tên đăng nhập..." autocomplete="username" required />
             </div>
           </div>
 
           <div class="form-group">
-            <label for="login-password">Mật khẩu</label>
+            <label for="login-password">
+              <span class="label-bullet">❖</span> Mật khẩu
+            </label>
             <div class="input-with-icon">
               <span class="input-icon">
-                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </span>
-              <input type="password" id="login-password" placeholder="Nhập mật khẩu..." autocomplete="current-password" required value="admin123" />
+              <input type="password" id="login-password" placeholder="Nhập mật khẩu..." autocomplete="current-password" required />
+              <button type="button" id="btn-toggle-login-password" class="btn-toggle-password" title="Hiện / ẩn mật khẩu" aria-label="Hiện / ẩn mật khẩu">
+                <svg class="mono-svg-sm icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="mono-svg-sm icon-eye-off" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="23" x2="23" y2="1"></line>
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -64,13 +235,9 @@
             <span id="login-error-text">Tài khoản hoặc mật khẩu không chính xác</span>
           </div>
 
-          <div class="login-demo-hint">
-            <span>Tài khoản: admin | Mật khẩu: admin123</span>
-          </div>
-
           <button type="submit" class="btn-login-submit">
             <span>Đăng nhập hệ thống</span>
-            <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
@@ -79,7 +246,7 @@
 
         <div class="login-footer">
           <a href="/" class="login-back-home">
-            <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>

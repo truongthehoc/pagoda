@@ -1566,60 +1566,239 @@ html, body {
   flex-shrink: 0;
 }
 
-/* 8.1. MÀN HÌNH ĐĂNG NHẬP (LOGIN OVERLAY) */
+/* 8.1. MÀN HÌNH ĐĂNG NHẬP (LOGIN OVERLAY) - PHẬT GIÁO HOÀNG KIM TRANG NGHIÊM */
 .login-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(8px);
+  background: radial-gradient(circle at 50% 35%, rgba(26, 12, 6, 0.72) 0%, rgba(14, 7, 3, 0.88) 55%, rgba(6, 3, 1, 0.98) 100%),
+              url('/images/tam-bao-main.jpg') center 28% / cover no-repeat;
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeInModal 0.25s ease-out;
+  overflow: hidden;
+  animation: fadeInModal 0.35s ease-out;
 }
 
+/* Vầng hào quang trung tâm tỏa sáng huyền ảo */
+.login-ambient-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(650px, 95vw);
+  height: min(650px, 95vw);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.28) 0%, rgba(217, 119, 6, 0.14) 35%, rgba(180, 83, 9, 0.04) 65%, transparent 75%);
+  pointer-events: none;
+  z-index: 1;
+  animation: auraBreathe 6s ease-in-out infinite alternate;
+}
+
+@keyframes auraBreathe {
+  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.65; }
+  100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+}
+
+/* Bánh xe Pháp Luân (Dharmachakra / Mandala) thiêng liêng xoay chậm nền */
+.login-mandala-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(720px, 94vw);
+  height: min(720px, 94vw);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.16;
+  animation: rotateMandala 110s linear infinite;
+  filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.35));
+}
+
+.login-mandala-bg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes rotateMandala {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Canvas hạt bụi vàng quang minh lơ lửng */
+.login-particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Khung thẻ đăng nhập chính (Sacred Temple Glassmorphism) */
 .login-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.2);
-  border: 1px solid #e2e8f0;
-  width: 90%;
-  max-width: 420px;
-  padding: 36px 32px;
+  position: relative;
+  z-index: 5;
+  background: linear-gradient(165deg, rgba(28, 15, 8, 0.94) 0%, rgba(16, 8, 4, 0.98) 100%);
+  border-radius: 22px;
+  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.85),
+              0 0 45px rgba(245, 158, 11, 0.2),
+              inset 0 1px 0 rgba(254, 243, 199, 0.3),
+              inset 0 0 25px rgba(180, 83, 9, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  width: 92%;
+  max-width: 440px;
+  padding: 40px 34px 34px;
   text-align: center;
-  animation: scaleUpCard 0.25s ease-out;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: scaleUpCard 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
 @keyframes scaleUpCard {
-  from { opacity: 0; transform: scale(0.92); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.92) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* 4 Họa tiết góc Phật giáo hoàng kim (Traditional Buddhist Corner Ornaments) */
+.card-corner {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
+  transition: opacity 0.3s ease;
+}
+
+.card-corner svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.corner-tl { top: 9px; left: 9px; }
+.corner-tr { top: 9px; right: 9px; transform: scaleX(-1); }
+.corner-bl { bottom: 9px; left: 9px; transform: scaleY(-1); }
+.corner-br { bottom: 9px; right: 9px; transform: scale(-1); }
+
+/* Chỉ viền đôi hoàng kim thanh tịnh */
+.card-inner-frame {
+  position: absolute;
+  inset: 8px;
+  border: 1px dashed rgba(245, 158, 11, 0.25);
+  border-radius: 15px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Huy hiệu Hoa Sen Tinh Khiết & Hào Quang Xoay */
 .login-badge-icon {
-  width: 52px;
-  height: 52px;
+  position: relative;
+  width: 68px;
+  height: 68px;
   margin: 0 auto 16px;
-  border-radius: 14px;
-  background: #fdf2f8;
-  color: #af177a;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.35) 70%, rgba(69, 10, 10, 0.5) 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.45),
+              inset 0 0 15px rgba(245, 158, 11, 0.3);
+  animation: lotusGlow 4s ease-in-out infinite alternate;
+  z-index: 3;
+}
+
+@keyframes lotusGlow {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), inset 0 0 12px rgba(245, 158, 11, 0.25);
+  }
+  100% {
+    transform: scale(1.04);
+    box-shadow: 0 0 32px rgba(251, 191, 36, 0.65), inset 0 0 18px rgba(251, 191, 36, 0.45);
+  }
+}
+
+.lotus-halo-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.2px dashed rgba(251, 191, 36, 0.5);
+  animation: spinHaloRing 22s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spinHaloRing {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.sacred-lotus-svg {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+  display: block;
+}
+
+/* Tiêu đề & Dải phân cách hoa sen */
+.login-header {
+  position: relative;
+  z-index: 3;
+  margin-bottom: 22px;
 }
 
 .login-header h2 {
-  font-size: 1.45rem;
-  font-weight: 500;
-  color: #0f172a;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #fef3c7;
   margin-bottom: 6px;
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 35%, #fbbf24 75%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .login-subtitle {
-  font-size: 0.88rem;
-  color: #64748b;
-  margin-bottom: 24px;
+  font-size: 0.86rem;
+  color: rgba(254, 243, 199, 0.75);
+  margin-bottom: 14px;
   font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+.login-lotus-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 auto;
+  width: 85%;
+  opacity: 0.85;
+}
+
+.login-lotus-divider .divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.5), transparent);
+}
+
+.login-lotus-divider .divider-icon {
+  width: 26px;
+  height: 14px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+}
+
+/* Biểu mẫu đăng nhập */
+.login-form {
+  position: relative;
+  z-index: 3;
 }
 
 .login-form .form-group {
@@ -1628,11 +1807,19 @@ html, body {
 }
 
 .login-form label {
-  display: block;
-  font-size: 0.84rem;
-  font-weight: 400;
-  color: #475569;
-  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fde68a;
+  margin-bottom: 7px;
+  letter-spacing: 0.4px;
+}
+
+.login-form .label-bullet {
+  color: #f59e0b;
+  font-size: 0.78rem;
 }
 
 .input-with-icon {
@@ -1644,96 +1831,188 @@ html, body {
 .input-with-icon .input-icon {
   position: absolute;
   left: 14px;
-  color: #94a3b8;
+  color: #f59e0b;
   display: flex;
   align-items: center;
+  pointer-events: none;
+  transition: color 0.2s;
 }
 
 .input-with-icon input {
   width: 100%;
-  padding: 10px 14px 10px 42px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #0f172a;
-  background: #ffffff;
+  padding: 12px 42px 12px 42px;
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  color: #ffffff;
+  background: rgba(12, 6, 3, 0.75);
   outline: none;
   font-family: inherit;
   font-weight: 400;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.input-with-icon input::placeholder {
+  color: rgba(254, 243, 199, 0.35);
 }
 
 .input-with-icon input:focus {
-  border-color: #af177a;
-  box-shadow: 0 0 0 3px rgba(175, 23, 122, 0.12);
+  border-color: #fbbf24;
+  background: rgba(18, 9, 4, 0.9);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25),
+              0 0 20px rgba(245, 158, 11, 0.3),
+              inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-.login-error-alert {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-  font-size: 0.82rem;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-align: left;
-  font-weight: 400;
-}
-
-.login-demo-hint {
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  color: #64748b;
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: 400;
-}
-
-.btn-login-submit {
-  width: 100%;
-  background: #af177a;
-  color: #ffffff;
+/* Nút hiện / ẩn mật khẩu (Password Visibility Toggle) */
+.input-with-icon .btn-toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
   border: none;
-  border-radius: 8px;
-  padding: 11px;
-  font-weight: 500;
-  font-size: 0.92rem;
+  color: rgba(245, 158, 11, 0.65);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.input-with-icon .btn-toggle-password:hover {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+}
+
+/* Cảnh báo lỗi */
+.login-error-alert {
+  background: rgba(127, 29, 29, 0.55);
+  border: 1px solid rgba(239, 68, 68, 0.55);
+  color: #fee2e2;
+  font-size: 0.82rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
   gap: 8px;
+  text-align: left;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.login-error-alert svg {
+  color: #f87171;
+  flex-shrink: 0;
+}
+
+/* Nút Đăng nhập Hoàng Kim Phật Giáo */
+.btn-login-submit {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #991b1b 0%, #b45309 50%, #d97706 100%);
+  color: #ffffff;
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  border-radius: 10px;
+  padding: 13px 20px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   font-family: inherit;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 24px -4px rgba(180, 83, 9, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.btn-login-submit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transform: skewX(-25deg);
+  animation: btnSweep 4.5s infinite ease-in-out;
+}
+
+@keyframes btnSweep {
+  0% { left: -100%; }
+  35%, 100% { left: 160%; }
 }
 
 .btn-login-submit:hover {
-  background: #951268;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(217, 119, 6, 0.65),
+              0 0 25px rgba(245, 158, 11, 0.4);
+  filter: brightness(1.12);
+  border-color: rgba(251, 191, 36, 0.9);
 }
 
+.btn-login-submit:active {
+  transform: translateY(0);
+}
+
+/* Chân trang đăng nhập */
 .login-footer {
-  margin-top: 20px;
+  margin-top: 22px;
+  position: relative;
+  z-index: 3;
 }
 
 .login-back-home {
-  color: #64748b;
+  color: rgba(254, 243, 199, 0.7);
   text-decoration: none;
   font-size: 0.84rem;
-  font-weight: 400;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: color 0.2s;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
 }
 
 .login-back-home:hover {
-  color: #af177a;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.1);
+  transform: translateX(-3px);
+}
+
+.login-back-home svg {
+  transition: transform 0.25s ease;
+}
+
+.login-back-home:hover svg {
+  transform: translateX(-2px);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 32px 20px 24px;
+    width: 95%;
+  }
+  .login-header h2 {
+    font-size: 1.35rem;
+  }
+  .login-badge-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 14px;
+  }
+  .card-corner {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 /* 8.2. BỐ CỤC SIDEBAR & MAIN CONTENT */
