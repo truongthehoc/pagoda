@@ -84,12 +84,17 @@ class ModernAdminApp {
     this.bellVolumeLabel = document.getElementById('bell-volume-label');
     this.intervalChips = document.querySelectorAll('.btn-interval-chip');
     this.btnTestBell = document.getElementById('btn-test-bell');
+    this.bellSourceBadge = document.getElementById('bell-source-badge');
+    this.btnClearBellUrl = document.getElementById('btn-clear-bell-url');
+    this.bellAutoplayStatus = document.getElementById('bell-autoplay-status');
 
     this.woodenFishCustomUrl = document.getElementById('wooden-fish-custom-url');
     this.woodenFishCustomFile = document.getElementById('wooden-fish-custom-file');
     this.woodenFishVolumeSlider = document.getElementById('wooden-fish-volume-slider');
     this.woodenFishVolumeLabel = document.getElementById('wooden-fish-volume-label');
     this.btnTestWoodenFish = document.getElementById('btn-test-wooden-fish');
+    this.woodenFishSourceBadge = document.getElementById('wooden-fish-source-badge');
+    this.btnClearWoodenFishUrl = document.getElementById('btn-clear-wooden-fish-url');
 
     this.btnSaveBellConfig = document.getElementById('btn-save-bell-config');
     this.btnResetBellDefault = document.getElementById('btn-reset-bell-default');
@@ -1419,22 +1424,89 @@ class ModernAdminApp {
       }
     } catch (e) {}
 
+    // Helper cập nhật badge nguồn âm thanh
+    const updateBellSourceBadge = () => {
+      const hasCustom = Boolean(this.bellCustomUrl && this.bellCustomUrl.value.trim());
+      if (this.bellSourceBadge) {
+        this.bellSourceBadge.className = `sound-source-badge ${hasCustom ? 'badge-custom' : 'badge-default'}`;
+        this.bellSourceBadge.textContent = hasCustom ? '📁 Tệp âm thanh riêng' : '✨ Mặc định: Bộ tạo âm thanh tự nhiên';
+      }
+      if (this.btnClearBellUrl) {
+        this.btnClearBellUrl.style.display = hasCustom ? 'flex' : 'none';
+      }
+    };
+
+    const updateWoodenFishSourceBadge = () => {
+      const hasCustom = Boolean(this.woodenFishCustomUrl && this.woodenFishCustomUrl.value.trim());
+      if (this.woodenFishSourceBadge) {
+        this.woodenFishSourceBadge.className = `sound-source-badge ${hasCustom ? 'badge-custom' : 'badge-default'}`;
+        this.woodenFishSourceBadge.textContent = hasCustom ? '📁 Tệp âm thanh riêng' : '✨ Mặc định: Bộ tạo âm mõ gỗ tự nhiên';
+      }
+      if (this.btnClearWoodenFishUrl) {
+        this.btnClearWoodenFishUrl.style.display = hasCustom ? 'flex' : 'none';
+      }
+    };
+
     // Cấu hình Chuông
-    if (this.bellCustomUrl) this.bellCustomUrl.value = bellConfig.custom_url || bellConfig.customUrl || '';
-    if (this.bellAutoplayToggle) this.bellAutoplayToggle.checked = Boolean(bellConfig.auto_play ?? bellConfig.autoPlay ?? true);
-    if (this.bellIntervalInput) this.bellIntervalInput.value = bellConfig.interval_seconds || bellConfig.intervalSeconds || 60;
+    if (this.bellCustomUrl) {
+      this.bellCustomUrl.value = bellConfig.custom_url || bellConfig.customUrl || '';
+      this.bellCustomUrl.addEventListener('input', updateBellSourceBadge);
+    }
+    if (this.bellAutoplayToggle) {
+      this.bellAutoplayToggle.checked = Boolean(bellConfig.auto_play ?? bellConfig.autoPlay ?? true);
+      if (this.bellAutoplayStatus) {
+        this.bellAutoplayStatus.textContent = this.bellAutoplayToggle.checked ? 'Tự động phát' : 'Đã tạm dừng';
+      }
+      this.bellAutoplayToggle.addEventListener('change', () => {
+        if (this.bellAutoplayStatus) {
+          this.bellAutoplayStatus.textContent = this.bellAutoplayToggle.checked ? 'Tự động phát' : 'Đã tạm dừng';
+        }
+      });
+    }
+    if (this.bellIntervalInput) {
+      this.bellIntervalInput.value = bellConfig.interval_seconds || bellConfig.intervalSeconds || 60;
+      this.bellIntervalInput.addEventListener('input', () => {
+        const val = parseInt(this.bellIntervalInput.value, 10);
+        this.intervalChips.forEach(c => {
+          c.classList.toggle('active', parseInt(c.getAttribute('data-sec'), 10) === val);
+        });
+      });
+    }
 
     const initialBellVol = Math.round((bellConfig.volume || 0.85) * 100);
     if (this.bellVolumeSlider) this.bellVolumeSlider.value = initialBellVol;
     if (this.bellVolumeLabel) this.bellVolumeLabel.textContent = `${initialBellVol}%`;
 
+    // Nút xóa đường dẫn chuông riêng
+    if (this.btnClearBellUrl) {
+      this.btnClearBellUrl.addEventListener('click', () => {
+        if (this.bellCustomUrl) this.bellCustomUrl.value = '';
+        updateBellSourceBadge();
+        this.showToast('Đã khôi phục tiếng chuông chùa tự nhiên mặc định');
+      });
+    }
+
     // Cấu hình Mõ
     if (this.woodenFishCustomUrl) {
       this.woodenFishCustomUrl.value = bellConfig.wooden_fish_url || bellConfig.woodenFishUrl || '';
+      this.woodenFishCustomUrl.addEventListener('input', updateWoodenFishSourceBadge);
     }
     const initialWfVol = Math.round((bellConfig.wooden_fish_volume ?? bellConfig.woodenFishVolume ?? 0.9) * 100);
     if (this.woodenFishVolumeSlider) this.woodenFishVolumeSlider.value = initialWfVol;
     if (this.woodenFishVolumeLabel) this.woodenFishVolumeLabel.textContent = `${initialWfVol}%`;
+
+    // Nút xóa đường dẫn tiếng mõ riêng
+    if (this.btnClearWoodenFishUrl) {
+      this.btnClearWoodenFishUrl.addEventListener('click', () => {
+        if (this.woodenFishCustomUrl) this.woodenFishCustomUrl.value = '';
+        updateWoodenFishSourceBadge();
+        this.showToast('Đã khôi phục tiếng gõ mõ gỗ tự nhiên mặc định');
+      });
+    }
+
+    // Cập nhật trạng thái badge ban đầu
+    updateBellSourceBadge();
+    updateWoodenFishSourceBadge();
 
     // Chips chọn nhanh chu kỳ chuông
     this.intervalChips.forEach(chip => {
@@ -1482,6 +1554,7 @@ class ModernAdminApp {
           if (uploadRes.ok) {
             const data = await uploadRes.json();
             if (this.bellCustomUrl) this.bellCustomUrl.value = data.url;
+            updateBellSourceBadge();
             this.showToast('Đã tải tệp chuông lên server. Nhấn "Lưu Cấu Hình Âm Thanh Hệ Thống" để lưu.');
             this.bellCustomFile.value = '';
           }
@@ -1509,6 +1582,7 @@ class ModernAdminApp {
           if (uploadRes.ok) {
             const data = await uploadRes.json();
             if (this.woodenFishCustomUrl) this.woodenFishCustomUrl.value = data.url;
+            updateWoodenFishSourceBadge();
             this.showToast('Đã tải tệp tiếng mõ lên server. Nhấn "Lưu Cấu Hình Âm Thanh Hệ Thống" để lưu.');
             this.woodenFishCustomFile.value = '';
           }
@@ -1555,6 +1629,8 @@ class ModernAdminApp {
         );
 
         if (success) {
+          updateBellSourceBadge();
+          updateWoodenFishSourceBadge();
           this.showToast(`Đã lưu cấu hình Âm thanh hệ thống (Chuông & Mõ) vào MySQL!`);
         } else {
           this.showToast('Lỗi khi lưu cấu hình vào cơ sở dữ liệu', 'warning');
@@ -1566,7 +1642,10 @@ class ModernAdminApp {
     if (this.btnResetBellDefault) {
       this.btnResetBellDefault.addEventListener('click', async () => {
         if (this.bellCustomUrl) this.bellCustomUrl.value = '';
-        if (this.bellAutoplayToggle) this.bellAutoplayToggle.checked = true;
+        if (this.bellAutoplayToggle) {
+          this.bellAutoplayToggle.checked = true;
+          if (this.bellAutoplayStatus) this.bellAutoplayStatus.textContent = 'Tự động phát';
+        }
         if (this.bellIntervalInput) this.bellIntervalInput.value = 60;
         if (this.bellVolumeSlider) this.bellVolumeSlider.value = 85;
         if (this.bellVolumeLabel) this.bellVolumeLabel.textContent = '85%';
@@ -1574,6 +1653,9 @@ class ModernAdminApp {
         if (this.woodenFishCustomUrl) this.woodenFishCustomUrl.value = '';
         if (this.woodenFishVolumeSlider) this.woodenFishVolumeSlider.value = 90;
         if (this.woodenFishVolumeLabel) this.woodenFishVolumeLabel.textContent = '90%';
+
+        updateBellSourceBadge();
+        updateWoodenFishSourceBadge();
 
         this.intervalChips.forEach(chip => {
           chip.classList.toggle('active', chip.getAttribute('data-sec') === '60');

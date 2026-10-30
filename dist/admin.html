@@ -7,9 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/admin-C6Gxr1ck.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/analytics-CEsmLgZs.js">
-    <link rel="stylesheet" crossorigin href="/assets/analytics-CdtyrELr.css">
+    <script type="module" crossorigin src="/assets/admin-DVA4fFjH.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/analytics-qFOvvwMp.js">
+    <link rel="stylesheet" crossorigin href="/assets/analytics-CJ11noOy.css">
   </head>
   <body class="admin-light-body">
 
@@ -944,160 +944,222 @@
              ========================================== -->
         <section id="tab-bell" class="admin-tab-pane">
           <div class="modern-card">
+            
+            <!-- LƯỚI 2 THẺ ĐỒNG BỘ CÂN XỨNG: CHUÔNG & MÕ -->
             <div class="system-sounds-grid">
-              <!-- KHỐI 1: TIẾNG CHUÔNG CHÙA (ĐẠI HỒNG CHUNG) -->
+
+              <!-- THẺ 1: TIẾNG CHUÔNG CHÙA (ĐẠI HỒNG CHUNG) -->
               <div class="sound-config-card">
+                <!-- Header: Icon, Tiêu đề, & Nút nghe thử trực tiếp -->
                 <div class="sound-card-header">
-                  <div class="sound-icon-badge bell-badge">
-                    <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  <div class="sound-header-left">
+                    <div class="sound-icon-badge bell-badge">
+                      <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4>Tiếng Chuông Chùa</h4>
+                      <span class="altar-subtext">Đại Hồng Chung định kỳ • Ngân vang thanh tịnh</span>
+                    </div>
+                  </div>
+
+                  <button type="button" id="btn-test-bell" class="btn-sound-preview-pill" title="Nghe thử tiếng chuông">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
-                  </div>
-                  <div>
-                    <h4>1. Tiếng Chuông Chùa (Đại Hồng Chung)</h4>
-                    <span class="text-hint">Phát tự động định kỳ theo chu kỳ thời gian</span>
-                  </div>
+                    <span>Nghe thử</span>
+                  </button>
                 </div>
 
-                <div class="setting-item" style="margin-top: 14px;">
-                  <label class="setting-label">Tệp âm thanh chuông riêng:</label>
-                  <p class="setting-desc">Mặc định hệ thống tạo âm thanh Đại Hồng Chung ngân vang trầm ấm bằng Web Audio API synthesizer.</p>
-                  
-                  <div class="input-with-button">
-                    <input type="text" id="bell-custom-url" placeholder="Đường dẫn file âm thanh chuông (.mp3, .wav)..." />
+                <!-- Section 1: Nguồn âm thanh -->
+                <div class="sound-section-block">
+                  <div class="sound-section-title-row">
+                    <span class="sound-section-label">Nguồn âm thanh:</span>
+                    <span id="bell-source-badge" class="sound-source-badge badge-default">✨ Mặc định: Bộ tạo âm thanh tự nhiên</span>
                   </div>
 
-                  <div style="margin-top: 10px;">
-                    <label class="btn-secondary-action" style="display: inline-flex;">
+                  <div class="audio-input-action-group">
+                    <input type="text" id="bell-custom-url" class="audio-url-input" placeholder="Dán liên kết URL .mp3 hoặc tải tệp lên..." />
+                    <label class="btn-audio-upload-inline" title="Tải tệp âm thanh chuông từ máy tính">
                       <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
-                      <span>Tải tệp chuông từ máy tính</span>
+                      <span>Tải tệp</span>
                       <input type="file" id="bell-custom-file" accept="audio/*" style="display: none;" />
                     </label>
+                    <button type="button" id="btn-clear-bell-url" class="btn-audio-clear-inline" title="Xóa và khôi phục âm thanh tự nhiên" style="display: none;">✕</button>
+                  </div>
+                  <span class="sound-input-hint">Hỗ trợ tệp MP3, WAV. Để trống để dùng âm thanh Đại Hồng Chung trầm ấm mặc định.</span>
+                </div>
+
+                <!-- Section 2: Âm lượng -->
+                <div class="sound-section-block">
+                  <div class="sound-section-title-row">
+                    <span class="sound-section-label">Âm lượng tiếng chuông:</span>
+                    <span id="bell-volume-label" class="sound-volume-badge">85%</span>
+                  </div>
+                  <div class="sound-slider-wrapper">
+                    <span class="volume-speaker-icon">🔈</span>
+                    <input type="range" id="bell-volume-slider" min="10" max="100" value="85" class="sound-range-slider" />
+                    <span class="volume-speaker-icon">🔊</span>
                   </div>
                 </div>
 
-                <div class="setting-item" style="margin-top: 16px;">
-                  <label class="setting-label">Âm lượng tiếng chuông:</label>
-                  <div class="slider-with-label">
-                    <input type="range" id="bell-volume-slider" min="10" max="100" value="85" />
-                    <span id="bell-volume-label" class="slider-val">85%</span>
+                <!-- Section 3: Cài đặt chu kỳ thỉnh chuông -->
+                <div class="sound-section-block sound-behavior-block">
+                  <div class="sound-section-title-row" style="margin-bottom: 10px;">
+                    <span class="sound-section-label">Chu kỳ tự động thỉnh chuông:</span>
+                    <div class="toggle-switch-wrapper" style="margin: 0;">
+                      <input type="checkbox" id="bell-autoplay-toggle" checked />
+                      <label for="bell-autoplay-toggle" class="toggle-switch"></label>
+                      <span class="toggle-status-text" id="bell-autoplay-status" style="font-weight: 600; font-size: 0.78rem;">Tự động phát</span>
+                    </div>
+                  </div>
+
+                  <div class="interval-selection-row">
+                    <div class="interval-chips-wrapper">
+                      <button type="button" class="btn-interval-chip" data-sec="30">30 giây</button>
+                      <button type="button" class="btn-interval-chip active" data-sec="60">60 giây</button>
+                      <button type="button" class="btn-interval-chip" data-sec="120">2 phút</button>
+                      <button type="button" class="btn-interval-chip" data-sec="300">5 phút</button>
+                    </div>
+                    <div class="interval-custom-box">
+                      <span>Tùy chỉnh:</span>
+                      <input type="number" id="bell-interval-input" min="10" max="3600" value="60" />
+                      <span>giây</span>
+                    </div>
                   </div>
                 </div>
 
-                <div class="setting-item" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9;">
-                  <label class="setting-label">Cài đặt chu kỳ thỉnh chuông:</label>
-                  <div class="toggle-switch-wrapper" style="margin-bottom: 12px;">
-                    <input type="checkbox" id="bell-autoplay-toggle" checked />
-                    <label for="bell-autoplay-toggle" class="toggle-switch"></label>
-                    <span class="toggle-status-text">Tự động phát tiếng chuông theo chu kỳ định kỳ</span>
-                  </div>
-
-                  <p class="setting-desc">Khoảng cách giữa các lần tiếng chuông tự động ngân vang:</p>
-                  <div class="interval-presets">
-                    <button type="button" class="btn-interval-chip" data-sec="30">30 giây</button>
-                    <button type="button" class="btn-interval-chip active" data-sec="60">60 giây (1 phút)</button>
-                    <button type="button" class="btn-interval-chip" data-sec="120">2 phút</button>
-                    <button type="button" class="btn-interval-chip" data-sec="300">5 phút</button>
-                  </div>
-
-                  <div class="custom-interval-input" style="margin-top: 8px;">
-                    <span>Hoặc tùy chỉnh số giây:</span>
-                    <input type="number" id="bell-interval-input" min="10" max="3600" value="60" /> <span>giây</span>
-                  </div>
-                </div>
-
-                <div style="margin-top: 16px;">
-                  <button type="button" id="btn-test-bell" class="btn-primary-action" style="width: 100%; justify-content: center;">
-                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    <span>Nghe thử tiếng chuông</span>
-                  </button>
-                </div>
               </div>
 
-              <!-- KHỐI 2: TIẾNG MÕ CHÙA (WOODEN FISH) -->
+              <!-- THẺ 2: TIẾNG MÕ CHÙA (WOODEN FISH) -->
               <div class="sound-config-card">
+                <!-- Header: Icon, Tiêu đề, & Nút nghe thử trực tiếp -->
                 <div class="sound-card-header">
-                  <div class="sound-icon-badge wooden-fish-badge">
-                    <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="9"></circle>
-                      <path d="M8 12a4 4 0 0 0 8 0"></path>
-                      <circle cx="9" cy="9" r="1"></circle>
+                  <div class="sound-header-left">
+                    <div class="sound-icon-badge wooden-fish-badge">
+                      <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M8 12a4 4 0 0 0 8 0"></path>
+                        <circle cx="9" cy="9" r="1"></circle>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4>Tiếng Mõ Chùa</h4>
+                      <span class="altar-subtext">Âm gỗ thanh tịnh • Điểm nhịp tâm linh</span>
+                    </div>
+                  </div>
+
+                  <button type="button" id="btn-test-wooden-fish" class="btn-sound-preview-pill" title="Nghe thử tiếng mõ">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
-                  </div>
-                  <div>
-                    <h4>2. Tiếng Mõ Chùa (Wooden Fish)</h4>
-                    <span class="text-hint">Gán với nút Thắp Hương & Rút Thẻ Cầu An</span>
-                  </div>
+                    <span>Nghe thử</span>
+                  </button>
                 </div>
 
-                <div class="setting-item" style="margin-top: 14px;">
-                  <label class="setting-label">Tệp âm thanh tiếng mõ riêng:</label>
-                  <p class="setting-desc">Mặc định hệ thống tạo tiếng gõ mõ gỗ tự nhiên ấm áp qua Web Audio synthesizer.</p>
-                  
-                  <div class="input-with-button">
-                    <input type="text" id="wooden-fish-custom-url" placeholder="Đường dẫn file âm thanh tiếng mõ (.mp3, .wav)..." />
+                <!-- Section 1: Nguồn âm thanh -->
+                <div class="sound-section-block">
+                  <div class="sound-section-title-row">
+                    <span class="sound-section-label">Nguồn âm thanh:</span>
+                    <span id="wooden-fish-source-badge" class="sound-source-badge badge-default">✨ Mặc định: Bộ tạo âm mõ gỗ tự nhiên</span>
                   </div>
 
-                  <div style="margin-top: 10px;">
-                    <label class="btn-secondary-action" style="display: inline-flex;">
+                  <div class="audio-input-action-group">
+                    <input type="text" id="wooden-fish-custom-url" class="audio-url-input" placeholder="Dán liên kết URL .mp3 hoặc tải tệp lên..." />
+                    <label class="btn-audio-upload-inline" title="Tải tệp âm thanh tiếng mõ từ máy tính">
                       <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                       </svg>
-                      <span>Tải tệp tiếng mõ từ máy tính</span>
+                      <span>Tải tệp</span>
                       <input type="file" id="wooden-fish-custom-file" accept="audio/*" style="display: none;" />
                     </label>
+                    <button type="button" id="btn-clear-wooden-fish-url" class="btn-audio-clear-inline" title="Xóa và khôi phục âm thanh tự nhiên" style="display: none;">✕</button>
+                  </div>
+                  <span class="sound-input-hint">Hỗ trợ tệp MP3, WAV. Để trống để dùng tiếng gõ mõ gỗ tự nhiên ấm áp.</span>
+                </div>
+
+                <!-- Section 2: Âm lượng -->
+                <div class="sound-section-block">
+                  <div class="sound-section-title-row">
+                    <span class="sound-section-label">Âm lượng tiếng mõ:</span>
+                    <span id="wooden-fish-volume-label" class="sound-volume-badge">90%</span>
+                  </div>
+                  <div class="sound-slider-wrapper">
+                    <span class="volume-speaker-icon">🔈</span>
+                    <input type="range" id="wooden-fish-volume-slider" min="10" max="100" value="90" class="sound-range-slider" />
+                    <span class="volume-speaker-icon">🔊</span>
                   </div>
                 </div>
 
-                <div class="setting-item" style="margin-top: 16px;">
-                  <label class="setting-label">Âm lượng tiếng mõ:</label>
-                  <div class="slider-with-label">
-                    <input type="range" id="wooden-fish-volume-slider" min="10" max="100" value="90" />
-                    <span id="wooden-fish-volume-label" class="slider-val">90%</span>
+                <!-- Section 3: Hành vi tương tác tiếng mõ (Cân xứng chiều cao với chu kỳ chuông) -->
+                <div class="sound-section-block sound-behavior-block">
+                  <div class="sound-section-title-row" style="margin-bottom: 10px;">
+                    <span class="sound-section-label">Hành vi phát tiếng mõ:</span>
+                    <span class="sound-status-pill"><span class="live-dot-green"></span> Tự động kích hoạt</span>
+                  </div>
+
+                  <div class="sound-triggers-grid">
+                    <div class="sound-trigger-badge">
+                      <span class="trigger-icon">🪔</span>
+                      <div class="trigger-meta">
+                        <strong>Thắp Nén Hương</strong>
+                        <span>Điểm 3 tiếng mõ</span>
+                      </div>
+                    </div>
+                    <div class="sound-trigger-badge">
+                      <span class="trigger-icon">📜</span>
+                      <div class="trigger-meta">
+                        <strong>Rút Thẻ Cầu An</strong>
+                        <span>Khởi niệm thiền vị</span>
+                      </div>
+                    </div>
+                    <div class="sound-trigger-badge">
+                      <span class="trigger-icon">🙏</span>
+                      <div class="trigger-meta">
+                        <strong>Vái Lạy Tam Bảo</strong>
+                        <span>Đồng hành tâm niệm</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div class="altar-info-box" style="margin-top: 18px;">
-                  <h4>Gán chức năng tương tác:</h4>
-                  <p style="font-size: 0.82rem; color: #475569; margin: 4px 0 0 0; line-height: 1.5;">
-                    Tiếng mõ chùa thanh tịnh sẽ tự động gõ vang mỗi khi Phật tử bấm nút <strong>Thắp Nén Hương Thơm</strong> hoặc <strong>Rút Thẻ Cầu An</strong>, và đồng hành trong từng lần vái lạy Tam Bảo.
-                  </p>
-                </div>
+              </div>
 
-                <div style="margin-top: 24px;">
-                  <button type="button" id="btn-test-wooden-fish" class="btn-primary-action" style="width: 100%; justify-content: center;">
-                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                    <span>Nghe thử tiếng mõ</span>
-                  </button>
-                </div>
+            </div>
+
+            <!-- THANH THAO TÁC CHÂN TRANG HIỆN ĐẠI & THUẬN TIỆN -->
+            <div class="sound-actions-bar">
+              <div class="sound-sync-info">
+                <span class="live-dot-green"></span>
+                <span>Cấu hình âm thanh được đồng bộ và lưu trữ trực tiếp vào MySQL Database</span>
+              </div>
+              <div class="sound-actions-buttons">
+                <button type="button" id="btn-reset-bell-default" class="btn-sound-secondary">
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                  </svg>
+                  <span>Khôi phục mặc định</span>
+                </button>
+                <button type="button" id="btn-save-bell-config" class="btn-sound-primary">
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  <span>Lưu Cấu Hình Âm Thanh Hệ Thống</span>
+                </button>
               </div>
             </div>
 
-            <!-- Nút hành động Lưu & Đặt lại -->
-            <div class="config-actions-row" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
-              <button id="btn-save-bell-config" class="btn-primary-action">
-                <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                  <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                <span>Lưu Cấu Hình Âm Thanh Hệ Thống</span>
-              </button>
-              <button id="btn-reset-bell-default" class="btn-secondary-action">
-                <span>Khôi phục âm thanh mặc định</span>
-              </button>
-            </div>
           </div>
         </section>
 
