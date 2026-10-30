@@ -7,9 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/admin-BZxg6RSz.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/analytics-Bvf1b5p6.js">
-    <link rel="stylesheet" crossorigin href="/assets/analytics-BeNAlZts.css">
+    <script type="module" crossorigin src="/assets/admin-RlDF_Kt9.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/analytics-D3MEatT6.js">
+    <link rel="stylesheet" crossorigin href="/assets/analytics-BmQxToi2.css">
   </head>
   <body class="admin-light-body">
 
@@ -762,30 +762,27 @@
              ========================================== -->
         <section id="tab-altar" class="admin-tab-pane">
           <div class="modern-card">
-            <div class="card-header-row">
-              <div>
-                <h3>Hình Ảnh Bàn Thờ Tam Bảo</h3>
-                <p class="text-muted">Cập nhật hình ảnh tôn tượng Tam Bảo hiển thị trang nghiêm cho giao diện Máy tính (PC) và Điện thoại (Mobile)</p>
-              </div>
-            </div>
 
-            <!-- LƯỚI 2 THẺ GỌN GÀNG CHO PC VÀ MOBILE -->
+            <!-- LƯỚI 2 THẺ CÂN XỨNG HOÀN HẢO CHO PC VÀ MOBILE -->
             <div class="altar-cards-grid">
               
               <!-- THẺ 1: HÌNH ẢNH MÁY TÍNH (PC) -->
               <div class="altar-card">
                 <div class="altar-card-header">
-                  <div class="altar-card-icon pc-icon">
-                    <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                      <line x1="8" y1="21" x2="16" y2="21"></line>
-                      <line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
+                  <div class="altar-header-left">
+                    <div class="altar-card-icon pc-icon">
+                      <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4>Ảnh Cho Máy Tính (PC)</h4>
+                      <span class="altar-subtext">Khung hình ngang (tỉ lệ 16:9)</span>
+                    </div>
                   </div>
-                  <div>
-                    <h4>Ảnh Cho Máy Tính (PC)</h4>
-                    <span class="altar-subtext">Khung hình ngang (tỉ lệ 16:9)</span>
-                  </div>
+                  <span class="altar-mode-badge pc-badge">🖥️ Mặc định 16:9</span>
                 </div>
 
                 <div class="altar-card-preview pc-preview-frame">
@@ -803,45 +800,58 @@
                     <span>Tải Ảnh Mới Cho PC</span>
                     <input type="file" id="input-altar-file" accept="image/*" style="display: none;" />
                   </label>
-                  <span class="altar-format-hint">Hỗ trợ JPG, PNG, WEBP (tự động tối ưu dung lượng)</span>
+                  <span class="altar-format-hint">Hỗ trợ JPG, PNG, WEBP (tự động tối ưu nén ảnh)</span>
                 </div>
               </div>
 
               <!-- THẺ 2: HÌNH ẢNH ĐIỆN THOẠI (MOBILE) -->
               <div class="altar-card">
                 <div class="altar-card-header">
-                  <div class="altar-card-icon mobile-icon">
-                    <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                      <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
+                  <div class="altar-header-left">
+                    <div class="altar-card-icon mobile-icon">
+                      <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4>Ảnh Cho Điện Thoại (Mobile)</h4>
+                      <span class="altar-subtext">Khung hình dọc (tỉ lệ 9:16)</span>
+                    </div>
                   </div>
-                  <div style="flex: 1;">
-                    <h4>Ảnh Cho Điện Thoại (Mobile)</h4>
-                    <span class="altar-subtext">Khung hình dọc hoặc dùng chung ảnh PC</span>
+                  <!-- Công tắc dùng chung PC đặt gọn gàng trong Header giúp 2 bên cân xứng -->
+                  <div class="altar-header-toggle">
+                    <div class="toggle-switch-wrapper" title="Bật để tự động dùng chung ảnh PC, tắt để tải ảnh dọc riêng">
+                      <input type="checkbox" id="cb-use-pc-for-mobile" checked />
+                      <label for="cb-use-pc-for-mobile" class="toggle-switch"></label>
+                      <span class="toggle-status-text" style="font-weight: 600; font-size: 0.78rem;">Dùng chung PC</span>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Nút gạt dùng chung ảnh PC -->
-                <div class="altar-mobile-toggle-strip">
-                  <div class="toggle-switch-wrapper">
-                    <input type="checkbox" id="cb-use-pc-for-mobile" checked />
-                    <label for="cb-use-pc-for-mobile" class="toggle-switch"></label>
-                    <span class="toggle-status-text" style="font-weight: 600;">Dùng chung hình ảnh của Máy tính (PC)</span>
-                  </div>
-                </div>
-
-                <!-- Khung xem trước điện thoại -->
+                <!-- Khung xem trước điện thoại (Bắt đầu cùng hàng và cùng chiều cao với PC) -->
                 <div class="altar-card-preview mobile-preview-frame">
                   <div class="mobile-preview-inner">
+                    <div class="mobile-speaker-notch"></div>
                     <img id="altar-mobile-preview" src="/images/tam-bao-main.jpg" alt="Ảnh Tam Bảo Mobile" />
                     <span class="altar-badge-pill" id="mobile-preview-badge">Đang dùng ảnh PC</span>
                   </div>
                 </div>
 
-                <!-- Vùng nút tải ảnh riêng cho Mobile (ẩn khi chọn dùng chung PC) -->
+                <!-- Trạng thái 1: Khi đang dùng chung PC (cân bằng hoàn hảo với nút bấm bên PC) -->
+                <div class="altar-card-actions mobile-using-pc-hint" id="mobile-using-pc-hint">
+                  <div class="btn-altar-synced-placeholder">
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    <span>Đang tự động đồng bộ & canh giữa từ ảnh PC</span>
+                  </div>
+                  <span class="altar-format-hint">Gạt tắt công tắc "Dùng chung PC" ở trên để tải ảnh chụp dọc riêng</span>
+                </div>
+
+                <!-- Trạng thái 2: Khi tắt công tắc, hiển thị nút tải ảnh Mobile riêng -->
                 <div class="altar-card-actions" id="mobile-altar-custom-box" style="display: none;">
-                  <label class="btn-primary-action btn-altar-upload">
+                  <label class="btn-primary-action btn-altar-upload" style="background: linear-gradient(135deg, #af177a, #831843);">
                     <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                       <polyline points="17 8 12 3 7 8"></polyline>
@@ -851,11 +861,6 @@
                     <input type="file" id="input-altar-mobile-file" accept="image/*" style="display: none;" />
                   </label>
                   <span class="altar-format-hint">Khuyến nghị ảnh chụp dọc (tỉ lệ 9:16 hoặc 3:4)</span>
-                </div>
-
-                <!-- Ghi chú thân thiện khi đang dùng chung PC -->
-                <div class="altar-card-actions mobile-using-pc-hint" id="mobile-using-pc-hint">
-                  <span class="altar-info-text">💡 Điện thoại đang tự động canh giữa ảnh PC. Hãy gạt tắt công tắc ở trên nếu bạn muốn tải ảnh chụp dọc riêng.</span>
                 </div>
               </div>
 
