@@ -676,10 +676,13 @@
              ========================================== -->
         <section id="tab-logs" class="admin-tab-pane">
           <div class="modern-card">
-            <div class="card-header-row">
-              <div>
-                <h3>Nhật Ký Tương Tác Hệ Thống (Lịch Sử Đầy Đủ)</h3>
-                <p class="text-muted">Theo dõi toàn bộ lịch sử viếng thăm, dâng hương, rút thẻ và tâm nguyện của khách thập phương từ cơ sở dữ liệu MySQL</p>
+            <!-- Thanh công cụ & bộ lọc (Gọn gàng, không lặp tiêu đề) -->
+            <div class="logs-toolbar-header">
+              <div class="filter-chips-group">
+                <button type="button" class="log-filter-chip active" data-filter="all">Tất cả hoạt động (<span id="log-count-all">0</span>)</button>
+                <button type="button" class="log-filter-chip" data-filter="visit">Viếng thăm (<span id="log-count-visit">0</span>)</button>
+                <button type="button" class="log-filter-chip" data-filter="offering">Thắp hương (<span id="log-count-offering">0</span>)</button>
+                <button type="button" class="log-filter-chip" data-filter="blessing">Rút thẻ & Tâm nguyện (<span id="log-count-blessing">0</span>)</button>
               </div>
 
               <div class="wishes-toolbar-actions">
@@ -709,15 +712,13 @@
               </div>
             </div>
 
-            <!-- Thanh lọc loại hoạt động -->
-            <div class="wishes-filter-bar">
-              <div class="filter-chips-group">
-                <button type="button" class="log-filter-chip active" data-filter="all">Tất cả hoạt động (<span id="log-count-all">0</span>)</button>
-                <button type="button" class="log-filter-chip" data-filter="visit">Viếng thăm (<span id="log-count-visit">0</span>)</button>
-                <button type="button" class="log-filter-chip" data-filter="offering">Thắp hương (<span id="log-count-offering">0</span>)</button>
-                <button type="button" class="log-filter-chip" data-filter="blessing">Rút thẻ & Tâm nguyện (<span id="log-count-blessing">0</span>)</button>
-              </div>
+            <!-- Thanh phụ trạng thái đồng bộ -->
+            <div class="logs-sub-bar">
               <span class="wishes-summary-hint" id="logs-summary-hint">Hiển thị toàn bộ lịch sử tương tác</span>
+              <span class="logs-sync-status">
+                <span class="live-dot-green"></span>
+                Dữ liệu đồng bộ trực tiếp từ MySQL Database
+              </span>
             </div>
 
             <!-- Bảng danh sách nhật ký đầy đủ -->

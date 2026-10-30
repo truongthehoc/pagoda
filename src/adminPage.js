@@ -382,8 +382,8 @@ class ModernAdminApp {
         subtitle: 'Dữ liệu được lưu trữ và truy vấn trực tiếp từ MySQL Database'
       },
       'tab-logs': {
-        title: 'Nhật ký tương tác hệ thống (Lịch sử đầy đủ)',
-        subtitle: 'Xem toàn bộ lịch sử viếng thăm, dâng hương, rút thẻ và tâm nguyện của khách thập phương từ MySQL'
+        title: 'Nhật ký tương tác hệ thống',
+        subtitle: 'Theo dõi toàn bộ lịch sử viếng thăm, dâng hương, rút thẻ và tâm nguyện của khách thập phương từ MySQL'
       },
       'tab-altar': {
         title: 'Cập nhật hình ảnh Tam Bảo (PC & Mobile)',
@@ -538,6 +538,7 @@ class ModernAdminApp {
 
   async renderAnalyticsData() {
     const data = await AnalyticsTracker.getData();
+    this.cachedDashboardLogs = data.recentLogs || [];
 
     const kpiTotalVisits = document.getElementById('kpi-total-visits');
     const kpiTodayVisits = document.getElementById('kpi-today-visits');
@@ -740,7 +741,10 @@ class ModernAdminApp {
         if (!confirmClean) return;
 
         try {
-          const res = await fetch('/api/admin/clean-logs', { method: 'POST' });
+          let res = await fetch('/api/admin/clean-logs', { method: 'POST' });
+          if (!res.ok) {
+            res = await fetch('/api/analytics/clean-logs', { method: 'POST' });
+          }
           const data = await res.json();
           this.showToast(data.message || 'Đã dọn sạch nhật ký tương tác!');
           await this.loadFullLogs();
@@ -783,22 +787,114 @@ class ModernAdminApp {
       </tr>
     `;
 
+    let logs = [];
+    let loadSuccess = false;
+
+    // 1. Thử gọi API chuyên dụng /api/admin/logs
     try {
       const res = await fetch('/api/admin/logs?limit=500');
-      if (!res.ok) throw new Error('Không thể tải nhật ký');
-      const data = await res.json();
-      this.allFullLogs = data.logs || [];
+      if (res.ok) {
+        const data = await res.json();
+        logs = Array.isArray(data) ? data : (data.logs || []);
+        loadSuccess = true;
+      }
+    } catch (_) {}
+
+    // 2. Nếu thất bại, thử gọi alias /api/analytics/logs
+    if (!loadSuccess) {
+      try {
+        const res = await fetch('/api/analytics/logs?limit=500');
+        if (res.ok) {
+          const data = await res.json();
+          logs = Array.isArray(data) ? data : (data.logs || []);
+          loadSuccess = true;
+        }
+      } catch (_) {}
+    }
+
+    // 3. Nếu vẫn chưa được (ví dụ Node server trên VPS chưa restart nên các route mới trả về 404),
+    // tự động lấy nhật ký từ /api/analytics/dashboard (đang chạy và trả về recentLogs thực tế)
+    if (!loadSuccess) {
+      try {
+        const res = await fetch('/api/analytics/dashboard');
+        if (res.ok) {
+          const dashData = await res.json();
+          const rLogs = dashData.recentLogs || [];
+          if (rLogs.length > 0) {
+            logs = rLogs.map((l, idx) => ({
+              id: l.id || (idx + 1),
+              type: l.type || 'visit',
+              label: l.label || 'Khách thập phương viếng thăm Chính Điện',
+              ip_address: l.ip_address || '127.0.0.1',
+              full_time: l.full_time || (l.time ? `Hôm nay ${l.time}` : 'Vừa xong'),
+              time_str: l.time || 'Vừa xong',
+              date_str: 'Hôm nay'
+            }));
+            loadSuccess = true;
+          }
+        }
+      } catch (_) {}
+    }
+
+    // 4. Nếu vẫn chưa được, dùng cache từ trang Dashboard nếu đã load trước đó
+    if (!loadSuccess && this.cachedDashboardLogs && this.cachedDashboardLogs.length > 0) {
+      logs = this.cachedDashboardLogs.map((l, idx) => ({
+        id: l.id || (idx + 1),
+        type: l.type || 'visit',
+        label: l.label || 'Khách thập phương viếng thăm Chính Điện',
+        ip_address: l.ip_address || '127.0.0.1',
+        full_time: l.full_time || (l.time ? `Hôm nay ${l.time}` : 'Vừa xong'),
+        time_str: l.time || 'Vừa xong',
+        date_str: 'Hôm nay'
+      }));
+      loadSuccess = true;
+    }
+
+    // 5. Dự phòng cuối cùng: đọc từ localStorage cache
+    if (!loadSuccess) {
+      try {
+        const cachedRaw = localStorage.getItem('pagoda_analytics_cache');
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          const rLogs = cached.recentLogs || [];
+          if (rLogs.length > 0) {
+            logs = rLogs.map((l, idx) => ({
+              id: l.id || (idx + 1),
+              type: l.type || 'visit',
+              label: l.label || 'Khách thập phương viếng thăm Chính Điện',
+              ip_address: l.ip_address || '127.0.0.1',
+              full_time: l.full_time || (l.time ? `Hôm nay ${l.time}` : 'Vừa xong'),
+              time_str: l.time || 'Vừa xong',
+              date_str: 'Hôm nay'
+            }));
+            loadSuccess = true;
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (loadSuccess || logs.length > 0) {
+      this.allFullLogs = logs;
       this.updateLogCounters();
       this.renderFilteredLogs();
-    } catch (e) {
-      console.warn('Lỗi tải nhật ký:', e);
+    } else {
+      this.allFullLogs = [];
+      this.updateLogCounters();
       this.adminFullLogsTbody.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; color: #ef4444; padding: 24px;">
-            Không thể tải dữ liệu nhật ký tương tác từ máy chủ
+          <td colspan="6" style="text-align: center; color: #64748b; padding: 36px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <span style="font-size: 1.5rem;">📜</span>
+              <span style="font-weight: 500; color: #475569;">Chưa có bản ghi nhật ký tương tác nào hoặc đang chờ máy chủ đồng bộ</span>
+              <button type="button" id="btn-retry-logs" class="btn-card-action" style="margin-top: 8px;">
+                🔄 Thử tải lại nhật ký
+              </button>
+            </div>
           </td>
         </tr>
       `;
+      const btnRetry = document.getElementById('btn-retry-logs');
+      if (btnRetry) btnRetry.addEventListener('click', () => this.loadFullLogs());
     }
   }
 

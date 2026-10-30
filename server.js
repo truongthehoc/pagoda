@@ -252,6 +252,34 @@ pool.getConnection()
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
       `);
+
+      // Bảng analytics_logs (Nhật ký tương tác thời gian thực)
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS analytics_logs (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          action_type VARCHAR(30) NOT NULL,
+          ip_address VARCHAR(45) DEFAULT NULL,
+          label VARCHAR(255) NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
+      try {
+        await conn.query("ALTER TABLE analytics_logs ADD COLUMN ip_address VARCHAR(45) DEFAULT NULL");
+      } catch (_) {}
+      try {
+        await conn.query("ALTER TABLE analytics_logs ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+      } catch (_) {}
+
+      // Bảng analytics_daily_stats (Thống kê theo ngày)
+      await conn.query(`
+        CREATE TABLE IF NOT EXISTS analytics_daily_stats (
+          stat_date DATE PRIMARY KEY,
+          visits_count INT DEFAULT 0,
+          offerings_count INT DEFAULT 0,
+          blessings_count INT DEFAULT 0,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+      `);
     } catch (tblErr) {
       console.warn('Cảnh báo khởi tạo bảng database:', tblErr.message);
     }
@@ -896,11 +924,13 @@ app.get('/api/analytics/dashboard', async (req, res) => {
       SELECT 
         id,
         action_type AS type,
+        IFNULL(ip_address, '127.0.0.1') AS ip_address,
         label,
+        DATE_FORMAT(created_at, '%d/%m/%Y %H:%i:%s') AS full_time,
         DATE_FORMAT(created_at, '%H:%i') AS time
       FROM analytics_logs
       ORDER BY id DESC
-      LIMIT 10
+      LIMIT 50
     `);
 
     let totalWishes = 0;
@@ -932,10 +962,10 @@ app.get('/api/analytics/dashboard', async (req, res) => {
 });
 
 // ========================================================
-// 5.1. API LẤY TRỌN VẸN TOÀN BỘ NHẬT KÝ TƯƠNG TÁC (ADMIN)
+// 5.1. API LẤY TRỌN VẸN TOÀN BỘ NHẬT KÝ TƯƠNG TÁC (ADMIN & ANALYTICS)
 // ========================================================
-app.get('/api/admin/logs', async (req, res) => {
-  const limit = Math.min(parseInt(req.query.limit || '500', 10), 1000);
+const handleGetFullLogs = async (req, res) => {
+  const limit = Math.min(Math.max(1, parseInt(req.query.limit || '500', 10) || 500), 1000);
   const type = req.query.type;
   const search = req.query.search;
 
@@ -944,7 +974,7 @@ app.get('/api/admin/logs', async (req, res) => {
       SELECT 
         id,
         action_type AS type,
-        ip_address,
+        IFNULL(ip_address, '127.0.0.1') AS ip_address,
         label,
         created_at,
         DATE_FORMAT(created_at, '%d/%m/%Y %H:%i:%s') AS full_time,
@@ -968,17 +998,18 @@ app.get('/api/admin/logs', async (req, res) => {
       sql += ' WHERE ' + whereClauses.join(' AND ');
     }
 
-    sql += ' ORDER BY id DESC LIMIT ?';
-    params.push(limit);
+    // Luôn đưa limit an toàn trực tiếp vào chuỗi SQL để tương thích mọi phiên bản MySQL / MariaDB
+    sql += ` ORDER BY id DESC LIMIT ${limit}`;
 
     const [rows] = await pool.query(sql, params);
-    res.json({
+    return res.json({
       success: true,
       total: rows.length,
       logs: rows
     });
   } catch (err) {
-    let logs = fallbackDb.stats.recentLogs || [];
+    console.warn('Cảnh báo truy vấn nhật ký tương tác:', err.message);
+    let logs = (fallbackDb.stats && fallbackDb.stats.recentLogs) || [];
     if (type && type !== 'all') {
       logs = logs.filter(l => (l.type || 'visit') === type);
     }
@@ -986,7 +1017,7 @@ app.get('/api/admin/logs', async (req, res) => {
       const kw = search.trim().toLowerCase();
       logs = logs.filter(l => (l.label && l.label.toLowerCase().includes(kw)) || (l.ip_address && l.ip_address.toLowerCase().includes(kw)));
     }
-    res.json({
+    return res.json({
       success: true,
       total: logs.length,
       logs: logs.map(l => ({
@@ -1000,21 +1031,32 @@ app.get('/api/admin/logs', async (req, res) => {
       }))
     });
   }
-});
+};
+
+// Hỗ trợ cả 2 endpoint để đảm bảo tương thích mọi cấu hình reverse proxy / Nginx
+app.get('/api/admin/logs', handleGetFullLogs);
+app.get('/api/analytics/logs', handleGetFullLogs);
 
 // Dọn dẹp riêng bảng nhật ký tương tác
-app.post('/api/admin/clean-logs', async (req, res) => {
+const handleCleanFullLogs = async (req, res) => {
   try {
-    await pool.query('TRUNCATE TABLE analytics_logs');
-    fallbackDb.stats.recentLogs = [];
+    try {
+      await pool.query('TRUNCATE TABLE analytics_logs');
+    } catch (_) {
+      await pool.query('DELETE FROM analytics_logs');
+    }
+    if (fallbackDb.stats) fallbackDb.stats.recentLogs = [];
     saveFallbackDb();
     res.json({ success: true, message: 'Đã dọn sạch toàn bộ nhật ký tương tác' });
   } catch (err) {
-    fallbackDb.stats.recentLogs = [];
+    if (fallbackDb.stats) fallbackDb.stats.recentLogs = [];
     saveFallbackDb();
     res.json({ success: true, message: 'Đã dọn sạch toàn bộ nhật ký tương tác (Fallback)' });
   }
-});
+};
+
+app.post('/api/admin/clean-logs', handleCleanFullLogs);
+app.post('/api/analytics/clean-logs', handleCleanFullLogs);
 
 // ========================================================
 // 6. API TÂM NGUYỆN PHẬT TỬ (KÍNH DÂNG LÊN TAM BẢO)
