@@ -32,10 +32,30 @@ class ModernAdminApp {
     this.pageSubtitle = document.getElementById('page-subtitle');
     this.sidebarTrackBadge = document.getElementById('sidebar-track-badge');
 
-    // Tab 1: Thống kê
+    // Tab 1: Thống kê & Thống kê nhanh tâm nguyện
     this.btnRefreshStats = document.getElementById('btn-refresh-stats');
     this.barChartContainer = document.getElementById('analytics-bar-chart');
     this.logsListContainer = document.getElementById('analytics-logs-list');
+    this.kpiTotalWishes = document.getElementById('kpi-total-wishes');
+    this.dashboardWishesTbody = document.getElementById('dashboard-wishes-tbody');
+    this.dashboardWishesBadge = document.getElementById('dashboard-wishes-badge');
+    this.btnRefreshDashboardWishes = document.getElementById('btn-refresh-dashboard-wishes');
+
+    // Tab Mới: Nhật ký tương tác đầy đủ (Full Logs)
+    this.adminFullLogsTbody = document.getElementById('admin-full-logs-tbody');
+    this.btnRefreshFullLogs = document.getElementById('btn-refresh-full-logs');
+    this.btnCleanFullLogs = document.getElementById('btn-clean-full-logs');
+    this.logsSearchInput = document.getElementById('logs-search-input');
+    this.logFilterChips = document.querySelectorAll('.log-filter-chip');
+    this.logCountAll = document.getElementById('log-count-all');
+    this.logCountVisit = document.getElementById('log-count-visit');
+    this.logCountOffering = document.getElementById('log-count-offering');
+    this.logCountBlessing = document.getElementById('log-count-blessing');
+    this.logsTotalLabel = document.getElementById('logs-total-label');
+    this.logsSummaryHint = document.getElementById('logs-summary-hint');
+    this.allFullLogs = [];
+    this.logsFilterState = 'all';
+    this.logsSearchText = '';
 
     // Tab 2: Ảnh bàn thờ (PC & Mobile)
     this.currentAltarPreview = document.getElementById('altar-current-preview');
@@ -127,6 +147,7 @@ class ModernAdminApp {
     this.setupAuth();
     this.setupNavigation();
     this.initAnalyticsTab();
+    this.initLogsTab();
     await this.initAltarTab();
     await this.initMusicTab();
     await this.initBellTab();
@@ -360,6 +381,10 @@ class ModernAdminApp {
         title: 'Thống kê lượt truy cập',
         subtitle: 'Dữ liệu được lưu trữ và truy vấn trực tiếp từ MySQL Database'
       },
+      'tab-logs': {
+        title: 'Nhật ký tương tác hệ thống (Lịch sử đầy đủ)',
+        subtitle: 'Xem toàn bộ lịch sử viếng thăm, dâng hương, rút thẻ và tâm nguyện của khách thập phương từ MySQL'
+      },
       'tab-altar': {
         title: 'Cập nhật hình ảnh Tam Bảo (PC & Mobile)',
         subtitle: 'Cấu hình ảnh nền riêng cho máy tính và điện thoại hoặc dùng chung tiện lợi'
@@ -408,11 +433,28 @@ class ModernAdminApp {
 
         if (targetTab === 'tab-dashboard') {
           this.renderAnalyticsData();
+        } else if (targetTab === 'tab-logs') {
+          this.loadFullLogs();
         } else if (targetTab === 'tab-wishes') {
           this.loadAdminWishes();
         }
       });
     });
+
+    // Các nút chuyển hướng nhanh giữa các Tab
+    document.querySelectorAll('.btn-goto-logs-tab').forEach(btn => {
+      btn.addEventListener('click', () => this.switchTab('tab-logs'));
+    });
+    document.querySelectorAll('.btn-goto-wishes-tab').forEach(btn => {
+      btn.addEventListener('click', () => this.switchTab('tab-wishes'));
+    });
+  }
+
+  switchTab(tabId) {
+    const navBtn = document.querySelector(`.sidebar-nav .nav-item[data-tab="${tabId}"]`);
+    if (navBtn) {
+      navBtn.click();
+    }
   }
 
   // =========================================================================
@@ -501,11 +543,16 @@ class ModernAdminApp {
     const kpiTodayVisits = document.getElementById('kpi-today-visits');
     const kpiTotalOfferings = document.getElementById('kpi-total-offerings');
     const kpiTotalBlessings = document.getElementById('kpi-total-blessings');
+    const kpiTotalWishes = document.getElementById('kpi-total-wishes');
 
     if (kpiTotalVisits) kpiTotalVisits.textContent = (data.totalVisits || 0).toLocaleString('vi-VN');
     if (kpiTodayVisits) kpiTodayVisits.textContent = (data.todayVisits || 0).toLocaleString('vi-VN');
     if (kpiTotalOfferings) kpiTotalOfferings.textContent = (data.totalOfferings || 0).toLocaleString('vi-VN');
     if (kpiTotalBlessings) kpiTotalBlessings.textContent = (data.totalBlessings || 0).toLocaleString('vi-VN');
+    if (kpiTotalWishes) {
+      const wishesCount = data.totalWishes !== undefined ? data.totalWishes : (this.allWishes ? this.allWishes.length : 0);
+      kpiTotalWishes.textContent = (wishesCount || 0).toLocaleString('vi-VN');
+    }
 
     // Biểu đồ thanh 7 ngày từ MySQL
     if (this.barChartContainer) {
@@ -539,7 +586,7 @@ class ModernAdminApp {
       }
     }
 
-    // Nhật ký hoạt động từ MySQL
+    // Nhật ký hoạt động gần đây từ MySQL
     if (this.logsListContainer) {
       this.logsListContainer.innerHTML = '';
       const logs = data.recentLogs || [];
@@ -565,7 +612,7 @@ class ModernAdminApp {
               </svg>
             `;
             badgeClass = 'badge-amber';
-          } else if (log.type === 'blessing') {
+          } else if (log.type === 'blessing' || log.type === 'wish') {
             svgIcon = `
               <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -589,6 +636,273 @@ class ModernAdminApp {
         });
       }
     }
+
+    // Hiển thị thống kê nhanh danh sách tâm nguyện trên Dashboard
+    await this.renderDashboardWishes();
+  }
+
+  // =========================================================================
+  // 3.1. THỐNG KÊ NHANH TÂM NGUYỆN PHẬT TỬ TRÊN DASHBOARD
+  // =========================================================================
+  async renderDashboardWishes() {
+    if (!this.dashboardWishesTbody) return;
+
+    try {
+      if (!this.allWishes || this.allWishes.length === 0) {
+        const res = await fetch('/api/admin/wishes');
+        if (res.ok) {
+          this.allWishes = await res.json();
+        }
+      }
+
+      const wishes = this.allWishes || [];
+      if (this.dashboardWishesBadge) {
+        this.dashboardWishesBadge.textContent = `${wishes.length} tâm nguyện`;
+      }
+      const kpiTotalWishes = document.getElementById('kpi-total-wishes');
+      if (kpiTotalWishes) {
+        kpiTotalWishes.textContent = (wishes.length || 0).toLocaleString('vi-VN');
+      }
+
+      if (wishes.length === 0) {
+        this.dashboardWishesTbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: #94a3b8; padding: 28px; font-size: 0.86rem;">
+              Chưa có lời tâm nguyện nào được gửi về hệ thống
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      // Lấy 6 tâm nguyện mới nhất hiển thị nhanh
+      const recentWishes = wishes.slice(0, 6);
+      this.dashboardWishesTbody.innerHTML = recentWishes.map((w, index) => {
+        const initial = (w.author_name || 'P').trim().charAt(0).toUpperCase();
+        const details = [w.author_age ? `${w.author_age} tuổi` : '', w.author_address || ''].filter(Boolean).join(' • ');
+        const isApproved = w.is_approved === 1 || w.is_approved === true;
+
+        return `
+          <tr>
+            <td style="text-align: center; font-weight: 600; color: #94a3b8;">${index + 1}</td>
+            <td>
+              <div class="wish-author-card">
+                <div class="author-avatar-mini">${initial}</div>
+                <div class="author-names">
+                  <strong>${w.author_name}</strong>
+                  ${details ? `<span style="font-size: 0.75rem; color: #64748b;">${details}</span>` : ''}
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="wish-content-preview" title="${w.content}">"${w.content}"</span>
+            </td>
+            <td style="text-align: center; font-weight: 600; color: #e11d48;">
+              <span style="display: inline-flex; align-items: center; gap: 4px;">
+                🙏 ${w.likes_count || 1}
+              </span>
+            </td>
+            <td style="color: #64748b; font-size: 0.8rem; white-space: nowrap;">
+              ${w.time_ago || (w.created_at ? new Date(w.created_at).toLocaleDateString('vi-VN') : 'Mới đây')}
+            </td>
+            <td style="text-align: center;">
+              <span class="status-badge ${isApproved ? 'badge-approved' : 'badge-hidden'}">
+                ${isApproved ? 'Đang hiển thị' : 'Đang ẩn'}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    } catch (e) {
+      console.warn('Lỗi hiển thị thống kê nhanh tâm nguyện:', e);
+    }
+  }
+
+  // =========================================================================
+  // 3.2. TAB MỚI: NHẬT KÝ TƯƠNG TÁC CHI TIẾT ĐẦY ĐỦ (MYSQL)
+  // =========================================================================
+  initLogsTab() {
+    if (this.btnRefreshFullLogs) {
+      this.btnRefreshFullLogs.addEventListener('click', async () => {
+        await this.loadFullLogs();
+        this.showToast('Đã làm mới toàn bộ nhật ký tương tác');
+      });
+    }
+
+    if (this.btnCleanFullLogs) {
+      this.btnCleanFullLogs.addEventListener('click', async () => {
+        const confirmClean = window.confirm(
+          '⚠️ XÁC NHẬN DỌN DẸP NHẬT KÝ TƯƠNG TÁC:\n\n' +
+          'Thao tác này sẽ xóa sạch toàn bộ lịch sử tương tác được lưu trong MySQL.\n' +
+          'Số liệu thống kê tổng hợp và danh sách tâm nguyện vẫn được giữ nguyên.\n\n' +
+          'Bạn có chắc chắn muốn xóa nhật ký không?'
+        );
+        if (!confirmClean) return;
+
+        try {
+          const res = await fetch('/api/admin/clean-logs', { method: 'POST' });
+          const data = await res.json();
+          this.showToast(data.message || 'Đã dọn sạch nhật ký tương tác!');
+          await this.loadFullLogs();
+          await this.renderAnalyticsData();
+        } catch (e) {
+          this.showToast('Lỗi khi dọn nhật ký');
+        }
+      });
+    }
+
+    // Bộ lọc theo loại hành động
+    this.logFilterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        this.logFilterChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        this.logsFilterState = chip.getAttribute('data-filter') || 'all';
+        this.renderFilteredLogs();
+      });
+    });
+
+    // Tìm kiếm nhật ký theo từ khóa
+    if (this.logsSearchInput) {
+      this.logsSearchInput.addEventListener('input', (e) => {
+        this.logsSearchText = e.target.value.trim().toLowerCase();
+        this.renderFilteredLogs();
+      });
+    }
+  }
+
+  async loadFullLogs() {
+    if (!this.adminFullLogsTbody) return;
+    this.adminFullLogsTbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align: center; color: #64748b; padding: 36px;">
+          <div class="loading-state-box">
+            <span class="pulse-spin">🪷</span>
+            <span style="margin-left: 8px;">Đang tải toàn bộ nhật ký tương tác từ MySQL Database...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    try {
+      const res = await fetch('/api/admin/logs?limit=500');
+      if (!res.ok) throw new Error('Không thể tải nhật ký');
+      const data = await res.json();
+      this.allFullLogs = data.logs || [];
+      this.updateLogCounters();
+      this.renderFilteredLogs();
+    } catch (e) {
+      console.warn('Lỗi tải nhật ký:', e);
+      this.adminFullLogsTbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: #ef4444; padding: 24px;">
+            Không thể tải dữ liệu nhật ký tương tác từ máy chủ
+          </td>
+        </tr>
+      `;
+    }
+  }
+
+  updateLogCounters() {
+    const logs = this.allFullLogs || [];
+    const countAll = logs.length;
+    const countVisit = logs.filter(l => (l.type || 'visit') === 'visit').length;
+    const countOffering = logs.filter(l => l.type === 'offering').length;
+    const countBlessing = logs.filter(l => l.type === 'blessing' || l.type === 'wish').length;
+
+    if (this.logCountAll) this.logCountAll.textContent = countAll;
+    if (this.logCountVisit) this.logCountVisit.textContent = countVisit;
+    if (this.logCountOffering) this.logCountOffering.textContent = countOffering;
+    if (this.logCountBlessing) this.logCountBlessing.textContent = countBlessing;
+    if (this.logsTotalLabel) this.logsTotalLabel.textContent = `Tổng cộng: ${countAll} bản ghi nhật ký`;
+  }
+
+  renderFilteredLogs() {
+    if (!this.adminFullLogsTbody) return;
+
+    let filtered = [...this.allFullLogs];
+
+    if (this.logsFilterState !== 'all') {
+      if (this.logsFilterState === 'blessing') {
+        filtered = filtered.filter(l => l.type === 'blessing' || l.type === 'wish');
+      } else {
+        filtered = filtered.filter(l => (l.type || 'visit') === this.logsFilterState);
+      }
+    }
+
+    if (this.logsSearchText) {
+      filtered = filtered.filter(l => {
+        const label = (l.label || '').toLowerCase();
+        const ip = (l.ip_address || '').toLowerCase();
+        const time = (l.full_time || l.time_str || '').toLowerCase();
+        return label.includes(this.logsSearchText) || ip.includes(this.logsSearchText) || time.includes(this.logsSearchText);
+      });
+    }
+
+    if (this.logsSummaryHint) {
+      this.logsSummaryHint.textContent = `Hiển thị ${filtered.length} / ${this.allFullLogs.length} bản ghi`;
+    }
+
+    if (filtered.length === 0) {
+      this.adminFullLogsTbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: #94a3b8; padding: 36px;">
+            Không tìm thấy bản ghi nhật ký nào phù hợp với bộ lọc
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    this.adminFullLogsTbody.innerHTML = filtered.map((l, index) => {
+      let badgeTypeClass = 'type-visit';
+      let badgeTypeLabel = 'Viếng thăm';
+      let typeIcon = '👁️';
+
+      if (l.type === 'offering') {
+        badgeTypeClass = 'type-offering';
+        badgeTypeLabel = 'Thắp hương';
+        typeIcon = '🪔';
+      } else if (l.type === 'blessing' || l.type === 'wish') {
+        badgeTypeClass = 'type-blessing';
+        badgeTypeLabel = 'Cầu an & Nguyện';
+        typeIcon = '🙏';
+      }
+
+      const displayTime = l.full_time || (l.date_str ? `${l.date_str} ${l.time_str || ''}` : l.time || 'Vừa xong');
+      const ip = (l.ip_address || '127.0.0.1').replace(/^.*:/, '') || '127.0.0.1';
+
+      return `
+        <tr>
+          <td style="text-align: center; font-weight: 600; color: #94a3b8;">${index + 1}</td>
+          <td style="white-space: nowrap; color: #475569; font-size: 0.82rem;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <svg class="mono-svg-xs" style="color: #94a3b8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>${displayTime}</span>
+            </div>
+          </td>
+          <td style="text-align: center;">
+            <span class="badge-action-type ${badgeTypeClass}">
+              <span>${typeIcon}</span>
+              <span>${badgeTypeLabel}</span>
+            </span>
+          </td>
+          <td>
+            <span style="font-weight: 500; color: #0f172a; line-height: 1.4;">${l.label}</span>
+          </td>
+          <td style="text-align: center;">
+            <span class="mono-ip-chip">${ip}</span>
+          </td>
+          <td style="text-align: center;">
+            <span class="status-badge badge-approved" style="font-size: 0.72rem; padding: 3px 8px;">
+              ✓ Đã ghi nhận
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
   // =========================================================================

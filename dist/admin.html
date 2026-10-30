@@ -7,9 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="/assets/admin-UChqogZv.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/analytics-Bmx_JG2g.js">
-    <link rel="stylesheet" crossorigin href="/assets/analytics-ykTIgUTS.css">
+    <script type="module" crossorigin src="/assets/admin-DbgbiHjb.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/analytics-DBxA1aSt.js">
+    <link rel="stylesheet" crossorigin href="/assets/analytics-B_2A-dGf.css">
   </head>
   <body class="admin-light-body">
 
@@ -296,6 +296,19 @@
             <span class="nav-label">Thống kê truy cập</span>
           </button>
 
+          <button class="nav-item" data-tab="tab-logs">
+            <span class="nav-icon">
+              <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </span>
+            <span class="nav-label">Nhật ký tương tác</span>
+          </button>
+
           <span class="nav-category" style="margin-top: 18px;">CẤU HÌNH KHÔNG GIAN</span>
 
           <button class="nav-item" data-tab="tab-altar">
@@ -534,6 +547,21 @@
                 <span>Lời nguyện cầu gia đạo bình an</span>
               </div>
             </div>
+
+            <div class="kpi-card card-purple">
+              <div class="kpi-header">
+                <span class="kpi-title">Tâm nguyện Phật tử</span>
+                <span class="kpi-icon-badge">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                  </svg>
+                </span>
+              </div>
+              <div class="kpi-value" id="kpi-total-wishes">0</div>
+              <div class="kpi-trend positive">
+                <span>Lời nguyện cầu dâng Tam Bảo</span>
+              </div>
+            </div>
           </div>
 
           <!-- Lưới 2 cột: Biểu đồ & Nhật ký -->
@@ -560,6 +588,13 @@
                   <p class="text-muted">Các hoạt động vừa diễn ra trên hệ thống</p>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
+                  <button type="button" class="btn-card-action btn-goto-logs-tab" title="Mở trang nhật ký đầy đủ">
+                    <span>Xem đầy đủ</span>
+                    <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </button>
                   <button id="btn-refresh-stats" class="btn-card-action" title="Tải lại số liệu">
                     <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M23 4v6h-6"></path>
@@ -579,6 +614,144 @@
               </div>
 
               <div id="analytics-logs-list" class="activity-logs-list"></div>
+            </div>
+          </div>
+
+          <!-- Thống kê nhanh danh sách Tâm Nguyện Phật Tử -->
+          <div class="modern-card dashboard-wishes-card" style="margin-top: 24px;">
+            <div class="card-header-row">
+              <div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <h3>Tâm Nguyện Phật Tử Mới Nhất</h3>
+                  <span class="badge-chip badge-purple" id="dashboard-wishes-badge">0 tâm nguyện</span>
+                </div>
+                <p class="text-muted">Thống kê nhanh các lời nguyện cầu gia đạo bình an mới nhất dâng lên Tam Bảo</p>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button type="button" id="btn-refresh-dashboard-wishes" class="btn-card-action" title="Tải lại danh sách tâm nguyện">
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M1 20v-6h6"></path>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  </svg>
+                  <span>Làm mới</span>
+                </button>
+                <button type="button" class="btn-card-action btn-goto-wishes-tab" title="Đi tới trang quản lý toàn bộ tâm nguyện">
+                  <span>Quản lý tất cả tâm nguyện</span>
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="dashboard-wishes-table-wrap">
+              <table class="modern-table dashboard-wishes-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px; text-align: center;">STT</th>
+                    <th style="width: 220px;">Phật tử dâng lễ</th>
+                    <th>Nội dung lời tâm nguyện</th>
+                    <th style="width: 100px; text-align: center;">Chắp tay</th>
+                    <th style="width: 130px;">Thời gian</th>
+                    <th style="width: 130px; text-align: center;">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-wishes-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: #64748b; padding: 24px;">
+                      <div class="loading-state-box">
+                        <span class="pulse-spin">🪷</span>
+                        <span>Đang tải danh sách tâm nguyện...</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB MỚI: NHẬT KÝ TƯƠNG TÁC CHI TIẾT ĐẦY ĐỦ
+             ========================================== -->
+        <section id="tab-logs" class="admin-tab-pane">
+          <div class="modern-card">
+            <div class="card-header-row">
+              <div>
+                <h3>Nhật Ký Tương Tác Hệ Thống (Lịch Sử Đầy Đủ)</h3>
+                <p class="text-muted">Theo dõi toàn bộ lịch sử viếng thăm, dâng hương, rút thẻ và tâm nguyện của khách thập phương từ cơ sở dữ liệu MySQL</p>
+              </div>
+
+              <div class="wishes-toolbar-actions">
+                <div class="wishes-search-box">
+                  <svg class="mono-svg-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input type="text" id="logs-search-input" placeholder="Tìm kiếm nội dung nhật ký, IP..." />
+                </div>
+
+                <button type="button" id="btn-refresh-full-logs" class="btn-card-action" title="Tải lại toàn bộ nhật ký">
+                  <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  <span>Làm mới</span>
+                </button>
+
+                <button type="button" id="btn-clean-full-logs" class="btn-card-action" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.35);" title="Dọn sạch toàn bộ nhật ký">
+                  <svg class="mono-svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>Dọn nhật ký</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Thanh lọc loại hoạt động -->
+            <div class="wishes-filter-bar">
+              <div class="filter-chips-group">
+                <button type="button" class="log-filter-chip active" data-filter="all">Tất cả hoạt động (<span id="log-count-all">0</span>)</button>
+                <button type="button" class="log-filter-chip" data-filter="visit">Viếng thăm (<span id="log-count-visit">0</span>)</button>
+                <button type="button" class="log-filter-chip" data-filter="offering">Thắp hương (<span id="log-count-offering">0</span>)</button>
+                <button type="button" class="log-filter-chip" data-filter="blessing">Rút thẻ & Tâm nguyện (<span id="log-count-blessing">0</span>)</button>
+              </div>
+              <span class="wishes-summary-hint" id="logs-summary-hint">Hiển thị toàn bộ lịch sử tương tác</span>
+            </div>
+
+            <!-- Bảng danh sách nhật ký đầy đủ -->
+            <div class="wishes-table-fullwidth-wrap">
+              <table class="wishes-table-fullwidth logs-full-table">
+                <thead>
+                  <tr>
+                    <th style="width: 60px; text-align: center;">STT</th>
+                    <th style="width: 180px;">Thời gian đầy đủ</th>
+                    <th style="width: 150px; text-align: center;">Hành động</th>
+                    <th>Chi tiết hoạt động</th>
+                    <th style="width: 140px; text-align: center;">Địa chỉ IP</th>
+                    <th style="width: 120px; text-align: center;">Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-full-logs-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: #64748b; padding: 36px;">
+                      <div class="loading-state-box">
+                        <span class="pulse-spin">🪷</span>
+                        <span>Đang tải nhật ký tương tác từ MySQL Database...</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Chân bảng tổng kết nhật ký -->
+            <div class="wishes-table-footer" style="display: flex; justify-content: space-between; align-items: center;">
+              <span id="logs-total-label">Tổng cộng: 0 bản ghi nhật ký</span>
+              <span class="text-hint">Dữ liệu được lưu trữ tự động theo thời gian thực trong MySQL</span>
             </div>
           </div>
         </section>

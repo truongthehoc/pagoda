@@ -903,6 +903,16 @@ app.get('/api/analytics/dashboard', async (req, res) => {
       LIMIT 10
     `);
 
+    let totalWishes = 0;
+    try {
+      const [wishesCount] = await pool.query('SELECT COUNT(*) AS total_wishes FROM prayers_wishes');
+      if (wishesCount && wishesCount[0]) {
+        totalWishes = Number(wishesCount[0].total_wishes);
+      }
+    } catch (_) {
+      totalWishes = fallbackDb.wishes ? fallbackDb.wishes.length : 0;
+    }
+
     res.json({
       totalVisits: Number(totals[0].total_visits),
       todayVisits: Number(todayStat.visits_count),
@@ -910,11 +920,99 @@ app.get('/api/analytics/dashboard', async (req, res) => {
       todayOfferings: Number(todayStat.offerings_count),
       totalBlessings: Number(totals[0].total_blessings),
       todayBlessings: Number(todayStat.blessings_count),
+      totalWishes,
       history,
       recentLogs: logs
     });
   } catch (err) {
-    res.json(fallbackDb.stats);
+    const statsData = { ...fallbackDb.stats };
+    statsData.totalWishes = fallbackDb.wishes ? fallbackDb.wishes.length : 0;
+    res.json(statsData);
+  }
+});
+
+// ========================================================
+// 5.1. API LẤY TRỌN VẸN TOÀN BỘ NHẬT KÝ TƯƠNG TÁC (ADMIN)
+// ========================================================
+app.get('/api/admin/logs', async (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit || '500', 10), 1000);
+  const type = req.query.type;
+  const search = req.query.search;
+
+  try {
+    let sql = `
+      SELECT 
+        id,
+        action_type AS type,
+        ip_address,
+        label,
+        created_at,
+        DATE_FORMAT(created_at, '%d/%m/%Y %H:%i:%s') AS full_time,
+        DATE_FORMAT(created_at, '%H:%i:%s') AS time_str,
+        DATE_FORMAT(created_at, '%d/%m/%Y') AS date_str
+      FROM analytics_logs
+    `;
+    const params = [];
+    const whereClauses = [];
+
+    if (type && type !== 'all') {
+      whereClauses.push('action_type = ?');
+      params.push(type);
+    }
+    if (search && search.trim()) {
+      whereClauses.push('(label LIKE ? OR ip_address LIKE ?)');
+      params.push(`%${search.trim()}%`, `%${search.trim()}%`);
+    }
+
+    if (whereClauses.length > 0) {
+      sql += ' WHERE ' + whereClauses.join(' AND ');
+    }
+
+    sql += ' ORDER BY id DESC LIMIT ?';
+    params.push(limit);
+
+    const [rows] = await pool.query(sql, params);
+    res.json({
+      success: true,
+      total: rows.length,
+      logs: rows
+    });
+  } catch (err) {
+    let logs = fallbackDb.stats.recentLogs || [];
+    if (type && type !== 'all') {
+      logs = logs.filter(l => (l.type || 'visit') === type);
+    }
+    if (search && search.trim()) {
+      const kw = search.trim().toLowerCase();
+      logs = logs.filter(l => (l.label && l.label.toLowerCase().includes(kw)) || (l.ip_address && l.ip_address.toLowerCase().includes(kw)));
+    }
+    res.json({
+      success: true,
+      total: logs.length,
+      logs: logs.map(l => ({
+        id: l.id,
+        type: l.type || 'visit',
+        ip_address: l.ip_address || '127.0.0.1',
+        label: l.label,
+        full_time: l.full_time || `${new Date().toLocaleDateString('vi-VN')} ${l.time || '10:00:00'}`,
+        time_str: l.time || '10:00:00',
+        date_str: new Date().toLocaleDateString('vi-VN')
+      }))
+    });
+  }
+});
+
+// Dọn dẹp riêng bảng nhật ký tương tác
+app.post('/api/admin/clean-logs', async (req, res) => {
+  try {
+    await pool.query('TRUNCATE TABLE analytics_logs');
+    fallbackDb.stats.recentLogs = [];
+    saveFallbackDb();
+    res.json({ success: true, message: 'Đã dọn sạch toàn bộ nhật ký tương tác' });
+  } catch (err) {
+    fallbackDb.stats.recentLogs = [];
+    saveFallbackDb();
+    res.json({ success: true, message: 'Đã dọn sạch toàn bộ nhật ký tương tác (Fallback)' });
   }
 });
 
