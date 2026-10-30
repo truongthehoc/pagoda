@@ -2548,7 +2548,7 @@ html, body {
   color: #0f172a;
 }
 
-/* 8.3. KPI CARDS (DASHBOARD) */
+/* 8.3. KPI CARDS (DASHBOARD) - PHONG CÁCH & HỌA TIẾT PHẬT GIÁO */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -2575,19 +2575,42 @@ html, body {
 }
 
 .kpi-card {
+  position: relative;
+  overflow: hidden;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 18px 20px;
+  border-radius: 14px;
+  padding: 18px 20px 16px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.025);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3.5px;
+  border-radius: 14px 14px 0 0;
+  opacity: 0.85;
+  transition: height 0.25s ease, opacity 0.25s ease;
+  z-index: 2;
 }
 
 .kpi-card:hover {
-  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.kpi-card:hover::before {
+  height: 4.5px;
+  opacity: 1;
 }
 
 .kpi-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2595,36 +2618,192 @@ html, body {
 
 .kpi-title {
   font-size: 0.84rem;
-  font-weight: 400;
-  color: #64748b;
+  font-weight: 500;
+  color: #475569;
+  letter-spacing: 0.1px;
 }
 
 .kpi-icon-badge {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
 }
 
-.card-blue .kpi-icon-badge { background: #eff6ff; color: #2563eb; }
-.card-amber .kpi-icon-badge { background: #fffbeb; color: #d97706; }
-.card-rose .kpi-icon-badge { background: #fff1f2; color: #e11d48; }
-.card-emerald .kpi-icon-badge { background: #ecfdf5; color: #059669; }
-.card-purple .kpi-icon-badge { background: #fdf2f8; color: #af177a; }
+.kpi-card:hover .kpi-icon-badge {
+  transform: scale(1.06);
+}
 
 .kpi-value {
-  font-size: 1.8rem;
-  font-weight: 500;
+  position: relative;
+  z-index: 2;
+  font-size: 1.85rem;
+  font-weight: 600;
   color: #0f172a;
-  margin: 8px 0 4px;
+  margin: 10px 0 4px;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
 }
 
 .kpi-trend {
+  position: relative;
+  z-index: 2;
   font-size: 0.74rem;
   color: #64748b;
   font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.3;
+}
+
+.kpi-buddhist-dot {
+  font-size: 0.68rem;
+  opacity: 0.85;
+  display: inline-block;
+  line-height: 1;
+}
+
+/* HỌA TIẾT THỦY ẤN PHẬT GIÁO (WATERMARK BACKGROUND) */
+.kpi-watermark {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 105px;
+  height: 105px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.08;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+.kpi-card:hover .kpi-watermark {
+  opacity: 0.17;
+  transform: scale(1.08) rotate(4deg);
+}
+
+/* 1. SẮC LAM BẢO QUANG (TỔNG LƯỢT TRUY CẬP - CỔNG CHÙA TAM QUAN & LIÊN HOA MANDALA) */
+.card-buddhist-blue, .card-blue {
+  background: linear-gradient(145deg, #ffffff 0%, #f9fbff 60%, #eef5ff 100%);
+  border-color: #dbeafe;
+}
+.card-buddhist-blue::before, .card-blue::before {
+  background: linear-gradient(90deg, #1d4ed8, #60a5fa);
+}
+.card-buddhist-blue:hover, .card-blue:hover {
+  border-color: #93c5fd;
+}
+.card-buddhist-blue .kpi-icon-badge, .card-blue .kpi-icon-badge {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 2px 4px rgba(29, 78, 216, 0.08);
+}
+.card-buddhist-blue .kpi-watermark, .card-blue .kpi-watermark {
+  color: #1d4ed8;
+}
+.card-buddhist-blue .kpi-buddhist-dot, .card-blue .kpi-buddhist-dot {
+  color: #2563eb;
+}
+
+/* 2. SẮC HOÀNG Y KIM QUANG (LƯỢT HÔM NAY - BÁNH XE PHÁP LUÂN CHUYỂN ĐỘNG LIÊN TỤC) */
+.card-buddhist-gold, .card-amber {
+  background: linear-gradient(145deg, #ffffff 0%, #fffef8 60%, #fef9e8 100%);
+  border-color: #fef08a;
+}
+.card-buddhist-gold::before, .card-amber::before {
+  background: linear-gradient(90deg, #b45309, #f59e0b, #fbbf24);
+}
+.card-buddhist-gold:hover, .card-amber:hover {
+  border-color: #fde047;
+}
+.card-buddhist-gold .kpi-icon-badge, .card-amber .kpi-icon-badge {
+  background: #fefce8;
+  color: #b45309;
+  border: 1px solid #fde047;
+  box-shadow: 0 2px 4px rgba(180, 83, 9, 0.08);
+}
+.card-buddhist-gold .kpi-watermark, .card-amber .kpi-watermark {
+  color: #d97706;
+}
+.card-buddhist-gold .kpi-buddhist-dot, .card-amber .kpi-buddhist-dot {
+  color: #d97706;
+}
+
+/* 3. SẮC TRẦM HƯƠNG CHU SA (THẮP HƯƠNG THƠM - LƯ ĐỒNG & MÂY CÁT TƯỜNG) */
+.card-buddhist-incense, .card-rose {
+  background: linear-gradient(145deg, #ffffff 0%, #fffbfb 60%, #fff1f2 100%);
+  border-color: #fecdd3;
+}
+.card-buddhist-incense::before, .card-rose::before {
+  background: linear-gradient(90deg, #b91c1c, #e11d48, #fb7185);
+}
+.card-buddhist-incense:hover, .card-rose:hover {
+  border-color: #fca5a5;
+}
+.card-buddhist-incense .kpi-icon-badge, .card-rose .kpi-icon-badge {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+  box-shadow: 0 2px 4px rgba(190, 18, 60, 0.08);
+}
+.card-buddhist-incense .kpi-watermark, .card-rose .kpi-watermark {
+  color: #e11d48;
+}
+.card-buddhist-incense .kpi-buddhist-dot, .card-rose .kpi-buddhist-dot {
+  color: #e11d48;
+}
+
+/* 4. SẮC BỒ ĐỀ NGỌC BÍCH (RÚT THẺ CẦU AN - LÁ BỒ ĐỀ GIÁC NGỘ & KINH VĂN BÌNH AN) */
+.card-buddhist-emerald, .card-emerald {
+  background: linear-gradient(145deg, #ffffff 0%, #f7fdfa 60%, #ecfdf5 100%);
+  border-color: #a7f3d0;
+}
+.card-buddhist-emerald::before, .card-emerald::before {
+  background: linear-gradient(90deg, #047857, #10b981, #34d399);
+}
+.card-buddhist-emerald:hover, .card-emerald:hover {
+  border-color: #6ee7b7;
+}
+.card-buddhist-emerald .kpi-icon-badge, .card-emerald .kpi-icon-badge {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  box-shadow: 0 2px 4px rgba(4, 120, 87, 0.08);
+}
+.card-buddhist-emerald .kpi-watermark, .card-emerald .kpi-watermark {
+  color: #059669;
+}
+.card-buddhist-emerald .kpi-buddhist-dot, .card-emerald .kpi-buddhist-dot {
+  color: #059669;
+}
+
+/* 5. SẮC HỒNG LIÊN BẠCH HOA (TÂM NGUYỆN PHẬT TỬ - ĐÓA SEN HÉ NỞ & NGUYỆN CẦU TAM BẢO) */
+.card-buddhist-lotus, .card-purple {
+  background: linear-gradient(145deg, #ffffff 0%, #fdf8fb 60%, #fdf2f8 100%);
+  border-color: #fbcfe8;
+}
+.card-buddhist-lotus::before, .card-purple::before {
+  background: linear-gradient(90deg, #831843, #af177a, #f472b6);
+}
+.card-buddhist-lotus:hover, .card-purple:hover {
+  border-color: #f472b6;
+}
+.card-buddhist-lotus .kpi-icon-badge, .card-purple .kpi-icon-badge {
+  background: #fdf2f8;
+  color: #831843;
+  border: 1px solid #fbcfe8;
+  box-shadow: 0 2px 4px rgba(131, 24, 67, 0.08);
+}
+.card-buddhist-lotus .kpi-watermark, .card-purple .kpi-watermark {
+  color: #af177a;
+}
+.card-buddhist-lotus .kpi-buddhist-dot, .card-purple .kpi-buddhist-dot {
+  color: #af177a;
 }
 
 /* BIỂU ĐỒ 7 NGÀY & NHẬT KÝ */

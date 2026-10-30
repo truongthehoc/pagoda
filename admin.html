@@ -475,90 +475,200 @@
              TAB 1: THỐNG KÊ LƯỢT TRUY CẬP (DASHBOARD)
              ========================================== -->
         <section id="tab-dashboard" class="admin-tab-pane active">
-          <!-- Hàng 4 thẻ số liệu KPI -->
+          <!-- Hàng 5 thẻ số liệu KPI Phật giáo -->
           <div class="kpi-grid">
-            <div class="kpi-card card-blue">
+            <!-- 1. Lam Bảo Quang: Tổng lượt truy cập (Cổng Chùa Tam Quan & Liên Hoa Mandala) -->
+            <div class="kpi-card card-buddhist-blue card-blue">
               <div class="kpi-header">
                 <span class="kpi-title">Tổng lượt truy cập</span>
-                <span class="kpi-icon-badge">
-                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <span class="kpi-icon-badge" title="Cổng Tam Quan Chùa">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 10c3-1.5 6-2 10-2s7 .5 10 2"></path>
+                    <path d="M4 10l2-4h12l2 4"></path>
+                    <path d="M12 4v2"></path>
+                    <path d="M6 10v10"></path>
+                    <path d="M18 10v10"></path>
+                    <path d="M9 20v-5a3 3 0 0 1 6 0v5"></path>
+                    <line x1="3" y1="20" x2="21" y2="20"></line>
                   </svg>
                 </span>
               </div>
               <div class="kpi-value" id="kpi-total-visits">0</div>
               <div class="kpi-trend positive">
+                <span class="kpi-buddhist-dot">❖</span>
                 <span>Khách thập phương viếng thăm</span>
               </div>
+              <!-- Watermark Hoa Sen Mandala -->
+              <svg class="kpi-watermark" viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true">
+                <circle cx="50" cy="50" r="44" stroke-width="1.2" stroke-dasharray="3 3"/>
+                <circle cx="50" cy="50" r="36" stroke-width="1.4"/>
+                <circle cx="50" cy="50" r="16" stroke-width="1.4"/>
+                <circle cx="50" cy="50" r="6" fill="currentColor"/>
+                <path d="M50 14 C44 26, 44 34, 50 34 C56 34, 56 26, 50 14 Z" stroke-width="1.2"/>
+                <path d="M50 86 C44 74, 44 66, 50 66 C56 66, 56 74, 50 86 Z" stroke-width="1.2"/>
+                <path d="M14 50 C26 44, 34 44, 34 50 C34 56, 26 56, 14 50 Z" stroke-width="1.2"/>
+                <path d="M86 50 C74 44, 66 44, 66 50 C66 56, 74 56, 86 50 Z" stroke-width="1.2"/>
+                <path d="M24.5 24.5 C36 29, 41 35, 39 41 C33 41, 28 35, 24.5 24.5 Z" stroke-width="1.2"/>
+                <path d="M75.5 75.5 C64 71, 59 65, 61 59 C67 59, 72 65, 75.5 75.5 Z" stroke-width="1.2"/>
+                <path d="M75.5 24.5 C71 36, 65 41, 59 39 C59 33, 65 28, 75.5 24.5 Z" stroke-width="1.2"/>
+                <path d="M24.5 75.5 C29 64, 35 59, 41 61 C41 67, 35 72, 24.5 75.5 Z" stroke-width="1.2"/>
+              </svg>
             </div>
 
-            <div class="kpi-card card-amber">
+            <!-- 2. Hoàng Y Kim Sắc: Lượt truy cập hôm nay (Bánh Xe Pháp Luân 8 Nan Hoa) -->
+            <div class="kpi-card card-buddhist-gold card-amber">
               <div class="kpi-header">
                 <span class="kpi-title">Lượt truy cập hôm nay</span>
-                <span class="kpi-icon-badge">
-                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                <span class="kpi-icon-badge" title="Bánh xe Pháp Luân">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <line x1="12" y1="3" x2="12" y2="9"></line>
+                    <line x1="12" y1="15" x2="12" y2="21"></line>
+                    <line x1="3" y1="12" x2="9" y2="12"></line>
+                    <line x1="15" y1="12" x2="21" y2="12"></line>
+                    <line x1="5.6" y1="5.6" x2="9.9" y2="9.9"></line>
+                    <line x1="14.1" y1="14.1" x2="18.4" y2="18.4"></line>
+                    <line x1="18.4" y1="5.6" x2="14.1" y2="9.9"></line>
+                    <line x1="9.9" y1="14.1" x2="5.6" y2="18.4"></line>
                   </svg>
                 </span>
               </div>
               <div class="kpi-value" id="kpi-today-visits">0</div>
               <div class="kpi-trend positive">
+                <span class="kpi-buddhist-dot">❖</span>
                 <span>Cập nhật theo thời gian thực</span>
               </div>
+              <!-- Watermark Bánh xe Pháp Luân (Dharmachakra) -->
+              <svg class="kpi-watermark" viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true">
+                <circle cx="50" cy="50" r="44" stroke-width="2"/>
+                <circle cx="50" cy="50" r="38" stroke-width="1" stroke-dasharray="2 2"/>
+                <circle cx="50" cy="50" r="14" stroke-width="2"/>
+                <circle cx="50" cy="50" r="7" stroke-width="1.5" fill="currentColor" fill-opacity="0.15"/>
+                <line x1="50" y1="6" x2="50" y2="36" stroke-width="2" stroke-linecap="round"/>
+                <line x1="50" y1="64" x2="50" y2="94" stroke-width="2" stroke-linecap="round"/>
+                <line x1="6" y1="50" x2="36" y2="50" stroke-width="2" stroke-linecap="round"/>
+                <line x1="64" y1="50" x2="94" y2="50" stroke-width="2" stroke-linecap="round"/>
+                <line x1="18.9" y1="18.9" x2="40.1" y2="40.1" stroke-width="2" stroke-linecap="round"/>
+                <line x1="59.9" y1="59.9" x2="81.1" y2="81.1" stroke-width="2" stroke-linecap="round"/>
+                <line x1="81.1" y1="18.9" x2="59.9" y2="40.1" stroke-width="2" stroke-linecap="round"/>
+                <line x1="40.1" y1="59.9" x2="18.9" y2="81.1" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="50" cy="6" r="3" fill="currentColor"/>
+                <circle cx="50" cy="94" r="3" fill="currentColor"/>
+                <circle cx="6" cy="50" r="3" fill="currentColor"/>
+                <circle cx="94" cy="50" r="3" fill="currentColor"/>
+                <circle cx="18.9" cy="18.9" r="3" fill="currentColor"/>
+                <circle cx="81.1" cy="81.1" r="3" fill="currentColor"/>
+                <circle cx="81.1" cy="18.9" r="3" fill="currentColor"/>
+                <circle cx="18.9" cy="81.1" r="3" fill="currentColor"/>
+              </svg>
             </div>
 
-            <div class="kpi-card card-rose">
+            <!-- 3. Trầm Hương Chu Sa: Lượt thắp hương thơm (Lư Hương & 3 Nén Tâm Hương) -->
+            <div class="kpi-card card-buddhist-incense card-rose">
               <div class="kpi-header">
                 <span class="kpi-title">Lượt thắp hương thơm</span>
-                <span class="kpi-icon-badge">
-                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                <span class="kpi-icon-badge" title="Lư hương & Ba nén tâm hương">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="9" y1="12" x2="9" y2="7"></line>
+                    <line x1="12" y1="12" x2="12" y2="5"></line>
+                    <line x1="15" y1="12" x2="15" y2="7"></line>
+                    <path d="M8.5 5c.5-.8 1-1.2 1-2"></path>
+                    <path d="M12 3.5c0-.8.5-1.5 1-2"></path>
+                    <path d="M15 5c0-.8.8-1.5 1-2"></path>
+                    <path d="M6 12h12a3 3 0 0 1-3 5H9a3 3 0 0 1-3-5z"></path>
+                    <path d="M8 17l-1 4"></path>
+                    <path d="M16 17l1 4"></path>
+                    <path d="M12 17v3"></path>
                   </svg>
                 </span>
               </div>
               <div class="kpi-value" id="kpi-total-offerings">0</div>
               <div class="kpi-trend positive">
+                <span class="kpi-buddhist-dot">❖</span>
                 <span>Lượt dâng 3 nén tâm hương</span>
               </div>
+              <!-- Watermark Mây Cát Tường & Làn Khói Trầm -->
+              <svg class="kpi-watermark" viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M16 66 C16 54 28 46 38 48 C42 34 58 32 68 40 C76 34 88 40 88 52 C94 62 84 72 72 72 L26 72 C18 72 16 68 16 66 Z" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M38 48 C38 42 45 38 52 42" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M50 72 C50 62 62 55 70 62" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M42 30 C45 20 38 12 45 5" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3"/>
+                <path d="M56 26 C60 18 55 10 62 4" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M28 42 C30 32 26 24 32 16" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="78" cy="30" r="2" fill="currentColor"/>
+                <circle cx="22" cy="38" r="1.5" fill="currentColor"/>
+              </svg>
             </div>
 
-            <div class="kpi-card card-emerald">
+            <!-- 4. Bồ Đề Ngọc Bích: Lượt rút thẻ cầu an (Lá Bồ Đề Giác Ngộ) -->
+            <div class="kpi-card card-buddhist-emerald card-emerald">
               <div class="kpi-header">
                 <span class="kpi-title">Lượt rút thẻ cầu an</span>
-                <span class="kpi-icon-badge">
-                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                <span class="kpi-icon-badge" title="Lá Bồ Đề thanh tịnh">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2C13 5 18 7 20 12c2.5 6-.5 10-4 10-3 0-4-3-4-3s-1 3-4 3c-3.5 0-6.5-4-4-10 2-5 7-7 8-10z"></path>
+                    <path d="M12 5v14"></path>
+                    <path d="M12 9c2-1 4-1 5 1"></path>
+                    <path d="M12 13c-2-1-4-1-5 1"></path>
                   </svg>
                 </span>
               </div>
               <div class="kpi-value" id="kpi-total-blessings">0</div>
               <div class="kpi-trend positive">
+                <span class="kpi-buddhist-dot">❖</span>
                 <span>Lời nguyện cầu gia đạo bình an</span>
               </div>
+              <!-- Watermark Lá Bồ Đề Cổ Thụ (Bodhi Leaf) -->
+              <svg class="kpi-watermark" viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M50 8 C52 18 68 28 78 44 C88 60 82 82 65 92 C55 98 50 88 50 88 C50 88 45 98 35 92 C18 82 12 60 22 44 C32 28 48 18 50 8 Z" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M50 8 C49 4 46 2 42 2" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M50 14 L50 88" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M50 30 Q62 26 72 35" stroke-width="1.2"/>
+                <path d="M50 30 Q38 26 28 35" stroke-width="1.2"/>
+                <path d="M50 45 Q66 40 78 52" stroke-width="1.2"/>
+                <path d="M50 45 Q34 40 22 52" stroke-width="1.2"/>
+                <path d="M50 60 Q66 58 75 70" stroke-width="1.2"/>
+                <path d="M50 60 Q34 58 25 70" stroke-width="1.2"/>
+                <path d="M50 74 Q60 74 65 82" stroke-width="1.2"/>
+                <path d="M50 74 Q40 74 35 82" stroke-width="1.2"/>
+              </svg>
             </div>
 
-            <div class="kpi-card card-purple">
+            <!-- 5. Bạch Liên Hoa Cung: Tâm nguyện Phật tử (Đóa Sen Hé Nở Dâng Phật) -->
+            <div class="kpi-card card-buddhist-lotus card-purple">
               <div class="kpi-header">
                 <span class="kpi-title">Tâm nguyện Phật tử</span>
-                <span class="kpi-icon-badge">
-                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                <span class="kpi-icon-badge" title="Đóa Sen Dâng Tam Bảo">
+                  <svg class="mono-svg-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 4c-2 4-2 7 0 11 2-4 2-7 0-11z"></path>
+                    <path d="M10 7C7 10 6 13 9 16"></path>
+                    <path d="M14 7c3 3 4 6 1 9"></path>
+                    <path d="M7 11c-3 2-4 5-1 7 4 0 5-2 6-3"></path>
+                    <path d="M17 11c3 2 4 5 1 7-4 0-5-2-6-3"></path>
+                    <path d="M5 19c4 2 10 2 14 0"></path>
                   </svg>
                 </span>
               </div>
               <div class="kpi-value" id="kpi-total-wishes">0</div>
               <div class="kpi-trend positive">
+                <span class="kpi-buddhist-dot">❖</span>
                 <span>Lời nguyện cầu dâng Tam Bảo</span>
               </div>
+              <!-- Watermark Bạch Liên Hoa (Sacred Blooming Lotus) -->
+              <svg class="kpi-watermark" viewBox="0 0 100 100" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M50 20 C42 36 42 54 50 65 C58 54 58 36 50 20 Z" stroke-width="1.6"/>
+                <path d="M46 26 C32 38 30 56 44 67" stroke-width="1.5"/>
+                <path d="M54 26 C68 38 70 56 56 67" stroke-width="1.5"/>
+                <path d="M38 38 C20 48 18 64 38 72" stroke-width="1.5"/>
+                <path d="M62 38 C80 48 82 64 62 72" stroke-width="1.5"/>
+                <path d="M26 66 C35 78 65 78 74 66" stroke-width="1.5"/>
+                <path d="M16 80 C36 86 64 86 84 80" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M28 88 C40 92 60 92 72 88" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="50" cy="14" r="2" fill="currentColor"/>
+                <circle cx="43" cy="18" r="1.2" fill="currentColor"/>
+                <circle cx="57" cy="18" r="1.2" fill="currentColor"/>
+              </svg>
             </div>
           </div>
 
