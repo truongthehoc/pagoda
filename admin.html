@@ -872,13 +872,6 @@
              ========================================== -->
         <section id="tab-music" class="admin-tab-pane">
           <div class="modern-card">
-            <div class="card-header-row">
-              <div>
-                <h3>Danh sách nhạc thiền phát lần lượt</h3>
-                <p class="text-muted">Khi người dùng vào trang public, hệ thống sẽ lần lượt phát danh sách nhạc này. Người dùng có thể tăng giảm âm lượng tùy ý.</p>
-              </div>
-            </div>
-
             <!-- Form thêm bài nhạc -->
             <div class="music-add-container">
               <div class="add-subform">
@@ -949,13 +942,6 @@
              ========================================== -->
         <section id="tab-bell" class="admin-tab-pane">
           <div class="modern-card">
-            <div class="card-header-row">
-              <div>
-                <h3>Cài đặt Âm thanh hệ thống (Chuông & Mõ Chùa)</h3>
-                <p class="text-muted">Quản lý âm thanh Đại Hồng Chung (phát theo chu kỳ) và tiếng Mõ Chùa (gán với nút Thắp Hương & Rút Thẻ)</p>
-              </div>
-            </div>
-
             <div class="system-sounds-grid">
               <!-- KHỐI 1: TIẾNG CHUÔNG CHÙA (ĐẠI HỒNG CHUNG) -->
               <div class="sound-config-card">
@@ -1118,13 +1104,6 @@
              ========================================== -->
         <section id="tab-flare" class="admin-tab-pane">
           <div class="modern-card">
-            <div class="card-header-row">
-              <div>
-                <h3>Tùy chỉnh Flare ánh sáng quang minh quanh Phật</h3>
-                <p class="text-muted">Căn chỉnh quầng sáng hào quang quang học trên màn hình chính theo vị trí tượng Phật của ảnh bàn thờ</p>
-              </div>
-            </div>
-
             <div class="flare-settings-grid">
               <div class="flare-slider-card">
                 <div class="slider-field">
@@ -1182,21 +1161,6 @@
              TAB 6: QUẢN LÝ CHỨC NĂNG TƯƠNG TÁC (CHỨC NĂNG - TỈ LỆ 7/3)
              ======================================================== -->
         <section id="tab-action-buttons" class="admin-tab-pane">
-          <div class="content-header-card">
-            <div class="header-icon-box">
-              <svg class="mono-svg-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
-                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
-                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
-                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
-              </svg>
-            </div>
-            <div class="header-content">
-              <h2>Quản Lý Chức Năng Tương Tác</h2>
-              <p>Tùy chỉnh danh sách, sắp xếp thứ tự và chỉnh sửa tên các nút chức năng trên trang Chính Điện Tam Bảo.</p>
-            </div>
-          </div>
-
           <!-- BỐ CỤC CHIA 2 PHẦN TỈ LỆ 7/3 -->
           <div class="features-layout-grid">
             <!-- PHẦN TRÁI (7 PHẦN): DANH SÁCH CÁC CHỨC NĂNG -->
@@ -1393,13 +1357,12 @@
              ======================================================== -->
         <section id="tab-wishes" class="admin-tab-pane">
           <div class="modern-card wishes-fullwidth-card">
+            <!-- Thanh công cụ & bộ lọc (Gọn gàng, không lặp tiêu đề) -->
             <div class="wishes-toolbar-header">
-              <div class="wishes-header-info">
-                <span class="wishes-header-lotus">🪷</span>
-                <div>
-                  <h3>Danh Sách Tâm Nguyện Của Phật Tử Kính Dâng Tam Bảo</h3>
-                  <p class="text-muted">Xem, tìm kiếm, kiểm duyệt và quản lý các lời cầu an của khách thập phương</p>
-                </div>
+              <div class="filter-chips-group">
+                <button type="button" class="wish-filter-chip active" data-filter="all">Tất cả (<span id="wish-count-all">0</span>)</button>
+                <button type="button" class="wish-filter-chip" data-filter="approved">Đang hiển thị (<span id="wish-count-approved">0</span>)</button>
+                <button type="button" class="wish-filter-chip" data-filter="hidden">Đang ẩn (<span id="wish-count-hidden">0</span>)</button>
               </div>
 
               <div class="wishes-toolbar-actions">
@@ -1421,14 +1384,13 @@
               </div>
             </div>
 
-            <!-- Thanh lọc trạng thái -->
-            <div class="wishes-filter-bar">
-              <div class="filter-chips-group">
-                <button type="button" class="wish-filter-chip active" data-filter="all">Tất cả (<span id="wish-count-all">0</span>)</button>
-                <button type="button" class="wish-filter-chip" data-filter="approved">Đang hiển thị (<span id="wish-count-approved">0</span>)</button>
-                <button type="button" class="wish-filter-chip" data-filter="hidden">Đang ẩn (<span id="wish-count-hidden">0</span>)</button>
-              </div>
+            <!-- Thanh phụ trạng thái -->
+            <div class="logs-sub-bar">
               <span class="wishes-summary-hint" id="wishes-summary-hint">Hiển thị toàn bộ tâm nguyện</span>
+              <span class="logs-sync-status">
+                <span class="live-dot-green"></span>
+                Dữ liệu đồng bộ trực tiếp từ MySQL Database
+              </span>
             </div>
 
             <!-- Bảng danh sách Fullwidth -->

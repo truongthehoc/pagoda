@@ -3946,8 +3946,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
